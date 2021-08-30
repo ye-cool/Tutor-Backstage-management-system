@@ -58,13 +58,117 @@
       <a-layout-header :style="{ background: '#fff', padding: 0 }" />
       <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
         <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
-
+<div class="content">
+    <a-page-header
+    style="border: 1px solid rgb(235, 237, 240)"
+    title="Title"
+    sub-title="This is a subtitle"
+  >
+   <template slot="extra">
+       <span>管理员A</span>
+        <a-button key="1" type="primary">
+          退出
+        </a-button>
+      </template></a-page-header>
+<a-table :columns="columns" :data-source="data">
+    <a slot="name" slot-scope="text">{{ text }}</a>
+</a-table>
+</div>
         </div>
       </a-layout-content>
     </a-layout>
   </a-layout>
 </template>
 <script>
+const columns = [
+  {
+    title: '家长称谓',
+    dataIndex: 'name',
+    key: 'name',
+    scopedSlots: { customRender: 'name' }
+  },
+  {
+    title: '学生年级与补习科目',
+    dataIndex: 'age',
+    key: 'age',
+    width: 200
+  },
+  {
+    title: '联系电话',
+    dataIndex: 'address',
+    key: 'school',
+    ellipsis: true
+  },
+  {
+    title: '家庭住址范围',
+    dataIndex: 'address',
+    key: 'address 2',
+    ellipsis: true
+  },
+  {
+    title: '需求查看',
+    dataIndex: 'address',
+    key: 'address 3',
+    ellipsis: true
+  },
+  {
+    title: '审核状态',
+    dataIndex: 'address',
+    key: 'address 4',
+    ellipsis: true
+  },
+  {
+    title: '投递状态',
+    dataIndex: 'address',
+    key: 'address 5',
+    ellipsis: true
+  },
+  {
+    title: '操作',
+    dataIndex: 'address',
+    key: 'address 6',
+    ellipsis: true
+  }
+]
+const data = [
+  {
+    key: '1',
+    name: 'John Brown',
+    age: 32,
+    address: 'New York No. 1 Lake Park, New York No. 1 Lake Park',
+    tags: ['nice', 'developer']
+  },
+  {
+    key: '2',
+    name: 'Jim Green',
+    age: 42,
+    address: 'London No. 2 Lake Park, London No. 2 Lake Park',
+    tags: ['loser']
+  },
+  {
+    key: '3',
+    name: 'Joe Black',
+    age: 32,
+    address: 'Sidney No. 1 Lake Park, Sidney No. 1 Lake Park',
+    tags: ['cool', 'teacher']
+  }
+]
+export default {
+  data () {
+    return {
+      data,
+      columns
+    }
+  },
+  methods: {
+    onChange (value, selectedOptions) {
+      console.log(value, selectedOptions)
+    },
+    filter (inputValue, path) {
+      return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+    }
+  }
+}
 </script>
 
 <style>
@@ -75,5 +179,21 @@
 }
 .teacher,.parent,.book,.interface{
   padding-top: 20px;
+}
+.comtemt{
+  padding: 24px;
+}
+.search{
+  display: flex;
+  flex-wrap: wrap;
+}
+.search-condition{
+    display: block;
+    text-align:center;
+    height: 35px;
+    line-height: 35px;
+}
+tr:last-child td {
+  padding-bottom: 0;
 }
 </style>

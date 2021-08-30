@@ -1,0 +1,310 @@
+<template>
+  <a-layout id="components-layout-demo-fixed-sider">
+    <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }">
+      <div class="logo" />
+      <a-menu theme="dark" mode="inline"
+      :default-selected-keys="['1']"
+      :default-open-keys="[1]">
+        <a-menu-item key="1" class="teacher">
+          <router-link to="/teacher"></router-link>
+          <a-icon type="team" />
+          <span class="nav-text">教师信息管理</span>
+        </a-menu-item>
+        <a-menu-item key="2" class="parent">
+          <router-link to="/parent"></router-link>
+          <a-icon type="team" />
+          <span class="nav-text">家长需求管理</span>
+        </a-menu-item>
+        <a-sub-menu key="sub1">
+          <span slot="title">
+          <a-icon type="book" />
+          <span class="nav-text">订单信息管理</span>
+          </span>
+          <a-menu-item key="3">
+          <router-link to="/matched-order"></router-link>
+          已匹配订单
+        </a-menu-item>
+        <a-menu-item key="4">
+        <router-link to="/pending-order"></router-link>
+          待匹配订单
+        </a-menu-item>
+      </a-sub-menu>
+        <a-sub-menu key="sub2">
+          <span slot="title"><a-icon type="control" /><span class="nav-text">界面设置管理</span></span>
+          <a-menu-item key="5">
+          <router-link to="/home-teacher"></router-link>
+          首页教师展示
+        </a-menu-item>
+        <a-menu-item key="6">
+          <router-link to="/banner"></router-link>
+          banner设置
+        </a-menu-item>
+      </a-sub-menu>
+        <a-sub-menu key="sub3">
+          <span slot="title"><a-icon type="control" /><span class="nav-text">人员管理</span></span>
+          <a-menu-item key="7">
+            <router-link to="/audit"></router-link>
+          审核管理员注册
+        </a-menu-item>
+        <a-menu-item key="8">
+          <router-link to="/check"></router-link>
+          查看管理员信息
+        </a-menu-item>
+      </a-sub-menu>
+      </a-menu>
+    </a-layout-sider>
+    <a-layout :style="{ marginLeft: '200px' }">
+      <a-layout-header :style="{ background: '#fff', padding: 0 }" />
+      <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
+        <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
+<div class="content">
+    <a-page-header
+    style="border: 1px solid rgb(235, 237, 240)"
+    title="Title"
+    sub-title="This is a subtitle"
+  >
+   <template slot="extra">
+       <span>管理员A</span>
+        <a-button key="1" type="primary">
+          退出
+        </a-button>
+      </template></a-page-header>
+
+<div class="search">
+    <a-space>
+    <span class="search-condition">搜索条件</span>
+  <a-cascader
+    :options="options1"
+    :show-search="{ filter }"
+    placeholder="所在地区"
+    @change="onChange"
+    class="Teaching-area"
+  /><br /><br />
+  <a-cascader
+    :options="options2"
+    :show-search="{ filter }"
+    placeholder="学生年级"
+    @change="onChange"
+    class="Teaching-grade"
+  /><br /><br />
+  <a-cascader
+    :options="options3"
+    :show-search="{ filter }"
+    placeholder="补习科目"
+    @change="onChange"
+    class="Subjects-taught"
+  />
+  <a-input placeholder="家长称谓/联系电话" style="width: 200px" @search="onSearch" />
+    <a-button type="primary" icon="search">
+      Search
+    </a-button>
+    </a-space>
+</div>
+<a-table :columns="columns" :data-source="data">
+    <a slot="name" slot-scope="text">{{ text }}</a>
+</a-table>
+</div>
+        </div>
+      </a-layout-content>
+    </a-layout>
+  </a-layout>
+</template>
+<script>
+const columns = [
+  {
+    title: '家长称谓',
+    dataIndex: 'name',
+    key: 'name',
+    scopedSlots: { customRender: 'name' }
+  },
+  {
+    title: '学生年级与补习科目',
+    dataIndex: 'age',
+    key: 'age',
+    width: 200
+  },
+  {
+    title: '联系电话',
+    dataIndex: 'address',
+    key: 'school',
+    ellipsis: true
+  },
+  {
+    title: '家庭住址范围',
+    dataIndex: 'address',
+    key: 'address 2',
+    ellipsis: true
+  },
+  {
+    title: '需求查看',
+    dataIndex: 'address',
+    key: 'address 3',
+    ellipsis: true
+  },
+  {
+    title: '审核状态',
+    dataIndex: 'address',
+    key: 'address 4',
+    ellipsis: true
+  },
+  {
+    title: '投递状态',
+    dataIndex: 'address',
+    key: 'address 5',
+    ellipsis: true
+  }
+]
+const data = [
+  {
+    key: '1',
+    name: 'John Brown',
+    age: 32,
+    address: 'New York No. 1 Lake Park, New York No. 1 Lake Park',
+    tags: ['nice', 'developer']
+  },
+  {
+    key: '2',
+    name: 'Jim Green',
+    age: 42,
+    address: 'London No. 2 Lake Park, London No. 2 Lake Park',
+    tags: ['loser']
+  },
+  {
+    key: '3',
+    name: 'Joe Black',
+    age: 32,
+    address: 'Sidney No. 1 Lake Park, Sidney No. 1 Lake Park',
+    tags: ['cool', 'teacher']
+  }
+]
+export default {
+  data () {
+    return {
+      data,
+      columns,
+      options1: [
+        {
+          value: '锦江区',
+          label: '锦江区'
+
+        },
+        {
+          value: '金牛区',
+          label: '金牛区'
+
+        },
+        {
+          value: '武侯区',
+          label: '武侯区'
+
+        },
+        {
+          value: '青羊区',
+          label: '青羊区'
+
+        },
+        {
+          value: '成华区',
+          label: '成华区'
+
+        },
+        {
+          value: '高新区',
+          label: '高新区'
+
+        },
+        {
+          value: '天府新区',
+          label: '天府新区'
+
+        },
+        {
+          value: '新都区',
+          label: '新都区'
+
+        },
+        {
+          value: '郫都区',
+          label: '郫都区'
+
+        },
+        {
+          value: '双流区',
+          label: '双流区'
+        },
+        {
+          value: '龙泉驿区',
+          label: '龙泉驿区'
+
+        },
+        {
+          value: '温江区',
+          label: '温江区'
+
+        },
+        {
+          value: '其他',
+          label: '其他'
+
+        }
+      ],
+      options2: [
+        {
+          value: '锦江区',
+          label: '锦江区'
+
+        }
+      ],
+      options3: [
+        {
+          value: '锦江区',
+          label: '锦江区'
+
+        }
+      ],
+      options4: [
+        {
+          value: '锦江区',
+          label: '锦江区'
+
+        }
+      ]
+    }
+  },
+  methods: {
+    onChange (value, selectedOptions) {
+      console.log(value, selectedOptions)
+    },
+    filter (inputValue, path) {
+      return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+    }
+  }
+}
+</script>
+
+<style>
+#components-layout-demo-fixed-sider .logo {
+  height: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 16px;
+}
+.teacher,.parent,.book,.interface{
+  padding-top: 20px;
+}
+.comtemt{
+  padding: 24px;
+}
+.search{
+  display: flex;
+  flex-wrap: wrap;
+}
+.search-condition{
+    display: block;
+    text-align:center;
+    height: 35px;
+    line-height: 35px;
+}
+tr:last-child td {
+  padding-bottom: 0;
+}
+</style>

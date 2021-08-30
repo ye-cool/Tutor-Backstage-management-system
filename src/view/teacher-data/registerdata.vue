@@ -58,6 +58,19 @@
       <a-layout-header :style="{ background: '#fff', padding: 0 }" />
       <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
         <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
+<div class="content">
+    <a-page-header
+    style="border: 1px solid rgb(235, 237, 240)"
+    title="Title"
+    sub-title="This is a subtitle"
+  >
+   <template slot="extra">
+       <span>管理员A</span>
+        <a-button key="1" type="primary">
+          退出
+        </a-button>
+      </template></a-page-header>
+</div>
 
         </div>
       </a-layout-content>
@@ -65,6 +78,19 @@
   </a-layout>
 </template>
 <script>
+
+export default {
+  data () {
+  },
+  methods: {
+    onChange (value, selectedOptions) {
+      console.log(value, selectedOptions)
+    },
+    filter (inputValue, path) {
+      return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+    }
+  }
+}
 </script>
 
 <style>
@@ -75,5 +101,21 @@
 }
 .teacher,.parent,.book,.interface{
   padding-top: 20px;
+}
+.comtemt{
+  padding: 24px;
+}
+.search{
+  display: flex;
+  flex-wrap: wrap;
+}
+.search-condition{
+    display: block;
+    text-align:center;
+    height: 35px;
+    line-height: 35px;
+}
+tr:last-child td {
+  padding-bottom: 0;
 }
 </style>
