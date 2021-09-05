@@ -1,63 +1,6 @@
 <template>
-  <a-layout id="components-layout-demo-fixed-sider">
-    <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }">
-      <div class="logo" />
-      <a-menu theme="dark" mode="inline"
-      :default-selected-keys="['1']"
-      :default-open-keys="[1]">
-        <a-menu-item key="1" class="teacher">
-          <router-link to="/teacher"></router-link>
-          <a-icon type="team" />
-          <span class="nav-text">教师信息管理</span>
-        </a-menu-item>
-        <a-menu-item key="2" class="parent">
-          <router-link to="/parent"></router-link>
-          <a-icon type="team" />
-          <span class="nav-text">家长需求管理</span>
-        </a-menu-item>
-        <a-sub-menu key="sub1">
-          <span slot="title">
-          <a-icon type="book" />
-          <span class="nav-text">订单信息管理</span>
-          </span>
-          <a-menu-item key="3">
-          <router-link to="/matched-order"></router-link>
-          已匹配订单
-        </a-menu-item>
-        <a-menu-item key="4">
-        <router-link to="/pending-order"></router-link>
-          待匹配订单
-        </a-menu-item>
-      </a-sub-menu>
-        <a-sub-menu key="sub2">
-          <span slot="title"><a-icon type="control" /><span class="nav-text">界面设置管理</span></span>
-          <a-menu-item key="5">
-          <router-link to="/home-teacher"></router-link>
-          首页教师展示
-        </a-menu-item>
-        <a-menu-item key="6">
-          <router-link to="/banner"></router-link>
-          banner设置
-        </a-menu-item>
-      </a-sub-menu>
-        <a-sub-menu key="sub3">
-          <span slot="title"><a-icon type="control" /><span class="nav-text">人员管理</span></span>
-          <a-menu-item key="7">
-            <router-link to="/audit"></router-link>
-          审核管理员注册
-        </a-menu-item>
-        <a-menu-item key="8">
-          <router-link to="/check"></router-link>
-          查看管理员信息
-        </a-menu-item>
-      </a-sub-menu>
-
-      </a-menu>
-    </a-layout-sider>
-    <a-layout :style="{ marginLeft: '200px' }">
-      <a-layout-header :style="{ background: '#fff', padding: 0 }" />
-      <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
-        <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
+<Menu>
+  <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
 <div class="content">
     <a-page-header
     style="border: 1px solid rgb(235, 237, 240)"
@@ -109,32 +52,169 @@
     </a-space>
 </div>
 <a-table :columns="columns" :data-source="data">
-    <!-- <a slot="name" slot-scope="text">{{ text }}</a> -->
-    <a slot="register" slot-scope="text" @click="showModal">{{ text }}</a>
-    <a slot="exhibit" slot-scope="text" @click="showModal">{{ text }}</a>
-</a-table>
-    <a-modal v-model="visible" title="Title" on-ok="handleOk">
+    <template slot="register">
+      <a-modal :visible="modal1Visible" on-ok="handleOk" :closable="false">
     <template slot="footer">
-      <a-button key="back" @click="handleCancel">
-        Return
-      </a-button>
-      <a-button key="submit" type="primary" :loading="loading" @click="handleOk">
-        Submit
+      <a-button key="back" type="primary" @click="handleCancel">
+        返回
       </a-button>
     </template>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
+ <a-descriptions title="注册资料" bordered>
+    <a-descriptions-item label="姓名">
+      小晞
+    </a-descriptions-item>
+    <a-descriptions-item label="学历">
+      本科生
+    </a-descriptions-item>
+    <a-descriptions-item label="学校">
+      电子科技大学
+    </a-descriptions-item>
+    <a-descriptions-item label="所教科目">
+      高中数学
+    </a-descriptions-item>
+    <a-descriptions-item label="家教经历">
+      每天打电动
+    </a-descriptions-item>
+    <a-descriptions-item label="自我评价">
+      人美心善
+    </a-descriptions-item>
+    <a-descriptions-item label="价格区间" :span="2">
+      90元/小时-120元/小时
+    </a-descriptions-item>
+    <a-descriptions-item label="空闲时间">
+      寒暑假均可
+    </a-descriptions-item>
+    <a-descriptions-item label="授课区域">
+      成华区
+    </a-descriptions-item>
+    <a-descriptions-item label="常住地址">
+      电子科技大学欣苑学生公寓
+    </a-descriptions-item>
+  </a-descriptions>
     </a-modal>
+      <a @click="showModal">查看</a>
+    </template>
+    <template slot="exhibit">
+      <a-modal :visible="modal2Visible" title="Title" on-ok="handleOk2" :closable="false">
+    <template slot="footer">
+      <a-button key="back" @click="handleCancel2">
+        取消
+      </a-button>
+      <a-button key="submit" type="primary" :loading="loading" @click="handleOk2">
+        审核通过，发布资料
+      </a-button>
+    </template>
+    <a-form class="form">
+      <a-form-item v-bind="formItemLayout" label="称谓">
+      <span>
+        王老师
+      </span>
+    <a-button type="primary" icon="download" class="download">
+      下载展示资料
+    </a-button>
+    </a-form-item>
+      <a-form-item v-bind="formItemLayout" label="学校">
+      <span>
+        四川大学
+      </span>
+      <span>本科生</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="授课科目">
+      <a-cascader
+    :options="options1"
+    :show-search="{ filter }"
+    placeholder="授课年级"
+    @change="onChange"
+    style="width: 200px"
+  />
+      <a-cascader
+    :options="options2"
+    :show-search="{ filter }"
+    placeholder="授课科目"
+    @change="onChange"
+    style="width: 200px"
+  />
+      <a-cascader
+    :options="options1"
+    :show-search="{ filter }"
+    placeholder="授课年级"
+    @change="onChange"
+    style="width: 200px"
+  />
+      <a-cascader
+    :options="options2"
+    :show-search="{ filter }"
+    placeholder="授课科目"
+    @change="onChange"
+    style="width: 200px"
+  />
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="价格区间" has-feedback>
+      <div>
+      <a-input style="width: 100px"></a-input>
+      <span>至</span>
+      <a-input style="width: 100px"></a-input>
+      <span>元/小时</span>
+      </div>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="展示价格" has-feedback>
+      <span>倍数设置</span>
+      <a-input style="width: 100px"></a-input>
+      <br>
+      <span>价格区间</span>
+      <br>
+      <div>
+      <a-input style="width: 100px"></a-input>
+      <span>至</span>
+      <a-input style="width: 100px"></a-input>
+      <span>元/小时</span>
+      </div>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout">
+      <span slot="label">
+        家教经历
+      </span>
+      <a-textarea style="width: 500px" :rows="4"></a-textarea>
+    </a-form-item><a-form-item v-bind="formItemLayout">
+      <span slot="label">
+        空闲时间
+      </span>
+      <span>周一至周五晚</span>
+    </a-form-item><a-form-item v-bind="formItemLayout">
+      <span slot="label">
+        区域
+      </span>
+      <span>金牛区 成华区 锦江区</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout">
+      <span slot="label">
+        常住地址
+      </span>
+      <span>金牛区二十中附近</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout">
+      <span slot="label">
+        一句话标签
+      </span>
+      <a-input style="width: 450px" placeholder="请输入内容"></a-input>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout">
+      <span slot="label">
+        授课课时数
+      </span>
+      <a-input style="width: 450px" placeholder="请输入内容"></a-input>
+    </a-form-item>
+  </a-form>
+    </a-modal>
+      <a @click="showModal2">编辑</a>
+    </template>
+</a-table>
 </div>
         </div>
-      </a-layout-content>
-    </a-layout>
-  </a-layout>
+</Menu>
 </template>
 <script>
+import Menu from '../components/menu.vue'
 const columns = [
   {
     title: '教师姓名',
@@ -162,7 +242,6 @@ const columns = [
   },
   {
     title: '注册资料',
-    dataIndex: 'register',
     key: 'register',
     ellipsis: true,
     scopedSlots: { customRender: 'register' }
@@ -194,8 +273,8 @@ const data = [
     gender: '男',
     school: '电子科技大学',
     SubjectsAndGrand: '高中数学',
-    register: '查看',
-    exhibit: '编辑',
+    // register: '查看',
+    // exhibit: '编辑',
     dataStatus: '待审核',
     operator: '无'
   },
@@ -205,8 +284,8 @@ const data = [
     gender: '男',
     school: '电子科技大学',
     SubjectsAndGrand: '高中数学',
-    register: '查看',
-    exhibit: '编辑',
+    // register: '查看',
+    // exhibit: '编辑',
     dataStatus: '待审核',
     operator: '无'
   },
@@ -216,8 +295,8 @@ const data = [
     gender: '男',
     school: '电子科技大学',
     SubjectsAndGrand: '高中数学',
-    register: '查看',
-    exhibit: '编辑',
+    // register: '查看',
+    // exhibit: '编辑',
     dataStatus: '待审核',
     operator: '无'
   }
@@ -225,9 +304,32 @@ const data = [
 export default {
   data () {
     return {
-      visible: false,
+      modal1Visible: false,
+      modal2Visible: false,
+      loading: false,
       data,
       columns,
+      formItemLayout: {
+        labelCol: {
+          span: 6
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 }
+        }
+      },
+      tailFormItemLayout: {
+        wrapperCol: {
+          xs: {
+            span: 24,
+            offset: 0
+          },
+          sm: {
+            span: 16,
+            offset: 8
+          }
+        }
+      },
       options1: [
         {
           value: '锦江区',
@@ -317,12 +419,44 @@ export default {
       ]
     }
   },
+  components: {
+    Menu
+  },
   methods: {
+    onSearch () {
+
+    },
     showModal () {
-      this.visible = true
+      this.modal1Visible = true
     },
     hideModal () {
-      this.visible = false
+      this.modal1Visible = false
+    },
+    handleOk (e) {
+      this.loading = true
+      setTimeout(() => {
+        this.modal1Visible = false
+        this.loading = false
+      }, 3000)
+    },
+    handleCancel (e) {
+      this.modal1Visible = false
+    },
+    showModal2 () {
+      this.modal2Visible = true
+    },
+    hideModal2 () {
+      this.modal2Visible = false
+    },
+    handleOk2 (e) {
+      this.loading = true
+      setTimeout(() => {
+        this.modal2Visible = false
+        this.loading = false
+      }, 3000)
+    },
+    handleCancel2 (e) {
+      this.modal2Visible = false
     },
     onChange (value, selectedOptions) {
       console.log(value, selectedOptions)
@@ -340,9 +474,6 @@ export default {
   background: rgba(255, 255, 255, 0.2);
   margin: 16px;
 }
-.teacher,.parent,.book,.interface{
-  padding-top: 20px;
-}
 .comtemt{
   padding: 24px;
 }
@@ -358,5 +489,11 @@ export default {
 }
 tr:last-child td {
   padding-bottom: 0;
+}
+.ant-modal-content{
+  width:900px;
+}
+.download{
+  margin-left: 380px;
 }
 </style>

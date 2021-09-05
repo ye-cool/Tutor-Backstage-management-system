@@ -1,63 +1,7 @@
 <template>
-  <a-layout id="components-layout-demo-fixed-sider">
-    <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }">
-      <div class="logo" />
-      <a-menu theme="dark" mode="inline"
-      :default-selected-keys="['1']"
-      :default-open-keys="[1]">
-        <a-menu-item key="1" class="teacher">
-          <router-link to="/teacher"></router-link>
-          <a-icon type="team" />
-          <span class="nav-text">教师信息管理</span>
-        </a-menu-item>
-        <a-menu-item key="2" class="parent">
-          <router-link to="/parent"></router-link>
-          <a-icon type="team" />
-          <span class="nav-text">家长需求管理</span>
-        </a-menu-item>
-        <a-sub-menu key="sub1">
-          <span slot="title">
-          <a-icon type="book" />
-          <span class="nav-text">订单信息管理</span>
-          </span>
-          <a-menu-item key="3">
-          <router-link to="/matched-order"></router-link>
-          已匹配订单
-        </a-menu-item>
-        <a-menu-item key="4">
-        <router-link to="/pending-order"></router-link>
-          待匹配订单
-        </a-menu-item>
-      </a-sub-menu>
-        <a-sub-menu key="sub2">
-          <span slot="title"><a-icon type="control" /><span class="nav-text">界面设置管理</span></span>
-          <a-menu-item key="5">
-          <router-link to="/home-teacher"></router-link>
-          首页教师展示
-        </a-menu-item>
-        <a-menu-item key="6">
-          <router-link to="/banner"></router-link>
-          banner设置
-        </a-menu-item>
-      </a-sub-menu>
-        <a-sub-menu key="sub3">
-          <span slot="title"><a-icon type="control" /><span class="nav-text">人员管理</span></span>
-          <a-menu-item key="7">
-            <router-link to="/audit"></router-link>
-          审核管理员注册
-        </a-menu-item>
-        <a-menu-item key="8">
-          <router-link to="/check"></router-link>
-          查看管理员信息
-        </a-menu-item>
-      </a-sub-menu>
-      </a-menu>
-    </a-layout-sider>
-    <a-layout :style="{ marginLeft: '200px' }">
-      <a-layout-header :style="{ background: '#fff', padding: 0 }" />
-      <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
-        <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
-<div class="content">
+<Menu>
+<div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
+  <div class="content">
     <a-page-header
     style="border: 1px solid rgb(235, 237, 240)"
     title="Title"
@@ -78,21 +22,18 @@
     :show-search="{ filter }"
     placeholder="所在地区"
     @change="onChange"
-    class="Teaching-area"
   /><br /><br />
   <a-cascader
     :options="options2"
     :show-search="{ filter }"
     placeholder="学生年级"
     @change="onChange"
-    class="Teaching-grade"
   /><br /><br />
   <a-cascader
     :options="options3"
     :show-search="{ filter }"
     placeholder="补习科目"
     @change="onChange"
-    class="Subjects-taught"
   />
   <a-input placeholder="家长称谓/联系电话" style="width: 200px" @search="onSearch" />
     <a-button type="primary" icon="search">
@@ -101,87 +42,251 @@
     </a-space>
 </div>
 <a-table :columns="columns" :data-source="data">
-    <a slot="name" slot-scope="text">{{ text }}</a>
+      <template slot="need">
+      <a-modal :visible="modal1Visible" title="家长需求" on-ok="handleOk" :closable="false">
+    <template slot="footer">
+      <a-button key="back" @click="handleCancel">
+        返回
+      </a-button>
+      <a-button key="submit" type="primary" :loading="loading" @click="handleOk">
+        发布
+      </a-button>
+    </template>
+     <a-form class="form">
+      <a-form-item v-bind="formItemLayout" label="家长称谓">
+      <span>
+        李雷
+      </span>
+    </a-form-item>
+      <a-form-item v-bind="formItemLayout" label="学生补习科目">
+      <span>
+        高中数学
+      </span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="学生情况与老师要求">
+      <a-textarea style="width: 500px" :rows="4"></a-textarea>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="联系电话" has-feedback>
+      <div>
+      <span>13498574832</span>
+      </div>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="家庭住址" has-feedback>
+      <span>金牛区</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout">
+      <span slot="label">
+        详细地址
+      </span>
+      <a-input style="width: 500px"></a-input>
+    </a-form-item><a-form-item v-bind="formItemLayout">
+      <span slot="label">
+        预期价格
+      </span>
+      <span>90元/小时</span>
+    </a-form-item><a-form-item v-bind="formItemLayout">
+      <span slot="label">
+        展示价格
+      </span>
+      <span>80元/小时</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout">
+      <span slot="label">
+        教师性别要求
+      </span>
+      <span>均可</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout">
+      <span slot="label">
+        补习时长
+      </span>
+      <a-input style="width: 500px"></a-input>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout">
+      <span slot="label">
+        空闲时间
+      </span>
+      <span>周一至周五</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout">
+      <span slot="label">
+        设置优先级
+      </span>
+      <a-cascader
+    :options="options4"
+    :show-search="{ filter }"
+    placeholder="优先级"
+    @change="onChange"
+    style="width: 200px"
+  />
+    </a-form-item>
+  </a-form>
+    </a-modal>
+      <a @click="showModal">编辑</a>
+    </template>
+    <template slot="deliveryStatus" slot-scope="text">
+      <a-modal :visible="modal2Visible" title="Title" on-ok="handleOk2" :closable="false">
+    <template slot="footer">
+      <a-button key="back" @click="handleCancel2" type="primary">
+        返回
+      </a-button>
+    </template>
+    <a-form class="form">
+      <a-form-item v-bind="formItemLayout" label="投递老师">
+      <teachermodal :modalVisible="modalVisible" v-on:changeVisible="changeVisible"></teachermodal>
+      <div class="taechername">
+      <a style="float:left; margin-right:10px;" @click="showteacherModal">王老师</a>
+      <a style="float:left; margin-right:10px;" @click="showteacherModal">李老师</a>
+      </div>
+    </a-form-item>
+      <a-form-item v-bind="formItemLayout" label="家长称谓">
+      <span>李雷</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="学生补习科目" has-feedback>
+      <span>高中数学</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="学习情况" has-feedback>
+      <span>数学基础不扎实</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="联系电话" has-feedback>
+      <span>13789574832</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="家庭住址" has-feedback>
+      <span>金牛区</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="期望价格" has-feedback>
+      <span>90</span><span>元/小时</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="展示价格" has-feedback>
+      <span>80</span><span>元/小时</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="教师性别要求" has-feedback>
+      <span>均可</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="补习时长" has-feedback>
+      <span>无</span>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="空闲时间" has-feedback>
+      <span>周一至周五晚上</span>
+    </a-form-item>
+  </a-form>
+    </a-modal>
+      <a @click="showModal2">{{ text }}</a>
+    </template>
 </a-table>
 </div>
         </div>
-      </a-layout-content>
-    </a-layout>
-  </a-layout>
+</Menu>
 </template>
 <script>
+import Menu from '../components/menu.vue'
+import teachermodal from '../components/teachermodal.vue'
 const columns = [
   {
     title: '家长称谓',
     dataIndex: 'name',
-    key: 'name',
-    scopedSlots: { customRender: 'name' }
+    key: 'name'
   },
   {
     title: '学生年级与补习科目',
-    dataIndex: 'age',
-    key: 'age',
+    dataIndex: 'SubjectsAndGrand',
+    key: 'SubjectsAndGrand',
     width: 200
   },
   {
     title: '联系电话',
-    dataIndex: 'address',
-    key: 'school',
+    dataIndex: 'TEL',
+    key: 'TEL',
     ellipsis: true
   },
   {
     title: '家庭住址范围',
-    dataIndex: 'address',
-    key: 'address 2',
+    dataIndex: 'home',
+    key: 'home',
     ellipsis: true
   },
   {
     title: '需求查看',
-    dataIndex: 'address',
-    key: 'address 3',
-    ellipsis: true
+    key: 'need',
+    ellipsis: true,
+    scopedSlots: { customRender: 'need' }
   },
   {
     title: '审核状态',
-    dataIndex: 'address',
-    key: 'address 4',
+    dataIndex: 'dataStatus',
+    key: 'dataStatus',
     ellipsis: true
   },
   {
     title: '投递状态',
-    dataIndex: 'address',
-    key: 'address 5',
-    ellipsis: true
+    dataIndex: 'deliveryStatus',
+    key: 'deliveryStatus',
+    ellipsis: true,
+    scopedSlots: { customRender: 'deliveryStatus' }
   }
 ]
 const data = [
   {
     key: '1',
     name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park, New York No. 1 Lake Park',
-    tags: ['nice', 'developer']
+    SubjectsAndGrand: '高中数学',
+    TEL: '13235983145',
+    home: '成华区',
+    // need: '编辑',
+    dataStatus: '待审核',
+    deliveryStatus: '已有0人投递'
   },
   {
     key: '2',
     name: 'Jim Green',
-    age: 42,
-    address: 'London No. 2 Lake Park, London No. 2 Lake Park',
-    tags: ['loser']
+    SubjectsAndGrand: '高中数学',
+    TEL: '13235983145',
+    home: '成华区',
+    // need: '编辑',
+    dataStatus: '待审核',
+    deliveryStatus: '已有0人投递'
   },
   {
     key: '3',
     name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park, Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher']
+    SubjectsAndGrand: '高中数学',
+    TEL: '13235983145',
+    home: '成华区',
+    // need: '编辑',
+    dataStatus: '待审核',
+    deliveryStatus: '已有0人投递'
   }
 ]
 export default {
   data () {
     return {
       data,
+      loading: false,
+      modalVisible: false,
+      modal1Visible: false,
+      modal2Visible: false,
       columns,
+      formItemLayout: {
+        labelCol: {
+          span: 6
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 }
+        }
+      },
+      tailFormItemLayout: {
+        wrapperCol: {
+          xs: {
+            span: 24,
+            offset: 0
+          },
+          sm: {
+            span: 16,
+            offset: 8
+          }
+        }
+      },
       options1: [
         {
           value: '锦江区',
@@ -264,14 +369,65 @@ export default {
       ],
       options4: [
         {
-          value: '锦江区',
-          label: '锦江区'
-
+          value: '1',
+          label: '1'
+        },
+        {
+          value: '2',
+          label: '2'
+        },
+        {
+          value: '3',
+          label: '3'
         }
       ]
     }
   },
+  components: {
+    Menu, teachermodal
+  },
   methods: {
+    changeVisible (value) {
+      this.modalVisible = value
+    },
+    onSearch () {
+
+    },
+    showteacherModal () {
+      this.modalVisible = true
+    },
+    showModal () {
+      this.modal1Visible = true
+    },
+    hideModal () {
+      this.modal1Visible = false
+    },
+    handleOk (e) {
+      this.loading = true
+      setTimeout(() => {
+        this.modal1Visible = false
+        this.loading = false
+      }, 3000)
+    },
+    handleCancel (e) {
+      this.modal1Visible = false
+    },
+    showModal2 () {
+      this.modal2Visible = true
+    },
+    hideModal2 () {
+      this.modal2Visible = false
+    },
+    handleOk2 (e) {
+      this.loading = true
+      setTimeout(() => {
+        this.modal2Visible = false
+        this.loading = false
+      }, 3000)
+    },
+    handleCancel2 (e) {
+      this.modal2Visible = false
+    },
     onChange (value, selectedOptions) {
       console.log(value, selectedOptions)
     },
@@ -306,5 +462,8 @@ export default {
 }
 tr:last-child td {
   padding-bottom: 0;
+}
+.ant-modal-content{
+  width:900px;
 }
 </style>

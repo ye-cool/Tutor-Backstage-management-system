@@ -1,22 +1,43 @@
 <template>
-<div class="common-layout">
+  <div class="common-layout">
     <div class="top">
       <div class="header">
         <img alt="logo" class="logo" src="@/assets/logo.png" />
-        <span class="title">{{systemName}}</span>
       </div>
     </div>
     <div class="login">
       <a-form @submit="onSubmit" :form="form">
-        <a-tabs size="large" :tabBarStyle="{textAlign: 'center'}" style="padding: 0 2px;">
+        <a-tabs
+          size="large"
+          :tabBarStyle="{ textAlign: 'center' }"
+          style="padding: 0 2px"
+        >
           <a-tab-pane tab="账户密码登录" key="1">
-            <a-alert type="error" :closable="true" v-show="error" :message="error" showIcon style="margin-bottom: 24px;" />
+            <a-alert
+              type="error"
+              :closable="true"
+              v-show="error"
+              :message="error"
+              showIcon
+              style="margin-bottom: 24px"
+            />
             <a-form-item>
               <a-input
                 autocomplete="autocomplete"
                 size="large"
                 placeholder="admin"
-                v-decorator="['name', {rules: [{ required: true, message: '请输入账户名', whitespace: true}]}]"
+                v-decorator="[
+                  'name',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: '请输入账户名',
+                        whitespace: true,
+                      },
+                    ],
+                  },
+                ]"
               >
                 <a-icon slot="prefix" type="user" />
               </a-input>
@@ -27,20 +48,37 @@
                 placeholder="888888"
                 autocomplete="autocomplete"
                 type="password"
-                v-decorator="['password', {rules: [{ required: true, message: '请输入密码', whitespace: true}]}]"
+                v-decorator="[
+                  'password',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: '请输入密码',
+                        whitespace: true,
+                      },
+                    ],
+                  },
+                ]"
               >
                 <a-icon slot="prefix" type="lock" />
               </a-input>
             </a-form-item>
           </a-tab-pane>
         </a-tabs>
-        <div>
-        </div>
+        <div></div>
         <a-form-item>
-          <a-button :loading="logging" style="width: 100%;margin-top: 24px" size="large" htmlType="submit" type="primary">登录</a-button>
+          <a-button
+            :loading="logging"
+            style="width: 100%; margin-top: 24px"
+            size="large"
+            htmlType="submit"
+            type="primary"
+            >登录</a-button
+          >
         </a-form-item>
         <div>
-          <router-link style="float: left" to="/signup" >注册新账户</router-link>
+          <router-link style="float: left" to="/signup">注册新账户</router-link>
         </div>
       </a-form>
     </div>
@@ -48,7 +86,46 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
+  data() {
+    return {
+      userToken: '',
+      logging: false,
+      error: '',
+      form: this.$form.createForm(this)
+    }
+  },
+  methods: {
+    ...mapMutations(['changeLogin']),
+    onSubmit(e) {
+      e.preventDefault()
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values)
+          this.axios({
+            method: 'post',
+            url: '/Api/Login/Admin',
+            data: {
+              username: values.name,
+              password: values.password
+            }
+          }).then((res) => {
+            console.log(res.data)
+            // this.userToken = 'Bearer ' + res.data.token
+            // 将用户token保存到vuex中
+            // this.changeLogin({ Authorization: this.userToken })
+            this.$router.push('/home')
+            if (res.data.code === 200) {
+              alert('登陆成功')
+            } else {
+              alert('密码错误')
+            }
+          })
+        }
+      })
+    }
+  }
 }
 </script>
 <style>
@@ -64,12 +141,14 @@ export default {
   background-position-y: 110px;
   background-size: 100%;
 }
-.common-layout .top,.login {
-  padding: 32px 0;
+.common-layout .top,
+.login {
+  padding: 30px 0;
   flex: 1;
 }
 @media (min-width: 768px) {
-  .common-layout .top,.login {
+  .common-layout .top,
+  .login {
     padding: 112px 0 24px;
   }
 }
@@ -85,17 +164,9 @@ export default {
   text-decoration: none;
 }
 .common-layout .top .header .logo {
-  height: 200px;
+  height: 150 px;
   vertical-align: top;
   margin-right: 16px;
-}
-.common-layout .top .header .title {
-  font-size: 33px;
-  color: #222;
-  font-family: 'Myriad Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  font-weight: 600;
-  position: relative;
-  top: 2px;
 }
 .common-layout .top .desc {
   font-size: 14px;

@@ -62,16 +62,6 @@ const routes = [
     redirect: '/teacher',
     name: '主页',
     component: () => import('@/view/home')
-  },
-  {
-    path: '/registerdata',
-    name: '注册资料',
-    component: () => import('@/view/teacher-data/registerdata')
-  },
-  {
-    path: '/exhibitdata',
-    name: '展示资料',
-    component: () => import('@/view/teacher-data/exhibitdata')
   }
 ]
 
