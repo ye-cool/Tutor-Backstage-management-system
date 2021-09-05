@@ -1,5 +1,5 @@
 <template>
-<Menu>        <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
+<div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
 <div class="content">
     <a-page-header
     style="border: 1px solid rgb(235, 237, 240)"
@@ -17,10 +17,8 @@
 </a-table>
 </div>
         </div>
-</Menu>
 </template>
 <script>
-import Menu from '../../components/menu.vue'
 const columns = [
   {
     title: '昵称',
@@ -85,9 +83,6 @@ export default {
       data,
       columns
     }
-  },
-  components: {
-    Menu
   },
   methods: {
     onChange (value, selectedOptions) {

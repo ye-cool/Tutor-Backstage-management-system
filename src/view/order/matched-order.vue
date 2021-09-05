@@ -1,5 +1,4 @@
 <template>
-<Menu>
    <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
 <div class="content">
     <a-page-header
@@ -17,10 +16,8 @@
 </a-table>
 </div>
         </div>
-</Menu>
 </template>
 <script>
-import Menu from '../../components/menu.vue'
 const columns = [
   {
     title: '家长联系方式',
@@ -75,7 +72,7 @@ const columns = [
     key: 'operate',
     ellipsis: true,
     width: 200
-  }
+  },
 ]
 const data = [
   {
@@ -113,24 +110,25 @@ const data = [
     processingStatus: '待处理',
     operater: '无',
     operate: '结束订单 添加备注'
-  }
+  },
 ]
 export default {
-  data () {
+  data() {
     return {
       data,
-      columns
+      columns,
     }
   },
-  components: {
-    Menu
-  },
+
   methods: {
-    onChange (value, selectedOptions) {
+    onChange(value, selectedOptions) {
       console.log(value, selectedOptions)
     },
-    filter (inputValue, path) {
-      return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+    filter(inputValue, path) {
+      return path.some(
+        (option) =>
+          option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
+      )
     }
   }
 }
@@ -142,21 +140,24 @@ export default {
   background: rgba(255, 255, 255, 0.2);
   margin: 16px;
 }
-.teacher,.parent,.book,.interface{
+.teacher,
+.parent,
+.book,
+.interface {
   padding-top: 20px;
 }
-.comtemt{
+.comtemt {
   padding: 24px;
 }
-.search{
+.search {
   display: flex;
   flex-wrap: wrap;
 }
-.search-condition{
-    display: block;
-    text-align:center;
-    height: 35px;
-    line-height: 35px;
+.search-condition {
+  display: block;
+  text-align: center;
+  height: 35px;
+  line-height: 35px;
 }
 tr:last-child td {
   padding-bottom: 0;

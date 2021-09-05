@@ -6,50 +6,51 @@
       :default-selected-keys="[this.$route.path]"
       @openChange="onOpenChange"
       :open-keys="openKeys"
+      router
       >
-        <a-menu-item key="/teacher" class="teacher">
-          <router-link to="/teacher"></router-link>
+        <a-menu-item key="/home/teacher" class="teacher">
           <a-icon type="team" />
           <span class="nav-text">教师信息管理</span>
+          <router-link to="/home/teacher"></router-link>
         </a-menu-item>
-        <a-menu-item key="/parent" class="parent">
-          <router-link to="/parent"></router-link>
+        <a-menu-item key="/home/parent" class="parent">
           <a-icon type="team" />
           <span class="nav-text">家长需求管理</span>
+          <router-link to="/home/parent"></router-link>
         </a-menu-item>
         <a-sub-menu key="sub1">
           <span slot="title">
           <a-icon type="book" />
           <span class="nav-text">订单信息管理</span>
           </span>
-          <a-menu-item key="/matched-order">
-          <router-link to="/matched-order"></router-link>
+          <a-menu-item key="/home/matched-order">
+          <router-link to="/home/matched-order"></router-link>
           已匹配订单
         </a-menu-item>
-        <a-menu-item key="/pending-order">
-        <router-link to="/pending-order"></router-link>
+        <a-menu-item key="/home/pending-order">
+        <router-link to="/home/pending-order"></router-link>
           待匹配订单
         </a-menu-item>
       </a-sub-menu>
         <a-sub-menu key="sub2">
           <span slot="title"><a-icon type="control" /><span class="nav-text">界面设置管理</span></span>
-          <a-menu-item key="/home-teacher">
-          <router-link to="/home-teacher"></router-link>
+          <a-menu-item key="/home/home-teacher">
+          <router-link to="/home/home-teacher"></router-link>
           首页教师展示
         </a-menu-item>
-        <a-menu-item key="/banner">
-          <router-link to="/banner"></router-link>
+        <a-menu-item key="/home/banner">
+        <router-link to="/home/banner"></router-link>
           banner设置
         </a-menu-item>
       </a-sub-menu>
         <a-sub-menu key="sub3">
           <span slot="title"><a-icon type="control" /><span class="nav-text">人员管理</span></span>
-          <a-menu-item key="/audit">
-            <router-link to="/audit"></router-link>
+          <a-menu-item key="/home/audit">
+          <router-link to="/home/audit"></router-link>
           审核管理员注册
         </a-menu-item>
-        <a-menu-item key="/check">
-          <router-link to="/check"></router-link>
+        <a-menu-item key="/home/check">
+        <router-link to="/home/check"></router-link>
           查看管理员信息
         </a-menu-item>
       </a-sub-menu>
@@ -58,7 +59,7 @@
     <a-layout :style="{ marginLeft: '200px' }">
       <a-layout-header :style="{ background: '#fff', padding: 0 }" />
       <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
-        <slot></slot>
+      <router-view></router-view>
       </a-layout-content>
     </a-layout>
   </a-layout>
