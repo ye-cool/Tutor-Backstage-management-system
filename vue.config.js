@@ -9,15 +9,20 @@ module.exports = {
     proxy: {
       // 配置跨域-将所有/api的请求拦截，代理到target上
       '/Api': {
-        target: 'http://192.168.1.18:8080/Api',
+        target: 'http://47.95.237.117:8090/Api',
         ws: true,
         changOrigin: true,
         pathRewrite: { // ---->>>并将/api换成/
-          '^/Api': 'http://192.168.1.18:8080'
+          '^/Api': 'http://47.95.237.117:8090'
         }
       }
-    }
+    },
+    overlay: {
+        warning: false,
+        errors: false
+    },
   },
+  lintOnSave: false,
   productionSourceMap: false,
   css: {
     loaderOptions: {

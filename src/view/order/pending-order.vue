@@ -12,7 +12,7 @@
           退出
         </a-button>
       </template></a-page-header>
-<a-table :columns="columns" :data-source="data">
+<a-table :columns="columns" :data-source="datas" :pagination="pagination">
     <a slot="name" slot-scope="text">{{ text }}</a>
 </a-table>
 </div>
@@ -70,49 +70,76 @@ const columns = [
     width: 200
   }
 ]
+const datas = []
 const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    SubjectsAndGrand: '高中数学',
-    TEL: '13235983145',
-    home: '成华区',
-    need: '编辑',
-    dataStatus: '待审核',
-    deliveryStatus: '已通过',
-    operate: '结束订单 添加备注'
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    SubjectsAndGrand: '高中数学',
-    TEL: '13235983145',
-    home: '成华区',
-    need: '编辑',
-    dataStatus: '待审核',
-    deliveryStatus: '已通过',
-    operate: '结束订单 添加备注'
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    SubjectsAndGrand: '高中数学',
-    TEL: '13235983145',
-    home: '成华区',
-    need: '编辑',
-    dataStatus: '待审核',
-    deliveryStatus: '已通过',
-    operate: '结束订单 添加备注'
-  }
+  // {
+  //   key: '1',
+  //   name: 'John Brown',
+  //   SubjectsAndGrand: '高中数学',
+  //   TEL: '13235983145',
+  //   home: '成华区',
+  //   need: '编辑',
+  //   dataStatus: '待审核',
+  //   deliveryStatus: '已通过',
+  //   operate: '结束订单 添加备注'
+  // },
+  // {
+  //   key: '2',
+  //   name: 'Jim Green',
+  //   SubjectsAndGrand: '高中数学',
+  //   TEL: '13235983145',
+  //   home: '成华区',
+  //   need: '编辑',
+  //   dataStatus: '待审核',
+  //   deliveryStatus: '已通过',
+  //   operate: '结束订单 添加备注'
+  // },
+  // {
+  //   key: '3',
+  //   name: 'Joe Black',
+  //   SubjectsAndGrand: '高中数学',
+  //   TEL: '13235983145',
+  //   home: '成华区',
+  //   need: '编辑',
+  //   dataStatus: '待审核',
+  //   deliveryStatus: '已通过',
+  //   operate: '结束订单 添加备注'
+  // }
 ]
 export default {
+  created() {
+    this.gettable()
+  },
   data () {
     return {
       data,
-      columns
+      datas,
+      columns,
+      pagination: {
+        pageSize: 10, // 默认每页显示数量
+        showTotal: total => `总共有 ${total} 名`// 显示总数
+      }
     }
   },
   methods: {
+    gettable() {
+      const _this = this
+      _this.axios.get('/Api/Admin/MatchedContracts', {
+        params: {
+          pageNumber: 1,
+          pageSize: 5
+        }
+      })
+        .then((res) => {
+          console.log(res.data)
+          _this.datas = []
+          _this.datas = res.data.data
+          console.log(_this.datas)
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
+    },
     onChange (value, selectedOptions) {
       console.log(value, selectedOptions)
     },

@@ -12,7 +12,7 @@
           退出
         </a-button>
       </template></a-page-header>
-<a-table :columns="columns" :data-source="data">
+<a-table :columns="columns" :data-source="datas" :pagination="pagination">
     <a slot="name" slot-scope="text">{{ text }}</a>
 </a-table>
 </div>
@@ -51,40 +51,67 @@ const columns = [
     ellipsis: true
   }
 ]
+const datas = []
 const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    wechatid: '2321443413414',
-    account: '8383872116',
-    password: '888888',
-    operate: '编辑'
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    wechatid: '2321443413414',
-    account: '8383872116',
-    password: '888888',
-    operate: '编辑'
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    wechatid: '2321443413414',
-    account: '8383872116',
-    password: '888888',
-    operate: '编辑'
-  }
+  // {
+  //   key: '1',
+  //   name: 'John Brown',
+  //   wechatid: '2321443413414',
+  //   account: '8383872116',
+  //   password: '888888',
+  //   operate: '修改密码'
+  // },
+  // {
+  //   key: '2',
+  //   name: 'Jim Green',
+  //   wechatid: '2321443413414',
+  //   account: '8383872116',
+  //   password: '888888',
+  //   operate: '修改密码'
+  // },
+  // {
+  //   key: '3',
+  //   name: 'Joe Black',
+  //   wechatid: '2321443413414',
+  //   account: '8383872116',
+  //   password: '888888',
+  //   operate: '修改密码'
+  // }
 ]
 export default {
+  created() {
+    this.gettable()
+  },
   data () {
     return {
       data,
-      columns
+      datas,
+      columns,
+      pagination: {
+        pageSize: 10, // 默认每页显示数量
+        showTotal: total => `总共有 ${total} 名`// 显示总数
+      }
     }
   },
   methods: {
+    gettable() {
+      const _this = this
+      _this.axios.get('/Api/Admin/Admins', {
+        params: {
+          pageNumber: 1,
+          pageSize: 5
+        }
+      })
+        .then((res) => {
+          console.log(res.data)
+          _this.datas = []
+          _this.datas = res.data.data
+          console.log(_this.datas)
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
+    },
     onChange (value, selectedOptions) {
       console.log(value, selectedOptions)
     },

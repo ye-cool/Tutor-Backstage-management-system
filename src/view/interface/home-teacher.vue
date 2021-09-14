@@ -12,8 +12,10 @@
           退出
         </a-button>
       </template></a-page-header>
-<a-table :columns="columns" :data-source="data">
-    <a slot="name" slot-scope="text">{{ text }}</a>
+<a-table :columns="columns" :data-source="datas" rowKey=tid :pagination="pagination">
+    <a slot="operate">
+       <a>更换</a>
+    </a>
 </a-table>
 </div>
         </div>
@@ -22,45 +24,67 @@
 const columns = [
   {
     title: '序号',
-    dataIndex: 'key'
+    dataIndex: 'ctid'
   },
   {
     title: '展示教师',
-    dataIndex: 'showTeacher',
-    key: 'showTeacher'
+    dataIndex: 'info'
   },
   {
     title: '操作',
     dataIndex: 'operate',
-    key: 'operate',
-    ellipsis: true
+    ellipsis: true,
+    scopedSlots: { customRender: 'operate' }
   }
 ]
+const datas = []
 const data = [
-  {
-    key: '1',
-    showTeacher: '王老师',
-    operate: '更换'
-  },
-  {
-    key: '2',
-    showTeacher: '王老师',
-    operate: '更换'
-  },
-  {
-    key: '3',
-    showTeacher: '王老师',
-    operate: '更换'
-  }
+  // {
+  //   key: '1',
+  //   showTeacher: '王老师',
+  //   operate: '更换'
+  // },
+  // {
+  //   key: '2',
+  //   showTeacher: '王老师',
+  //   operate: '更换'
+  // },
+  // {
+  //   key: '3',
+  //   showTeacher: '王老师',
+  //   operate: '更换'
+  // }
 ]
 export default {
+  created() {
+    this.gettable()
+  },
   data () {
     return {
       data,
-      columns
+      datas,
+      columns,
+      pagination: {
+        pageSize: 10, // 默认每页显示数量
+        showTotal: total => `总共有 ${total} 名`// 显示总数
+      }
     }
   },
   methods: {
+    gettable() {
+      const _this = this
+      _this.axios.get('/Api/Admin/Config/Teachers', {
+      })
+        .then((res) => {
+          console.log(res.data)
+          _this.datas = []
+          _this.datas = res.data.data
+          console.log(_this.datas)
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
+    },
     onChange (value, selectedOptions) {
       console.log(value, selectedOptions)
     },

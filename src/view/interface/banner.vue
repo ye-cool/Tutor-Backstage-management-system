@@ -12,8 +12,10 @@
           退出
         </a-button>
       </template></a-page-header>
-<a-table :columns="columns" :data-source="data">
-    <a slot="name" slot-scope="text">{{ text }}</a>
+<a-table :columns="columns" :data-source="datas1" rowKey=ciid :pagination="pagination">
+    <a slot="operate">
+      <a>编辑</a>
+    </a>
 </a-table>
 </div>
 <div class="content">
@@ -24,8 +26,10 @@
   >
    <template slot="extra">
       </template></a-page-header>
-<a-table :columns="columns" :data-source="data">
-    <a slot="name" slot-scope="text">{{ text }}</a>
+<a-table :columns="columns" :data-source="datas2" rowKey=ciid :pagination="pagination">
+    <a slot="operate">
+      <a>编辑</a>
+    </a>
 </a-table>
 </div>
 </div>
@@ -34,53 +38,84 @@
 const columns = [
   {
     title: '序号',
-    dataIndex: 'key'
+    dataIndex: 'ciid'
   },
   {
     title: 'banner海报',
-    dataIndex: 'bannerPoster',
-    key: 'bannerPoster'
+    dataIndex: 'image'
   },
   {
     title: '链接',
-    dataIndex: 'link',
-    key: 'link'
+    dataIndex: 'url'
   },
   {
     title: '操作',
-    dataIndex: 'operate',
-    key: 'operate',
-    ellipsis: true
+    ellipsis: true,
+    scopedSlots: { customRender: 'operate' }
   }
 ]
-const data = [
-  {
-    key: '1',
-    bannerPoster: 'banner1.png',
-    link: 'https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg',
-    operate: '编辑'
-  },
-  {
-    key: '2',
-    bannerPoster: 'banner1.png',
-    link: 'https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg',
-    operate: '编辑'
-  },
-  {
-    key: '3',
-    bannerPoster: 'banner1.png',
-    link: 'https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg',
-    operate: '编辑'
-  }
-]
+const datas1 = []
+const datas2 = []
+// const data = [
+// {
+//   key: '1',
+//   bannerPoster: 'banner1.png',
+//   link: 'https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg',
+//   operate: '编辑'
+// },
+// {
+//   key: '2',
+//   bannerPoster: 'banner1.png',
+//   link: 'https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg',
+//   operate: '编辑'
+// },
+// {
+//   key: '3',
+//   bannerPoster: 'banner1.png',
+//   link: 'https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg',
+//   operate: '编辑'
+// }
+// ]
 export default {
+  created() {
+    this.gettable()
+  },
   data () {
     return {
-      data,
-      columns
+      datas1,
+      datas2,
+      columns,
+      pagination: {
+        pageSize: 10, // 默认每页显示数量
+        showTotal: total => `总共有 ${total} 名`// 显示总数
+      }
     }
   },
   methods: {
+    gettable() {
+      const _this = this
+      _this.axios.get('/Api/Admin/Config/Images', {
+      })
+        .then((res) => {
+          console.log(res.data)
+          _this.datas1 = []
+          _this.datas2 = []
+          res.data.data.forEach((item, ciid) => {
+            if (ciid <= 2) {
+              _this.datas1.push(item)
+            } else {
+              _this.datas2.push(item)
+            }
+          })
+          //   _this.datas1 = res.data.data
+          console.log(_this.datas1)
+          // _this.datas2 = res.data.data
+          console.log(_this.datas2)
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
+    },
     onChange (value, selectedOptions) {
       console.log(value, selectedOptions)
     },

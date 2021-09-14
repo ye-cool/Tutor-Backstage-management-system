@@ -12,7 +12,16 @@
           退出
         </a-button>
       </template></a-page-header>
-<a-table :columns="columns" :data-source="data">
+<a-table :columns="columns" :data-source="datas" :pagination="pagination">
+   <template slot="teacherProfile" slot-scope="text">
+    <a @click="showModal1">{{ text }}</a>
+    </template>
+   <template slot="parentneed" slot-scope="text">
+    <a @click="showModal2">{{ text }}</a>
+    </template>
+   <template slot="operate" slot-scope="text">
+    <a>{{ text }}</a>
+    </template>
 </a-table>
 </div>
         </div>
@@ -34,13 +43,15 @@ const columns = [
     title: '教师资料',
     dataIndex: 'teacherProfile',
     key: 'teacherProfile',
-    ellipsis: true
+    ellipsis: true,
+    scopedSlots: { customRender: 'teacherProfile' }
   },
   {
     title: '家长需求',
     dataIndex: 'parentneed',
     key: 'parentneed',
-    ellipsis: true
+    ellipsis: true,
+    scopedSlots: { customRender: 'parentneed' }
   },
   {
     title: '匹配方式',
@@ -71,56 +82,84 @@ const columns = [
     dataIndex: 'operate',
     key: 'operate',
     ellipsis: true,
-    width: 200
-  },
+    width: 200,
+    scopedSlots: { customRender: 'operate' }
+  }
 ]
+const datas = []
 const data = [
-  {
-    key: '1',
-    parentContact: '15837483728',
-    teacherContact: '17584739483',
-    teacherProfile: '查看',
-    parentneed: '查看',
-    matchingMethod: '家长预约',
-    matchingTime: '2021.8.9 17.45',
-    processingStatus: '待处理',
-    operater: '无',
-    operate: '结束订单 添加备注'
-  },
-  {
-    key: '2',
-    parentContact: '15837483728',
-    teacherContact: '17584739483',
-    teacherProfile: '查看',
-    parentneed: '查看',
-    matchingMethod: '家长预约',
-    matchingTime: '2021.8.9 17.45',
-    processingStatus: '待处理',
-    operater: '无',
-    operate: '结束订单 添加备注'
-  },
-  {
-    key: '3',
-    parentContact: '15837483728',
-    teacherContact: '17584739483',
-    teacherProfile: '查看',
-    parentneed: '查看',
-    matchingMethod: '家长预约',
-    matchingTime: '2021.8.9 17.45',
-    processingStatus: '待处理',
-    operater: '无',
-    operate: '结束订单 添加备注'
-  },
+  // {
+  //   key: '1',
+  //   parentContact: '15837483728',
+  //   teacherContact: '17584739483',
+  //   teacherProfile: '查看',
+  //   parentneed: '查看',
+  //   matchingMethod: '家长预约',
+  //   matchingTime: '2021.8.9 17.45',
+  //   processingStatus: '待处理',
+  //   operater: '无',
+  //   operate: '结束订单 添加备注'
+  // },
+  // {
+  //   key: '2',
+  //   parentContact: '15837483728',
+  //   teacherContact: '17584739483',
+  //   teacherProfile: '查看',
+  //   parentneed: '查看',
+  //   matchingMethod: '家长预约',
+  //   matchingTime: '2021.8.9 17.45',
+  //   processingStatus: '待处理',
+  //   operater: '无',
+  //   operate: '结束订单 添加备注'
+  // },
+  // {
+  //   key: '3',
+  //   parentContact: '15837483728',
+  //   teacherContact: '17584739483',
+  //   teacherProfile: '查看',
+  //   parentneed: '查看',
+  //   matchingMethod: '家长预约',
+  //   matchingTime: '2021.8.9 17.45',
+  //   processingStatus: '待处理',
+  //   operater: '无',
+  //   operate: '结束订单 添加备注'
+  // }
 ]
 export default {
+  created() {
+    this.gettable()
+  },
   data() {
     return {
       data,
+      datas,
       columns,
+      pagination: {
+        pageSize: 10, // 默认每页显示数量
+        showTotal: total => `总共有 ${total} 名`// 显示总数
+      }
     }
   },
 
   methods: {
+    gettable() {
+      const _this = this
+      _this.axios.get('/Api/Admin/MatchedContracts', {
+        params: {
+          pageNumber: 1,
+          pageSize: 5
+        }
+      })
+        .then((res) => {
+          console.log(res.data)
+          _this.datas = []
+          _this.datas = res.data.data
+          console.log(_this.datas)
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
+    },
     onChange(value, selectedOptions) {
       console.log(value, selectedOptions)
     },

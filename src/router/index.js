@@ -20,6 +20,7 @@ const routes = [
   {
     path: '/home',
     name: '主页',
+    redirect: '/home/teacher',
     component: () => import('@/view/home'),
     children: [
       {

@@ -134,8 +134,6 @@ export default {
   flex-direction: column;
   height: 100vh;
   overflow: auto;
-  background-color: #222;
-  background-image: url('https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg');
   background-repeat: no-repeat;
   background-position-x: center;
   background-position-y: 110px;
@@ -164,7 +162,7 @@ export default {
   text-decoration: none;
 }
 .common-layout .top .header .logo {
-  height: 150 px;
+  height: 200 px;
   vertical-align: top;
   margin-right: 16px;
 }
