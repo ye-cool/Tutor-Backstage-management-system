@@ -14,77 +14,75 @@
       <a-form class="search" :form="form" @submit="handleSearch">
         <a-space>
           <a-form-item>
-          <span class="search-condition" style="width: 90px">搜索条件</span>
+            <span class="search-condition" style="width: 90px">搜索条件</span>
           </a-form-item>
           <a-form-item>
-          <a-cascader
-            :options="options1"
-            :show-search="{ filter }"
-            placeholder="授课地区"
-            v-decorator="[
-                  'TeachingArea'
-                ]"
-          />
+            <a-cascader
+              :options="options1"
+              :show-search="{ filter }"
+              placeholder="授课地区"
+              v-decorator="['TeachingArea']"
+            />
           </a-form-item>
           <br /><br />
           <a-form-item>
-      <a-select
-      placeholder="授课年级"
-      style="width: 120px"
-      @change="handlegradeChange"
-      v-decorator="[
-          'TeachingGrade'
-        ]">
-        <a-select-option v-for="grade in gradeData" :key="grade" >
-          {{ grade }}
-        </a-select-option>
-      </a-select>
+            <a-select
+              placeholder="授课年级"
+              style="width: 120px"
+              @change="handlegradeChange"
+              v-decorator="['TeachingGrade']"
+            >
+              <a-select-option v-for="grade in gradeData" :key="grade">
+                {{ grade }}
+              </a-select-option>
+            </a-select>
           </a-form-item>
-      <br /><br />
-      <a-form-item>
-      <a-select
-      placeholder="授课科目"
-      style="width: 150px"
-      v-decorator=
-      "[
-        'TeachingSubject'
-      ]">
-        <a-select-option v-if="istrue" :key="1000000" disabled>
-          请先选择授课年级
-        </a-select-option>
-        <a-select-option v-for="subject in subjects" :key="subject">
-          {{ subject }}
-        </a-select-option>
-      </a-select>
-      </a-form-item>
-      <br /><br />
-      <a-form-item>
-          <a-cascader
-            :options="options3"
-            :show-search="{ filter }"
-            placeholder="性别"
-            class="gender"
-            v-decorator="[
-                  'gender'
-                ]"
-          />
-      </a-form-item>
-      <a-form-item>
-          <a-input
-            placeholder="姓名/学校"
-            style="width: 200px"
-            v-decorator="[
-                  'nameorschool'
-                ]"
-          />
-      </a-form-item>
-      <a-form-item>
-          <a-button type="primary" icon="search" html-type="submit"> Search </a-button>
-      </a-form-item>
+          <br /><br />
+          <a-form-item>
+            <a-select
+              placeholder="授课科目"
+              style="width: 150px"
+              v-decorator="['TeachingSubject']"
+            >
+              <a-select-option v-if="istrue" :key="1000000" disabled>
+                请先选择授课年级
+              </a-select-option>
+              <a-select-option v-for="subject in subjects" :key="subject">
+                {{ subject }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+          <br /><br />
+          <a-form-item>
+            <a-cascader
+              :options="options3"
+              :show-search="{ filter }"
+              placeholder="性别"
+              class="gender"
+              v-decorator="['gender']"
+            />
+          </a-form-item>
+          <a-form-item>
+            <a-input
+              placeholder="姓名/学校"
+              style="width: 200px"
+              v-decorator="['nameorschool']"
+            />
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" icon="search" html-type="submit">
+              Search
+            </a-button>
+          </a-form-item>
         </a-space>
       </a-form>
-      <a-table :columns="columns" :data-source="datas" rowKey=tid :pagination="pagination">
-        <template slot="register">
+      <a-table
+        :columns="columns"
+        :data-source="datas"
+        rowKey="tid"
+        :pagination="pagination"
+      >
+        <template slot="register" slot-scope="scope">
           <a-modal :visible="modal1Visible" on-ok="handleOk" :closable="false">
             <template slot="footer">
               <a-button key="back" type="primary" @click="handleCancel">
@@ -92,37 +90,41 @@
               </a-button>
             </template>
             <a-descriptions title="注册资料" bordered>
-              <a-descriptions-item label="姓名"> 小晞 </a-descriptions-item>
-              <a-descriptions-item label="学历"> 本科生 </a-descriptions-item>
+              <a-descriptions-item label="姓名">{{
+                TeacherRegister.name
+              }}</a-descriptions-item>
+              <a-descriptions-item label="学历">{{
+                TeacherRegister.graduateEducation
+              }}</a-descriptions-item>
               <a-descriptions-item label="学校">
-                电子科技大学
+                {{ TeacherRegister.university }}
               </a-descriptions-item>
               <a-descriptions-item label="所教科目">
-                高中数学
+                {{ TeacherRegister.university }}
               </a-descriptions-item>
               <a-descriptions-item label="家教经历">
-                每天打电动
+                {{ TeacherRegister.teachingExperience }}
               </a-descriptions-item>
               <a-descriptions-item label="自我评价">
-                人美心善
+                {{ TeacherRegister.comment }}
               </a-descriptions-item>
               <a-descriptions-item label="价格区间" :span="2">
-                90元/小时-120元/小时
+                {{ TeacherRegister.teachingPrice }}
               </a-descriptions-item>
               <a-descriptions-item label="空闲时间">
-                寒暑假均可
+                {{ TeacherRegister.teachingTimes }}
               </a-descriptions-item>
               <a-descriptions-item label="授课区域">
-                成华区
+                {{ TeacherRegister.teachingAreas }}
               </a-descriptions-item>
               <a-descriptions-item label="常住地址">
-                电子科技大学欣苑学生公寓
+                {{ TeacherRegister.residentAddress }}
               </a-descriptions-item>
             </a-descriptions>
           </a-modal>
-          <a @click="showModal">查看</a>
+          <a @click="showModal(scope)">查看</a>
         </template>
-        <template slot="exhibit">
+        <template slot="exhibit" slot-scope="scope">
           <a-modal
             :visible="modal2Visible"
             title="Title"
@@ -152,26 +154,42 @@
                 <span>本科生</span>
               </a-form-item>
               <a-form-item v-bind="formItemLayout" label="授课科目">
-      <a-select placeholder="授课年级"  style="width: 120px" @change="handlegradeChange">
-        <a-select-option v-for="grade in gradeData" :key="grade">
-          {{ grade }}
-        </a-select-option>
-      </a-select>
-      <a-select placeholder="授课科目" v-model="secondsubject" style="width: 120px">
-        <a-select-option v-for="subject in subjects" :key="subject">
-          {{ subject }}
-        </a-select-option>
-      </a-select><br>
-      <a-select placeholder="授课年级"  style="width: 120px" @change="handlegradeChange">
-        <a-select-option v-for="grade in gradeData" :key="grade">
-          {{ grade }}
-        </a-select-option>
-      </a-select>
-      <a-select placeholder="授课科目" v-model="secondsubject" style="width: 120px">
-        <a-select-option v-for="subject in subjects" :key="subject">
-          {{ subject }}
-        </a-select-option>
-      </a-select>
+                <a-select
+                  placeholder="授课年级"
+                  style="width: 120px"
+                  @change="handlegradeChange"
+                >
+                  <a-select-option v-for="grade in gradeData" :key="grade">
+                    {{ grade }}
+                  </a-select-option>
+                </a-select>
+                <a-select
+                  placeholder="授课科目"
+                  v-model="secondsubject"
+                  style="width: 120px"
+                >
+                  <a-select-option v-for="subject in subjects" :key="subject">
+                    {{ subject }}
+                  </a-select-option> </a-select
+                ><br />
+                <a-select
+                  placeholder="授课年级"
+                  style="width: 120px"
+                  @change="handlegradeChange"
+                >
+                  <a-select-option v-for="grade in gradeData" :key="grade">
+                    {{ grade }}
+                  </a-select-option>
+                </a-select>
+                <a-select
+                  placeholder="授课科目"
+                  v-model="secondsubject"
+                  style="width: 120px"
+                >
+                  <a-select-option v-for="subject in subjects" :key="subject">
+                    {{ subject }}
+                  </a-select-option>
+                </a-select>
               </a-form-item>
               <a-form-item
                 v-bind="formItemLayout"
@@ -235,7 +253,7 @@
               </a-form-item>
             </a-form>
           </a-modal>
-          <a @click="showModal2">编辑</a>
+          <a @click="showModal2(scope)">编辑</a>
         </template>
       </a-table>
       <a-button @click="test"></a-button>
@@ -249,51 +267,51 @@ const columns = [
     title: '教师姓名',
     dataIndex: 'name',
     key: 'name',
-    scopedSlots: { customRender: 'name' }
+    scopedSlots: { customRender: 'name' },
   },
   {
     title: '性别',
     dataIndex: 'gender',
     key: 'gender',
-    width: 100
+    width: 100,
   },
   {
     title: '学校',
     dataIndex: 'university',
     key: 'university',
-    ellipsis: true
+    ellipsis: true,
   },
   {
     title: '授课年级与科目',
     dataIndex: 'teachingItems',
     key: 'teachingItems',
-    ellipsis: true
+    ellipsis: true,
   },
   {
     title: '注册资料',
     key: 'register',
     ellipsis: true,
-    scopedSlots: { customRender: 'register' }
+    scopedSlots: { customRender: 'register' },
   },
   {
     title: '展示资料',
     dataIndex: 'exhibit',
     key: 'exhibit',
     ellipsis: true,
-    scopedSlots: { customRender: 'exhibit' }
+    scopedSlots: { customRender: 'exhibit' },
   },
   {
     title: '资料状态',
     dataIndex: 'verifyStatus',
     key: 'verifyStatus',
-    ellipsis: true
+    ellipsis: true,
   },
   {
     title: '操作人',
     dataIndex: 'operator',
     key: 'operator',
-    ellipsis: true
-  }
+    ellipsis: true,
+  },
 ]
 const datas = []
 const data = [
@@ -333,76 +351,113 @@ const data = [
 ]
 const gradeData = ['小学', '初中', '高中', '小语种', '艺术类', '其他']
 const subjectData = {
-  '小学': ['全科', '语文', '奥数', '数学', '英语', '作业辅导'],
-  '初中': ['全科', '语文', '英语', '数学', '物理', '化学'],
-  '高中': ['数学', '语文', '英语', '物理', '化学', '生物', '历史', '政治', '地理'],
-  '小语种': ['法语', '德语', '西班牙语', '日语', '葡萄牙语', '韩语'],
-  '艺术类': ['音乐', '美术', '舞蹈', '体育', '其他'],
-  '其他': []
+  小学: ['全科', '语文', '奥数', '数学', '英语', '作业辅导'],
+  初中: ['全科', '语文', '英语', '数学', '物理', '化学'],
+  高中: [
+    '数学',
+    '语文',
+    '英语',
+    '物理',
+    '化学',
+    '生物',
+    '历史',
+    '政治',
+    '地理',
+  ],
+  小语种: ['法语', '德语', '西班牙语', '日语', '葡萄牙语', '韩语'],
+  艺术类: ['音乐', '美术', '舞蹈', '体育', '其他'],
+  其他: [],
 }
 const subjects = []
 const secondsubject = []
 const areaId = [
-  '锦江区', '金牛区', '武侯区', '青羊区', '成华区', '高新区', '天府新区', '新都区', '郫都区', '双流区', '龙泉驿区', '温江区', '其他'
+  '锦江区',
+  '金牛区',
+  '武侯区',
+  '青羊区',
+  '成华区',
+  '高新区',
+  '天府新区',
+  '新都区',
+  '郫都区',
+  '双流区',
+  '龙泉驿区',
+  '温江区',
+  '其他',
 ]
 const itemId = [
-  {iId:10, item:'小学全科'},
-  {iId:11, item:'小学语文'},
-  {iId:12, item:'小学奥数'},
-  {iId:13, item:'小学数学'},
-  {iId:14, item:'小学英语'},
-  {iId:15, item:'小学作业辅导'},
-  {iId:20, item:'初中全科'},
-  {iId:21, item:'初中语文'},
-  {iId:22, item:'初中英语'},
-  {iId:23, item:'初中数学'},
-  {iId:24, item:'初中物理'},
-  {iId:25, item:'初中化学'},
-  {iId:30, item:'高中数学'},
-  {iId:31, item:'高中语文'},
-  {iId:32, item:'高中英语'},
-  {iId:33, item:'高中物理'},
-  {iId:34, item:'高中化学'},
-  {iId:35, item:'高中生物'},
-  {iId:36, item:'高中历史'},
-  {iId:37, item:'高中政治'},
-  {iId:38, item:'高中地理'},
-  {iId:40, item:'小语种法语'},
-  {iId:41, item:'小语种德语'},
-  {iId:42, item:'小语种西班牙语'},
-  {iId:43, item:'小语种日语'},
-  {iId:44, item:'小语种葡萄牙语'},
-  {iId:45, item:'小语种韩语'},
-  {iId:50, item:'艺体类音乐'},
-  {iId:51, item:'艺体类美术'},
-  {iId:52, item:'艺体类舞蹈'},
-  {iId:53, item:'艺体类体育'},
-  {iId:54, item:'艺体类其他'},
-  {iId:60, item:'其他'}
+  { iId: 10, item: '小学全科' },
+  { iId: 11, item: '小学语文' },
+  { iId: 12, item: '小学奥数' },
+  { iId: 13, item: '小学数学' },
+  { iId: 14, item: '小学英语' },
+  { iId: 15, item: '小学作业辅导' },
+  { iId: 20, item: '初中全科' },
+  { iId: 21, item: '初中语文' },
+  { iId: 22, item: '初中英语' },
+  { iId: 23, item: '初中数学' },
+  { iId: 24, item: '初中物理' },
+  { iId: 25, item: '初中化学' },
+  { iId: 30, item: '高中数学' },
+  { iId: 31, item: '高中语文' },
+  { iId: 32, item: '高中英语' },
+  { iId: 33, item: '高中物理' },
+  { iId: 34, item: '高中化学' },
+  { iId: 35, item: '高中生物' },
+  { iId: 36, item: '高中历史' },
+  { iId: 37, item: '高中政治' },
+  { iId: 38, item: '高中地理' },
+  { iId: 40, item: '小语种法语' },
+  { iId: 41, item: '小语种德语' },
+  { iId: 42, item: '小语种西班牙语' },
+  { iId: 43, item: '小语种日语' },
+  { iId: 44, item: '小语种葡萄牙语' },
+  { iId: 45, item: '小语种韩语' },
+  { iId: 50, item: '艺体类音乐' },
+  { iId: 51, item: '艺体类美术' },
+  { iId: 52, item: '艺体类舞蹈' },
+  { iId: 53, item: '艺体类体育' },
+  { iId: 54, item: '艺体类其他' },
+  { iId: 60, item: '其他' },
 ]
 const certificateType = [
-  '无证', '幼儿园教师资格证', '小学教师资格证', '初级中学教师资格证', '高级中学教师资格证', '中等职业学校教师资格证', '中等职业学校实习指导教师资格证', '高等学校教师资格证', '成人教育教师资格证'
+  '无证',
+  '幼儿园教师资格证',
+  '小学教师资格证',
+  '初级中学教师资格证',
+  '高级中学教师资格证',
+  '中等职业学校教师资格证',
+  '中等职业学校实习指导教师资格证',
+  '高等学校教师资格证',
+  '成人教育教师资格证',
 ]
 const collegeStudentGrade = [
-  '大一', '大二', '大三', '大四', '硕士在读', '博士在读'
+  '大一',
+  '大二',
+  '大三',
+  '大四',
+  '硕士在读',
+  '博士在读',
 ]
-const gender = [
-  '男', '女'
-]
+const gender = ['男', '女']
+const TeacherRegister = {}
+const TeacherVerify = {}
 export default {
   created() {
     this.gettable()
   },
   data() {
     return {
-      teacherInfo:{
-          // areaId: 0,
-          // itemId: 0,
-          // gender: 0,
-          // nameOrUniversity: 'string',
-          pageNumber: 1,
-          pageSize: 10
+      teacherInfo: {
+        // areaId: 0,
+        // itemId: 0,
+        // gender: 0,
+        // nameOrUniversity: 'string',
+        pageNumber: 1,
+        pageSize: 10,
       },
+      TeacherRegister,
+      TeacherVerify,
       areaId,
       itemId,
       certificateType,
@@ -422,93 +477,93 @@ export default {
       columns,
       pagination: {
         pageSize: 10, // 默认每页显示数量
-        showTotal: total => `总共有 ${total} 名`// 显示总数
+        showTotal: (total) => `总共有 ${total} 名`, // 显示总数
       },
       formItemLayout: {
         labelCol: {
-          span: 6
+          span: 6,
         },
         wrapperCol: {
           xs: { span: 24 },
-          sm: { span: 16 }
-        }
+          sm: { span: 16 },
+        },
       },
       tailFormItemLayout: {
         wrapperCol: {
           xs: {
             span: 24,
-            offset: 0
+            offset: 0,
           },
           sm: {
             span: 16,
-            offset: 8
-          }
-        }
+            offset: 8,
+          },
+        },
       },
       options1: [
         {
           value: '锦江区',
-          label: '锦江区'
+          label: '锦江区',
         },
         {
           value: '金牛区',
-          label: '金牛区'
+          label: '金牛区',
         },
         {
           value: '武侯区',
-          label: '武侯区'
+          label: '武侯区',
         },
         {
           value: '青羊区',
-          label: '青羊区'
+          label: '青羊区',
         },
         {
           value: '成华区',
-          label: '成华区'
+          label: '成华区',
         },
         {
           value: '高新区',
-          label: '高新区'
+          label: '高新区',
         },
         {
           value: '天府新区',
-          label: '天府新区'
+          label: '天府新区',
         },
         {
           value: '新都区',
-          label: '新都区'
+          label: '新都区',
         },
         {
           value: '郫都区',
-          label: '郫都区'
+          label: '郫都区',
         },
         {
           value: '双流区',
-          label: '双流区'
+          label: '双流区',
         },
         {
           value: '龙泉驿区',
-          label: '龙泉驿区'
+          label: '龙泉驿区',
         },
         {
           value: '温江区',
-          label: '温江区'
+          label: '温江区',
         },
         {
           value: '其他',
-          label: '其他'
-        }
+          label: '其他',
+        },
       ],
       options3: [
         {
           value: '男',
-          label: '男'
+          label: '男',
         },
         {
           value: '女',
-          label: '女'
-        }
-      ]
+          label: '女',
+        },
+      ],
     }
   },
 
@@ -518,20 +573,39 @@ export default {
       this.form.validateFields((error, values) => {
         console.log('error', error)
         console.log('Received values of form: ', values)
-        var i = itemId.find(function(item){
-          return item.item == values.TeachingGrade+values.TeachingSubject
+        var i = itemId.find(function (item) {
+          return item.item == values.TeachingGrade + values.TeachingSubject
         })
         console.log(values.nameorschool)
-        this.axios.get('/Api/Admin/Teachers', {
-          params: {
-            areaId: areaId.indexOf(values.TeachingArea==undefined?null:values.TeachingArea[0])==-1?null:areaId.indexOf(values.TeachingArea==undefined?null:values.TeachingArea[0]),
-            itemId: i==undefined ? null : i.iId,
-            gender: gender.indexOf(values.gender==undefined?null:values.gender[0])==-1?null:gender.indexOf(values.gender==undefined?null:values.gender[0]),
-            nameOrUniversity: values.nameorschool,
-            pageNumber: 1,
-            pageSize: 10
-          }
-        })
+        this.axios
+          .get('/Api/Admin/Teachers', {
+            params: {
+              areaId:
+                areaId.indexOf(
+                  values.TeachingArea == undefined
+                    ? null
+                    : values.TeachingArea[0]
+                ) == -1
+                  ? null
+                  : areaId.indexOf(
+                      values.TeachingArea == undefined
+                        ? null
+                        : values.TeachingArea[0]
+                    ),
+              itemId: i == undefined ? null : i.iId,
+              gender:
+                gender.indexOf(
+                  values.gender == undefined ? null : values.gender[0]
+                ) == -1
+                  ? null
+                  : gender.indexOf(
+                      values.gender == undefined ? null : values.gender[0]
+                    ),
+              nameOrUniversity: values.nameorschool,
+              pageNumber: 1,
+              pageSize: 10,
+            },
+          })
           .then((res) => {
             console.log(res.data)
             this.datas = []
@@ -548,14 +622,15 @@ export default {
       this.subjects = subjectData[value]
       this.secondsubject = subjectData[value][0]
       this.form.setFieldsValue({
-        TeachingSubject: secondsubject
+        TeachingSubject: secondsubject,
       })
     },
     gettable() {
       const _this = this
-      _this.axios.get('/Api/Admin/Teachers', {
-        params: _this.teacherInfo
-      })
+      _this.axios
+        .get('/Api/Admin/Teachers', {
+          params: _this.teacherInfo,
+        })
         .then((res) => {
           console.log(res.data)
           _this.datas = []
@@ -592,8 +667,8 @@ export default {
             teachingTimes: [0],
             tid: 'test',
             university: 'string',
-            version: 0
-          }
+            version: 0,
+          },
         })
         .then((res) => {
           console.log(res.data)
@@ -604,12 +679,12 @@ export default {
     },
     test2() {
       const _this = this
-      _this
-        .axios.get('/Api/Admin/Teachers', {
+      _this.axios
+        .get('/Api/Admin/Teachers', {
           params: {
             pageNumber: 1,
-            pageSize: 5
-          }
+            pageSize: 5,
+          },
         })
         .then((res) => {
           console.log(res.data)
@@ -618,8 +693,21 @@ export default {
           console.log(error.response)
         })
     },
-    showModal() {
+    showModal(userInfo) {
+      console.log(userInfo)
       this.modal1Visible = true
+        const _this = this
+        _this.axios
+          .get(`/Api/Admin/Teacher/Register/${userInfo.tid}`)
+          .then((res) => {
+            console.log(res.data.data)
+            _this.TeacherRegister = {}
+            _this.TeacherRegister = res.data.data
+            // console.log(_this.TeacherRegister.name)
+          })
+          .catch((error) => {
+            console.log(error.response)
+          })
     },
     hideModal() {
       this.modal1Visible = false
@@ -634,8 +722,35 @@ export default {
     handleCancel(e) {
       this.modal1Visible = false
     },
-    showModal2() {
+    showModal2(userInfo) {
+      console.log(userInfo)
       this.modal2Visible = true
+      if(userInfo.verifyStatus == 0){
+      const _this = this
+        _this.axios
+          .get(`/Api/Admin/Teacher/Register/${userInfo.tid}`)
+          .then((res) => {
+            console.log(res.data.data)
+            _this.TeacherVerify = {}
+            _this.TeacherVerify = res.data.data
+            // console.log(_this.TeacherRegister.name)
+          })
+          .catch((error) => {
+            console.log(error.response)
+          })
+      }
+      const _this = this
+        _this.axios
+          .get(`/Api/Admin/Teacher/Verify/${userInfo.tid}`)
+          .then((res) => {
+            console.log(res.data.data)
+            _this.TeacherVerify = {}
+            _this.TeacherVerify = res.data.data
+            // console.log(_this.TeacherRegister.name)
+          })
+          .catch((error) => {
+            console.log(error.response)
+          })
     },
     hideModal2() {
       this.modal2Visible = false
@@ -655,8 +770,8 @@ export default {
         (option) =>
           option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
       )
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -688,7 +803,7 @@ tr:last-child td {
 .download {
   margin-left: 380px;
 }
-.form-ant-form-ant-form-horizontal{
+.form-ant-form-ant-form-horizontal {
   height: 0;
 }
 </style>
