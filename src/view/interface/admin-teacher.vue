@@ -11,37 +11,38 @@
           <a-button key="1" type="primary"> 退出 </a-button>
         </template></a-page-header
       >
-      <a-table :columns="columns" :data-source="data" :pagination="pagination" rowKey="aid">
+      <a-table
+        :columns="columns"
+        :data-source="data"
+        rowKey="tid"
+        :pagination="pagination"
+      >
         <a slot="operate" slot-scope="scope">
-          <a class="agree" @click="agree(scope)">通过</a>
-          <a @click="reject(scope)">拒绝</a>
+          <a @click="change(scope)">更换</a>
         </a>
       </a-table>
+      <changeteacher
+        :ctmodalVisible="modalVisible"
+        v-on:changeVisible="changeVisible"
+        :ctid="ctid"
+      >
+      </changeteacher>
     </div>
   </div>
 </template>
 <script>
+import changeteacher from '../../components/changeteacher.vue'
 const columns = [
   {
-    title: '用户名',
-    dataIndex: 'username',
-    key: 'username',
+    title: '序号',
+    dataIndex: 'ctid',
   },
   {
-    title: '微信昵称',
-    dataIndex: 'wechat',
-    key: 'wechat',
-    width: 200,
-  },
-  {
-    title: '账号',
-    dataIndex: 'aid',
-    key: 'aid',
-    ellipsis: true,
+    title: '展示教师',
+    dataIndex: 'info.name',
   },
   {
     title: '操作',
-    key: 'operate',
     ellipsis: true,
     scopedSlots: { customRender: 'operate' },
   },
@@ -55,27 +56,26 @@ export default {
     return {
       data,
       columns,
+      ctid : Number,
+      modalVisible: false,
       pagination: {
         pageSize: 10, // 默认每页显示数量
         showTotal: (total) => `总共有 ${total} 名`, // 显示总数
       },
     }
   },
-
+  components: {
+    changeteacher,
+  },
   methods: {
     gettable() {
       const _this = this
-      _this.axios
-        .get('/Api/Admin/Verify/Admins', {
-          params: {
-            pageNumber: 1,
-            pageSize: 10,
-          },
-        })
+      _this.$api.mode
+        .getAdminTeacher()
         .then((res) => {
           console.log(res.data)
           _this.data = []
-          _this.data = res.data.data
+          _this.data = res.data
           console.log(_this.data)
         })
         .catch((error) => {
@@ -85,36 +85,24 @@ export default {
     onChange(value, selectedOptions) {
       console.log(value, selectedOptions)
     },
+    changeVisible(value) {
+      this.modalVisible = value
+    },
+    change(userInfo) {
+      console.log(userInfo.ctid)
+      this.modalVisible = true
+      this.ctid = null
+      this.ctid = userInfo.ctid
+    },
     filter(inputValue, path) {
       return path.some(
         (option) =>
           option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
       )
     },
-    agree(e) {
-      console.log(e)
-      const _this = this
-      _this.$api.mode.putAdmin({
-            adminStatus: 1,
-            aid: e.aid
-        })
-        .then((res) => {
-          console.log(res.data)
-        })
-        .catch((error) => {
-          console.log(error.response)
-        })
-    },
-    reject(userInfo) {
-      console.log(userInfo)
-      let key = userInfo.aid
-      const datasource = [...this.data];
-      this.data = dataSource.filter(item => item.aid!== key);
-    }
   },
 }
 </script>
-
 <style>
 #components-layout-demo-fixed-sider .logo {
   height: 32px;
@@ -139,9 +127,6 @@ export default {
   text-align: center;
   height: 35px;
   line-height: 35px;
-}
-.agree {
-  margin-right: 5px;
 }
 tr:last-child td {
   padding-bottom: 0;

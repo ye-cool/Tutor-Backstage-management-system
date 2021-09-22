@@ -58,7 +58,6 @@
               <a-input
                 placeholder="家长称谓/联系电话"
                 style="width: 200px"
-                @search="onSearch"
                 v-decorator="['nameortel']"
             /></a-form-item>
             <a-form-item>
@@ -69,191 +68,185 @@
           </a-space>
         </a-form>
       </div>
-      <a-table :columns="columns" :data-source="datas" :pagination="pagination">
-        <template slot="need">
-          <a-modal
-            :visible="modal1Visible"
-            title="家长需求"
-            on-ok="handleOk"
-            :closable="false"
-          >
-            <template slot="footer">
-              <a-button key="back" @click="handleCancel"> 返回 </a-button>
-              <a-button
-                key="submit"
-                type="primary"
-                :loading="loading"
-                @click="handleOk"
-              >
-                发布
-              </a-button>
-            </template>
-            <a-form class="form">
-              <a-form-item v-bind="formItemLayout" label="家长称谓">
-                <span> 李雷 </span>
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="学生补习科目">
-                <span> 高中数学 </span>
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="学生情况与老师要求">
-                <a-textarea style="width: 500px" :rows="4"></a-textarea>
-              </a-form-item>
-              <a-form-item
-                v-bind="formItemLayout"
-                label="联系电话"
-                has-feedback
-              >
-                <div>
-                  <span>13498574832</span>
-                </div>
-              </a-form-item>
-              <a-form-item
-                v-bind="formItemLayout"
-                label="家庭住址"
-                has-feedback
-              >
-                <span>金牛区</span>
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout">
-                <span slot="label"> 详细地址 </span>
-                <a-input style="width: 500px"></a-input> </a-form-item
-              ><a-form-item v-bind="formItemLayout">
-                <span slot="label"> 预期价格 </span>
-                <span>90元/小时</span> </a-form-item
-              ><a-form-item v-bind="formItemLayout">
-                <span slot="label"> 展示价格 </span>
-                <span>80元/小时</span>
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout">
-                <span slot="label"> 教师性别要求 </span>
-                <span>均可</span>
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout">
-                <span slot="label"> 补习时长 </span>
-                <a-input style="width: 500px"></a-input>
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout">
-                <span slot="label"> 空闲时间 </span>
-                <span>周一至周五</span>
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout">
-                <span slot="label"> 设置优先级 </span>
-                <a-cascader
-                  :options="options2"
-                  :show-search="{ filter }"
-                  placeholder="优先级"
-                  @change="onChange"
-                  style="width: 200px"
-                />
-              </a-form-item>
-            </a-form>
-          </a-modal>
-          <a @click="showModal">编辑</a>
+      <a-table
+        :columns="columns"
+        :data-source="data"
+        :pagination="false"
+        rowKey="did"
+      >
+        <template slot="need" slot-scope="scope">
+          <a @click="showModal(scope)">编辑</a>
         </template>
-        <template slot="deliveryStatus" slot-scope="text">
-          <a-modal
-            :visible="modal2Visible"
-            title="Title"
-            on-ok="handleOk2"
-            :closable="false"
-          >
-            <template slot="footer">
-              <a-button key="back" @click="handleCancel2" type="primary">
-                返回
-              </a-button>
-            </template>
-            <a-form class="form">
-              <a-form-item v-bind="formItemLayout" label="投递老师">
-                <teachermodal
-                  :modalVisible="modalVisible"
-                  v-on:changeVisible="changeVisible"
-                ></teachermodal>
-                <div class="taechername">
-                  <a
-                    style="float: left; margin-right: 10px"
-                    @click="showteacherModal"
-                    >王老师</a
-                  >
-                  <a
-                    style="float: left; margin-right: 10px"
-                    @click="showteacherModal"
-                    >李老师</a
-                  >
-                </div>
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="家长称谓">
-                <span>李雷</span>
-              </a-form-item>
-              <a-form-item
-                v-bind="formItemLayout"
-                label="学生补习科目"
-                has-feedback
-              >
-                <span>高中数学</span>
-              </a-form-item>
-              <a-form-item
-                v-bind="formItemLayout"
-                label="学习情况"
-                has-feedback
-              >
-                <span>数学基础不扎实</span>
-              </a-form-item>
-              <a-form-item
-                v-bind="formItemLayout"
-                label="联系电话"
-                has-feedback
-              >
-                <span>13789574832</span>
-              </a-form-item>
-              <a-form-item
-                v-bind="formItemLayout"
-                label="家庭住址"
-                has-feedback
-              >
-                <span>金牛区</span>
-              </a-form-item>
-              <a-form-item
-                v-bind="formItemLayout"
-                label="期望价格"
-                has-feedback
-              >
-                <span>90</span><span>元/小时</span>
-              </a-form-item>
-              <a-form-item
-                v-bind="formItemLayout"
-                label="展示价格"
-                has-feedback
-              >
-                <span>80</span><span>元/小时</span>
-              </a-form-item>
-              <a-form-item
-                v-bind="formItemLayout"
-                label="教师性别要求"
-                has-feedback
-              >
-                <span>均可</span>
-              </a-form-item>
-              <a-form-item
-                v-bind="formItemLayout"
-                label="补习时长"
-                has-feedback
-              >
-                <span>无</span>
-              </a-form-item>
-              <a-form-item
-                v-bind="formItemLayout"
-                label="空闲时间"
-                has-feedback
-              >
-                <span>周一至周五晚上</span>
-              </a-form-item>
-            </a-form>
-          </a-modal>
-          <a @click="showModal2">{{ text }}</a>
+        <template slot="deliveryStatus" slot-scope="text, scope">
+          <a @click="showModal2(scope)">已有{{ text }}人投递</a>
         </template>
       </a-table>
-      <a-button @click="test"></a-button>
-      <a-button @click="test2"></a-button>
+      <a-pagination
+        :current="pagination.displayPage"
+        :pageSize="pagination.displayRows"
+        :total="pagination.total"
+        :pageSizeOptions="pagination.pageSizeOptions"
+        :showTotal="(total) => `共 ${total} 条数据`"
+        showSizeChanger
+        showQuickJumper
+        @change="handlePageChange"
+        @showSizeChange="showSizeChange"
+        style="margin: 16px 0; text-align: right"
+      />
+      <a-modal
+        :visible="modal1Visible"
+        title="家长需求"
+        on-ok="handleOk"
+        :closable="false"
+      >
+        <template slot="footer">
+          <a-button key="back" @click="handleCancel"> 返回 </a-button>
+          <a-button
+            key="submit"
+            type="primary"
+            :loading="loading"
+            @click="handleOk"
+          >
+            发布
+          </a-button>
+        </template>
+        <a-form :form="form">
+          <a-form-item v-bind="formItemLayout" label="家长称谓">
+            <span> {{ demandRegister.parentName }} </span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout" label="学生补习科目">
+            <span>
+              {{
+                itemId[demandRegister.itemId] == undefined
+                  ? null
+                  : itemId[demandRegister.itemId].item
+              }}
+            </span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout" label="学生情况与老师要求">
+            <a-textarea
+              style="width: 500px"
+              :rows="4"
+              v-decorator="['studentLearningSituation']"
+            ></a-textarea>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout" label="联系电话" has-feedback>
+            <span>{{ demandRegister.phone }} </span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout" label="家庭住址" has-feedback>
+            <span> {{ demandRegister.studyArea }}</span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout">
+            <span slot="label"> 详细地址 </span>
+            <a-input
+              style="width: 500px"
+              v-decorator="['detailadress']"
+            ></a-input> </a-form-item
+          ><a-form-item v-bind="formItemLayout">
+            <span slot="label"> 预期价格 </span>
+            <span>{{ demandRegister.price }}</span> </a-form-item
+          ><a-form-item v-bind="formItemLayout">
+            <span slot="label"> 展示价格 </span>
+            <span>{{ demandRegister.applyNumber }}</span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout">
+            <span slot="label"> 教师性别要求 </span>
+            <span>{{ demandRegister.teacherGender }}</span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout">
+            <span slot="label"> 补习时长 </span>
+            <a-input
+              style="width: 500px"
+              v-decorator="['studytimes']"
+            ></a-input>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout">
+            <span slot="label"> 空闲时间 </span>
+            <span>{{ demandRegister.studyTimes }}</span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout">
+            <span slot="label"> 设置优先级 </span>
+            <a-cascader
+              :options="options2"
+              :show-search="{ filter }"
+              placeholder="优先级"
+              @change="onChange"
+              style="width: 200px"
+              v-decorator="['priority']"
+            />
+          </a-form-item>
+        </a-form>
+      </a-modal>
+      <a-modal
+        :visible="modal2Visible"
+        title="Title"
+        on-ok="handleOk2"
+        :closable="false"
+      >
+        <template slot="footer">
+          <a-button key="back" @click="handleCancel2" type="primary">
+            返回
+          </a-button>
+        </template>
+        <a-form class="form">
+          <a-form-item v-bind="formItemLayout" label="投递老师">
+            <teachermodal
+              :modalVisible="modalVisible"
+              v-on:changeVisible="changeVisible"
+            ></teachermodal>
+            <div class="taechername">
+              <a
+                style="float: left; margin-right: 10px"
+                @click="showteacherModal"
+                >王老师</a
+              >
+              <a
+                style="float: left; margin-right: 10px"
+                @click="showteacherModal"
+                >李老师</a
+              >
+            </div>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout" label="家长称谓">
+            <span>{{demandRegister.parentName}}</span>
+          </a-form-item>
+          <a-form-item
+            v-bind="formItemLayout"
+            label="学生补习科目"
+            has-feedback
+          >
+            <span>{{itemId[demandRegister.itemId]==undefined ? null :itemId[demandRegister.itemId].item}}</span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout" label="学习情况" has-feedback>
+            <span>{{demandRegister.studentLearningSituation}}</span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout" label="联系电话" has-feedback>
+            <span>{{demandRegister.phone}}</span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout" label="家庭住址" has-feedback>
+            <span>{{demandRegister.address}}</span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout" label="期望价格" has-feedback>
+            <span>{{demandRegister.price}}</span><span>元/小时</span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout" label="展示价格" has-feedback>
+            <span>{{demandRegister.parentName}}</span><span>元/小时</span>
+          </a-form-item>
+          <a-form-item
+            v-bind="formItemLayout"
+            label="教师性别要求"
+            has-feedback
+          >
+            <span>{{demandRegister.teacherGender}}</span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout" label="补习时长" has-feedback>
+            <span>{{demandRegister.parentName}}</span>
+          </a-form-item>
+          <a-form-item v-bind="formItemLayout" label="空闲时间" has-feedback>
+            <span>{{demandRegister.studyTimes}}</span>
+          </a-form-item>
+        </a-form>
+      </a-modal>
     </div>
   </div>
 </template>
@@ -297,45 +290,13 @@ const columns = [
   },
   {
     title: '投递状态',
-    dataIndex: 'demandStatus',
+    dataIndex: 'applyNumber',
     key: 'demandStatus',
     ellipsis: true,
     scopedSlots: { customRender: 'deliveryStatus' },
   },
 ]
-const datas = []
-const data = [
-  // {
-  //   key: '1',
-  //   name: 'John Brown',
-  //   SubjectsAndGrand: '高中数学',
-  //   TEL: '13235983145',
-  //   home: '成华区',
-  //   // need: '编辑',
-  //   dataStatus: '待审核',
-  //   deliveryStatus: '已有0人投递'
-  // },
-  // {
-  //   key: '2',
-  //   name: 'Jim Green',
-  //   SubjectsAndGrand: '高中数学',
-  //   TEL: '13235983145',
-  //   home: '成华区',
-  //   // need: '编辑',
-  //   dataStatus: '待审核',
-  //   deliveryStatus: '已有0人投递'
-  // },
-  // {
-  //   key: '3',
-  //   name: 'Joe Black',
-  //   SubjectsAndGrand: '高中数学',
-  //   TEL: '13235983145',
-  //   home: '成华区',
-  //   // need: '编辑',
-  //   dataStatus: '待审核',
-  //   deliveryStatus: '已有0人投递'
-  // }
-]
+var data = []
 const gradeData = ['小学', '初中', '高中', '小语种', '艺术类', '其他']
 const subjectData = {
   小学: ['全科', '语文', '奥数', '数学', '英语', '作业辅导'],
@@ -355,16 +316,74 @@ const subjectData = {
   艺术类: ['音乐', '美术', '舞蹈', '体育', '其他'],
   其他: [],
 }
-const subjects = []
-const secondsubject = []
+var subjects = []
+const areaId = [
+  '锦江区',
+  '金牛区',
+  '武侯区',
+  '青羊区',
+  '成华区',
+  '高新区',
+  '天府新区',
+  '新都区',
+  '郫都区',
+  '双流区',
+  '龙泉驿区',
+  '温江区',
+  '其他',
+]
+const itemId = [
+  { iId: 10, item: '小学全科' },
+  { iId: 11, item: '小学语文' },
+  { iId: 12, item: '小学奥数' },
+  { iId: 13, item: '小学数学' },
+  { iId: 14, item: '小学英语' },
+  { iId: 15, item: '小学作业辅导' },
+  { iId: 20, item: '初中全科' },
+  { iId: 21, item: '初中语文' },
+  { iId: 22, item: '初中英语' },
+  { iId: 23, item: '初中数学' },
+  { iId: 24, item: '初中物理' },
+  { iId: 25, item: '初中化学' },
+  { iId: 30, item: '高中数学' },
+  { iId: 31, item: '高中语文' },
+  { iId: 32, item: '高中英语' },
+  { iId: 33, item: '高中物理' },
+  { iId: 34, item: '高中化学' },
+  { iId: 35, item: '高中生物' },
+  { iId: 36, item: '高中历史' },
+  { iId: 37, item: '高中政治' },
+  { iId: 38, item: '高中地理' },
+  { iId: 40, item: '小语种法语' },
+  { iId: 41, item: '小语种德语' },
+  { iId: 42, item: '小语种西班牙语' },
+  { iId: 43, item: '小语种日语' },
+  { iId: 44, item: '小语种葡萄牙语' },
+  { iId: 45, item: '小语种韩语' },
+  { iId: 50, item: '艺体类音乐' },
+  { iId: 51, item: '艺体类美术' },
+  { iId: 52, item: '艺体类舞蹈' },
+  { iId: 53, item: '艺体类体育' },
+  { iId: 54, item: '艺体类其他' },
+  { iId: 60, item: '其他' },
+]
+var demandRegister = {}
+var demandVerify = {}
 export default {
   created() {
     this.gettable()
   },
   data() {
     return {
+      demandInfo: {
+        pageNumber: 1,
+        pageSize: 10,
+      },
+      demandRegister,
+      demandVerify,
+      areaId,
+      itemId,
       data,
-      datas,
       istrue: true,
       loading: false,
       form: this.$form.createForm(this),
@@ -374,19 +393,17 @@ export default {
       gradeData,
       subjectData,
       subjects,
-      secondsubject,
       columns,
       pagination: {
+        displayPage: 1,
+        displayRows: 10,
         pageSize: 10, // 默认每页显示数量
-        showTotal: (total) => `总共有 ${total} 名`, // 显示总数
+        total: 10,
+        pageSizeOptions: ['10', '20', '30', '50'],
       },
       formItemLayout: {
         labelCol: {
           span: 6,
-        },
-        wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 },
         },
       },
       tailFormItemLayout: {
@@ -457,28 +474,16 @@ export default {
       ],
       options2: [
         {
-          value: '小学',
-          label: '小学',
+          value: '1',
+          label: '1',
         },
         {
-          value: '初中',
-          label: '初中',
+          value: '2',
+          label: '2',
         },
         {
-          value: '高中',
-          label: '高中',
-        },
-        {
-          value: '小语种',
-          label: '小语种',
-        },
-        {
-          value: '艺术类',
-          label: '艺术类',
-        },
-        {
-          value: '其他',
-          label: '其他',
+          value: '3',
+          label: '3',
         },
       ],
       options3: [
@@ -498,61 +503,54 @@ export default {
       this.form.validateFields((error, values) => {
         console.log('error', error)
         console.log('Received values of form: ', values)
+        var i = itemId.find(function (item) {
+          return item.item == values.StudentGrade + values.StudentSubject
+        })
+        this.$api.mode
+          .getDemand({
+            params: {
+              areaId:
+                areaId.indexOf(
+                  values.StudentArea == undefined ? null : values.StudentArea[0]
+                ) == -1
+                  ? null
+                  : areaId.indexOf(
+                      values.StudentArea == undefined
+                        ? null
+                        : values.StudentArea[0]
+                    ),
+              itemId: i == undefined ? null : i.iId,
+              nameOrPhone: values.nameortel,
+              pageNumber: 1,
+              pageSize: 10,
+            },
+          })
+          .then((res) => {
+            console.log(res.data)
+            this.data = []
+            this.data = res.data
+            console.log(this.data)
+          })
+          .catch((error) => {
+            console.log(error.response)
+          })
       })
     },
     handlegradeChange(value) {
       this.istrue = false
       this.subjects = subjectData[value]
-      this.secondsubject = subjectData[value][0]
-      this.form.setFieldsValue({
-        TeachingSubject: secondsubject,
-      })
     },
     gettable() {
       const _this = this
-      _this.axios
-        .get('/Api/Admin/Demands', {
-          params: {
-            pageNumber: 1,
-            pageSize: 5,
-          },
+      _this.$api.mode
+        .getDemand({
+          params: _this.demandInfo,
         })
         .then((res) => {
           console.log(res.data)
-          _this.datas = []
-          _this.datas = res.data.data
-          console.log(_this.datas)
-        })
-        .catch((error) => {
-          console.log(error.response)
-        })
-    },
-    test() {
-      const _this = this
-      _this.axios
-        .post('/Api/User/Admin/SignUp', {
-          adminStatus: 0,
-          adminType: 0,
-          aid: 'string',
-          nickname: '1',
-          password: 'string',
-          uid: 'string',
-          username: 'string',
-          wechat: 'string'
-        })
-        .then((res) => {
-          console.log(res.data)
-        })
-        .catch((error) => {
-          console.log(error.response)
-        })
-    },
-    test2() {
-      const _this = this
-      _this.axios
-        .get('')
-        .then((res) => {
-          console.log(res.data)
+          _this.data = []
+          _this.data = res.data
+          console.log(_this.data)
         })
         .catch((error) => {
           console.log(error.response)
@@ -561,28 +559,55 @@ export default {
     changeVisible(value) {
       this.modalVisible = value
     },
-    onSearch() {},
     showteacherModal() {
       this.modalVisible = true
     },
-    showModal() {
+    showModal(userInfo) {
+      console.log(userInfo)
       this.modal1Visible = true
+      const _this = this
+      _this.$api.mode
+        .getDemandRegister(`${userInfo.did}`)
+        .then((res) => {
+          console.log(res.data)
+          _this.demandRegister = {}
+          _this.demandRegister = res.data
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
     },
     hideModal() {
       this.modal1Visible = false
     },
     handleOk(e) {
-      this.loading = true
-      setTimeout(() => {
-        this.modal1Visible = false
-        this.loading = false
-      }, 3000)
+      e.preventDefault()
+      this.form.validateFields((error, values) => {
+        console.log('error', error)
+        console.log('Received values of form: ', values)
+        this.loading = true
+        setTimeout(() => {
+          this.modal1Visible = false
+          this.loading = false
+        }, 3000)
+      })
     },
     handleCancel(e) {
       this.modal1Visible = false
     },
-    showModal2() {
+    showModal2(userInfo) {
       this.modal2Visible = true
+      const _this = this
+      _this.$api.mode
+        .getDemandRegister(`${userInfo.did}`)
+        .then((res) => {
+          console.log(res.data)
+          _this.demandRegister = {}
+          _this.demandRegister = res.data
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
     },
     hideModal2() {
       this.modal2Visible = false
@@ -605,6 +630,17 @@ export default {
         (option) =>
           option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
       )
+    },
+    showSizeChange(current, pagesize) {
+      this.pagination.displayRows = pagesize
+      this.demandInfo.pageSize = pagesize
+      this.gettable()
+    },
+    handlePageChange(displayPage) {
+      console.log(displayPage)
+      this.pagination.displayPage = displayPage
+      this.demandInfo.pageNumber = displayPage
+      this.gettable()
     },
   },
 }

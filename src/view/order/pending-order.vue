@@ -12,8 +12,14 @@
           退出
         </a-button>
       </template></a-page-header>
-<a-table :columns="columns" :data-source="datas" :pagination="pagination">
-    <a slot="name" slot-scope="text">{{ text }}</a>
+<a-table :columns="columns" :data-source="data" :pagination="false" rowKey="did">
+    <a slot="verifyStatus" slot-scope="text">{{ text == 0 ? '未审核' : '已通过'}}</a>
+    <a slot="applyTeachers" slot-scope="text">已有{{ text }}人投递</a>
+    <a slot="need">编辑</a>
+    <a slot="operate" slot-scope="scope">
+      <a @click="reject(scope)">结束订单 </a>
+      <a>添加备注</a>
+    </a>
 </a-table>
 </div>
 </div>
@@ -22,9 +28,8 @@
 const columns = [
   {
     title: '家长称谓',
-    dataIndex: 'name',
-    key: 'name',
-    scopedSlots: { customRender: 'name' }
+    dataIndex: 'parentName',
+    key: 'parentName'
   },
   {
     title: '学生年级与补习科目',
@@ -34,78 +39,46 @@ const columns = [
   },
   {
     title: '联系电话',
-    dataIndex: 'TEL',
-    key: 'TEL',
+    dataIndex: 'phone',
+    key: 'phone',
     ellipsis: true
   },
   {
     title: '家庭住址范围',
-    dataIndex: 'home',
-    key: 'home',
+    dataIndex: 'address',
+    key: 'address',
     ellipsis: true
   },
   {
     title: '需求查看',
-    dataIndex: 'need',
     key: 'need',
-    ellipsis: true
+    ellipsis: true,
+    scopedSlots: { customRender: 'need' }
   },
   {
     title: '审核状态',
-    dataIndex: 'dataStatus',
-    key: 'dataStatus',
-    ellipsis: true
+    dataIndex: 'verifyStatus',
+    key: 'verifyStatus',
+    ellipsis: true,
+    scopedSlots: { customRender: 'verifyStatus' }
   },
   {
     title: '投递状态',
-    dataIndex: 'deliveryStatus',
-    key: 'deliveryStatus',
-    ellipsis: true
+    dataIndex: 'applyTeachers',
+    key: 'applyTeachers',
+    ellipsis: true,
+    scopedSlots: { customRender: 'applyTeachers' },
+    width: 200
   },
   {
     title: '操作',
-    dataIndex: 'operate',
     key: 'operate',
     ellipsis: true,
-    width: 200
+    width: 200,
+    scopedSlots: { customRender: 'operate' },
   }
 ]
-const datas = []
-const data = [
-  // {
-  //   key: '1',
-  //   name: 'John Brown',
-  //   SubjectsAndGrand: '高中数学',
-  //   TEL: '13235983145',
-  //   home: '成华区',
-  //   need: '编辑',
-  //   dataStatus: '待审核',
-  //   deliveryStatus: '已通过',
-  //   operate: '结束订单 添加备注'
-  // },
-  // {
-  //   key: '2',
-  //   name: 'Jim Green',
-  //   SubjectsAndGrand: '高中数学',
-  //   TEL: '13235983145',
-  //   home: '成华区',
-  //   need: '编辑',
-  //   dataStatus: '待审核',
-  //   deliveryStatus: '已通过',
-  //   operate: '结束订单 添加备注'
-  // },
-  // {
-  //   key: '3',
-  //   name: 'Joe Black',
-  //   SubjectsAndGrand: '高中数学',
-  //   TEL: '13235983145',
-  //   home: '成华区',
-  //   need: '编辑',
-  //   dataStatus: '待审核',
-  //   deliveryStatus: '已通过',
-  //   operate: '结束订单 添加备注'
-  // }
-]
+var data = []
 export default {
   created() {
     this.gettable()
@@ -113,7 +86,6 @@ export default {
   data () {
     return {
       data,
-      datas,
       columns,
       pagination: {
         pageSize: 10, // 默认每页显示数量
@@ -124,7 +96,7 @@ export default {
   methods: {
     gettable() {
       const _this = this
-      _this.axios.get('/Api/Admin/MatchedContracts', {
+      _this.$api.mode.getUnmatchedContracts({
         params: {
           pageNumber: 1,
           pageSize: 5
@@ -132,9 +104,9 @@ export default {
       })
         .then((res) => {
           console.log(res.data)
-          _this.datas = []
-          _this.datas = res.data.data
-          console.log(_this.datas)
+          _this.data = []
+          _this.data = res.data
+          console.log(_this.data)
         })
         .catch((error) => {
           console.log(error.response)
@@ -145,6 +117,17 @@ export default {
     },
     filter (inputValue, path) {
       return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+    },
+    reject(userInfo){
+      console.log(userInfo)
+      this.$api.mode.deleteDemand(`${userInfo.did}`)
+      .then((res) => {
+          console.log(res)
+          this.gettable()
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
     }
   }
 }

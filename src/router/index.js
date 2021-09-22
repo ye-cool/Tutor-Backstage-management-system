@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
 Vue.use(VueRouter)
 
 const routes = [
@@ -18,10 +20,10 @@ const routes = [
     component: () => import('@/view/signup')
   },
   {
-    path: '/home',
+    path: '/admin',
     name: '主页',
-    redirect: '/home/teacher',
-    component: () => import('@/view/home'),
+    redirect: '/admin/teacher',
+    component: () => import('@/view/admin'),
     children: [
       {
         path: 'teacher',
@@ -44,9 +46,9 @@ const routes = [
         component: () => import('@/view/order/pending-order')
       },
       {
-        path: 'home-teacher',
+        path: 'admin-teacher',
         name: '首页教师展示',
-        component: () => import('@/view/interface/home-teacher')
+        component: () => import('@/view/interface/admin-teacher')
       },
       {
         path: 'banner',
@@ -70,5 +72,22 @@ const routes = [
 const router = new VueRouter({
   routes
 })
+// 路由权限守卫
+router.beforeEach((to, from, next) => {
+  NProgress.start();
+  if(!to.meta.requireAuth) {
+    next()
+  } else {
+    if(localStorage.getItem('token')) {
+      next()
+    } else {
+      next({path: '/login'})
+    }
+  }
+});
+
+router.afterEach(() => {
+  NProgress.done();
+});
 
 export default router

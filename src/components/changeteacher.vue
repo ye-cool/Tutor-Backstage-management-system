@@ -1,302 +1,304 @@
 <template>
-  <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
-    <div class="content">
-      <a-page-header
-        style="border: 1px solid rgb(235, 237, 240)"
-        title="Title"
-        sub-title="This is a subtitle"
-      >
-        <template slot="extra">
-          <span>管理员A</span>
-          <a-button key="1" type="primary"> 退出 </a-button>
-        </template></a-page-header
-      >
-      <a-form class="search" :form="form" @submit="handleSearch">
-        <a-space>
-          <a-form-item>
-            <span class="search-condition" style="width: 90px">搜索条件</span>
-          </a-form-item>
-          <a-form-item>
-            <a-cascader
-              :options="options1"
-              :show-search="{ filter }"
-              placeholder="授课地区"
-              v-decorator="['TeachingArea']"
-            />
-          </a-form-item>
-          <br /><br />
-          <a-form-item>
-            <a-select
-              placeholder="授课年级"
-              style="width: 120px"
-              @change="handlegradeChange"
-              v-decorator="['TeachingGrade']"
-            >
-              <a-select-option v-for="grade in gradeData" :key="grade">
-                {{ grade }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-          <br /><br />
-          <a-form-item>
-            <a-select
-              placeholder="授课科目"
-              style="width: 150px"
-              v-decorator="['TeachingSubject']"
-            >
-              <a-select-option v-if="istrue" :key="1000000" disabled>
-                请先选择授课年级
-              </a-select-option>
-              <a-select-option v-for="subject in subjects" :key="subject">
-                {{ subject }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-          <br /><br />
-          <a-form-item>
-            <a-cascader
-              :options="options3"
-              :show-search="{ filter }"
-              placeholder="性别"
-              class="gender"
-              v-decorator="['gender']"
-            />
-          </a-form-item>
-          <a-form-item>
-            <a-input
-              placeholder="姓名/学校"
-              style="width: 200px"
-              v-decorator="['nameorschool']"
-            />
-          </a-form-item>
-          <a-form-item>
-            <a-button type="primary" icon="search" html-type="submit">
-              Search
-            </a-button>
-          </a-form-item>
-        </a-space>
-      </a-form>
-      <a-table
-        :columns="columns"
-        :data-source="data"
-        rowKey="tid"
-        :pagination="false"
-      >
-        <template slot="gender" slot-scope="text">
-          {{ text === 0 ? '男' : '女' }}
-        </template>
-        <template slot="verifyStatus" slot-scope="text">
-          {{ text === 0 ? '待审核' : '已通过' }}
-        </template>
-        <template slot="register" slot-scope="scope">
-          <a @click="showModal(scope)">查看</a>
-        </template>
-        <template slot="exhibit" slot-scope="scope">
-          <a @click="showModal2(scope)">编辑</a>
-        </template>
-      </a-table>
-      <a-pagination
-        :current="pagination.displayPage"
-        :pageSize="pagination.displayRows"
-        :total="pagination.total"
-        :pageSizeOptions="pagination.pageSizeOptions"
-        :showTotal="(total) => `共 ${total} 条数据`"
-        showSizeChanger
-        showQuickJumper
-        @change="handlePageChange"
-        @showSizeChange="showSizeChange"
-        style="margin: 16px 0; text-align: right"
-      />
-      <teachermodal
-        :modalVisible="modal1Visible"
-        v-on:changeVisible="changeVisible"
-        :teacherRegister="TeacherRegister"
-      ></teachermodal>
-      <a-modal
-        :visible="modal2Visible"
-        title="Title"
-        on-ok="handleOk2"
-        :closable="false"
-      >
-        <template slot="footer">
-          <a-button key="back" @click="handleCancel2"> 取消 </a-button>
-          <a-button
-            key="submit"
-            type="primary"
-            :loading="loading"
-            @click="handleOk2"
-          >
-            审核通过，发布资料
-          </a-button>
-        </template>
-        <a-form :form="form">
-          <a-form-item v-bind="formItemLayout" label="称谓">
-            <span> {{ TeacherVerify.name }} </span>
-            <a-button type="primary" icon="download" class="download">
-              下载展示资料
-            </a-button>
-          </a-form-item>
-          <a-form-item v-bind="formItemLayout" label="学校">
-            <span>{{ TeacherVerify.university }} </span>
-          </a-form-item>
-          <a-form-item v-bind="formItemLayout" label="学历">
-            <span>
-              {{
-                TeacherVerify.graduateEducation == 0
-                  ? '专科生'
-                  : TeacherVerify.graduateEducation == 1
-                  ? '本科生'
-                  : TeacherVerify.graduateEducation == 2
-                  ? '硕士生'
-                  : '博士生'
-              }}</span
-            >
-          </a-form-item>
-          <a-space class="layout">
+  <a-modal :visible="ctmodalVisible" :closable="false" width="1100px">
+    <template slot="footer">
+      <a-button key="back" @click="cthandleCancel"> 取消 </a-button>
+    </template>
+    <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
+      <div class="content">
+        <a-form class="search" :form="form" @submit="handleSearch">
+          <a-space>
             <a-form-item>
-              <span slot="label">授课科目</span>
+              <span class="search-condition" style="width: 90px">搜索条件</span>
             </a-form-item>
+            <a-form-item>
+              <a-cascader
+                :options="options1"
+                :show-search="{ filter }"
+                placeholder="授课地区"
+                v-decorator="['TeachingArea']"
+              />
+            </a-form-item>
+            <br /><br />
             <a-form-item>
               <a-select
                 placeholder="授课年级"
                 style="width: 120px"
-                @change="handlegradeChange1"
-                v-decorator="['grade']"
+                @change="handlegradeChange"
+                v-decorator="['TeachingGrade']"
               >
                 <a-select-option v-for="grade in gradeData" :key="grade">
                   {{ grade }}
                 </a-select-option>
               </a-select>
             </a-form-item>
+            <br /><br />
             <a-form-item>
               <a-select
                 placeholder="授课科目"
-                style="width: 120px"
-                v-decorator="['subject']"
+                style="width: 150px"
+                v-decorator="['TeachingSubject']"
               >
-                <a-select-option v-for="subject in subjects1" :key="subject">
+                <a-select-option v-if="istrue" :key="1000000" disabled>
+                  请先选择授课年级
+                </a-select-option>
+                <a-select-option v-for="subject in subjects" :key="subject">
                   {{ subject }}
                 </a-select-option>
               </a-select>
             </a-form-item>
+            <br /><br />
             <a-form-item>
-              <a-select
-                placeholder="授课年级"
-                style="width: 120px"
-                @change="handlegradeChange2"
-                v-decorator="['grade2']"
-              >
-                <a-select-option v-for="grade in gradeData" :key="grade">
-                  {{ grade }}
-                </a-select-option>
-              </a-select>
+              <a-cascader
+                :options="options3"
+                :show-search="{ filter }"
+                placeholder="性别"
+                class="gender"
+                v-decorator="['gender']"
+              />
             </a-form-item>
             <a-form-item>
-              <a-select
-                placeholder="授课科目"
-                style="width: 120px"
-                v-decorator="['subject2']"
-              >
-                <a-select-option v-for="subject in subjects2" :key="subject">
-                  {{ subject }}
-                </a-select-option>
-              </a-select>
+              <a-input
+                placeholder="姓名/学校"
+                style="width: 200px"
+                v-decorator="['nameorschool']"
+              />
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary" icon="search" html-type="submit">
+                Search
+              </a-button>
             </a-form-item>
           </a-space>
-          <a-space class="layout">
-            <a-form-item>
-              <span slot="label">价格区间</span>
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                style="width: 100px"
-                v-decorator="['lowPrice']"
-              ></a-input>
-            </a-form-item>
-            <a-form-item>
-              <span>至</span>
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                style="width: 100px"
-                v-decorator="['highPrice']"
-              ></a-input>
-            </a-form-item>
-            <a-form-item>
-              <span>元/小时</span>
-            </a-form-item>
-          </a-space>
-          <a-form-item v-bind="formItemLayout">
-            <span slot="label">展示价格</span>
-            <span>倍数设置 </span>
-            <a-input style="width: 100px" v-decorator="['multiple']"></a-input>
-          </a-form-item>
-          <a-space class="layout">
-            <a-form-item>
-              <span slot="label">价格区间</span>
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                style="width: 100px"
-                v-decorator="['lowPriceVerified']"
-              ></a-input>
-            </a-form-item>
-            <a-form-item>
-              <span>至</span>
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                style="width: 100px"
-                v-decorator="['highPriceVerified']"
-              ></a-input>
-            </a-form-item>
-            <a-form-item>
-              <span>元/小时</span>
-            </a-form-item>
-          </a-space>
-          <a-form-item v-bind="formItemLayout">
-            <span slot="label"> 家教经历 </span>
-            <a-textarea
-              v-decorator="['teachingExperience']"
-              style="width: 500px"
-              :rows="4"
-            ></a-textarea> </a-form-item
-          ><a-form-item v-bind="formItemLayout">
-            <span slot="label"> 空闲时间 </span>
-            <span>{{ TeacherVerify.teachingTimes }}</span> </a-form-item
-          ><a-form-item v-bind="formItemLayout">
-            <span slot="label"> 区域 </span>
-            <span>{{ TeacherVerify.teachingAreas }}</span>
-          </a-form-item>
-          <a-form-item v-bind="formItemLayout">
-            <span slot="label"> 常住地址 </span>
-            <span>{{ TeacherVerify.residentAddress }}</span>
-          </a-form-item>
-          <a-form-item v-bind="formItemLayout">
-            <span slot="label"> 一句话标签 </span>
-            <a-input
-              v-decorator="['comment']"
-              style="width: 450px"
-              placeholder="请输入内容"
-            ></a-input>
-          </a-form-item>
-          <a-form-item v-bind="formItemLayout">
-            <span slot="label"> 授课课时数 </span>
-            <a-input
-              v-decorator="['teachingHours']"
-              style="width: 450px"
-              placeholder="请输入内容"
-            ></a-input>
-          </a-form-item>
         </a-form>
-      </a-modal>
-      <!-- <a-button @click="test"></a-button>
+        <a-table
+          :columns="columns"
+          :data-source="datas"
+          rowKey="tid"
+          :pagination="false"
+        >
+          <template slot="gender" slot-scope="text">
+            {{ text === 0 ? '男' : '女' }}
+          </template>
+          <template slot="verifyStatus" slot-scope="text">
+            {{ text === 0 ? '待审核' : '已通过' }}
+          </template>
+          <template slot="register" slot-scope="scope">
+            <a @click="showModal(scope)">查看</a>
+          </template>
+          <template slot="exhibit" slot-scope="scope">
+            <a @click="showModal2(scope)">编辑</a>
+          </template>
+          <template slot="operate" slot-scope="scope">
+            <a @click="replace(scope)">更换</a>
+          </template>
+        </a-table>
+        <a-pagination
+          :current="pagination.displayPage"
+          :pageSize="pagination.displayRows"
+          :total="pagination.total"
+          :pageSizeOptions="pagination.pageSizeOptions"
+          :showTotal="(total) => `共 ${total} 条数据`"
+          showSizeChanger
+          showQuickJumper
+          @change="handlePageChange"
+          @showSizeChange="showSizeChange"
+          style="margin: 16px 0; text-align: right"
+        />
+        <teachermodal
+          :modalVisible="modal1Visible"
+          v-on:changeVisible="changeVisible"
+          :teacherRegister="TeacherRegister"
+        ></teachermodal>
+        <a-modal
+          :visible="modal2Visible"
+          title="Title"
+          on-ok="handleOk2"
+          :closable="false"
+          width="900px"
+        >
+          <template slot="footer">
+            <a-button key="back" @click="handleCancel2"> 取消 </a-button>
+            <a-button
+              key="submit"
+              type="primary"
+              :loading="loading"
+              @click="handleOk2"
+            >
+              审核通过，发布资料
+            </a-button>
+          </template>
+          <a-form :form="form">
+            <a-form-item v-bind="formItemLayout" label="称谓">
+              <span> {{ TeacherVerify.name }} </span>
+              <a-button type="primary" icon="download" class="download">
+                下载展示资料
+              </a-button>
+            </a-form-item>
+            <a-form-item v-bind="formItemLayout" label="学校">
+              <span>{{ TeacherVerify.university }} </span>
+            </a-form-item>
+            <a-form-item v-bind="formItemLayout" label="学历">
+              <span>
+                {{
+                  TeacherVerify.graduateEducation == 0
+                    ? '专科生'
+                    : TeacherVerify.graduateEducation == 1
+                    ? '本科生'
+                    : TeacherVerify.graduateEducation == 2
+                    ? '硕士生'
+                    : '博士生'
+                }}</span
+              >
+            </a-form-item>
+            <a-space class="layout">
+              <a-form-item>
+                <span slot="label">授课科目</span>
+              </a-form-item>
+              <a-form-item>
+                <a-select
+                  placeholder="授课年级"
+                  style="width: 120px"
+                  @change="handlegradeChange1"
+                  v-decorator="['grade']"
+                >
+                  <a-select-option v-for="grade in gradeData" :key="grade">
+                    {{ grade }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item>
+                <a-select
+                  placeholder="授课科目"
+                  style="width: 120px"
+                  v-decorator="['subject']"
+                >
+                  <a-select-option v-for="subject in subjects1" :key="subject">
+                    {{ subject }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item>
+                <a-select
+                  placeholder="授课年级"
+                  style="width: 120px"
+                  @change="handlegradeChange2"
+                  v-decorator="['grade2']"
+                >
+                  <a-select-option v-for="grade in gradeData" :key="grade">
+                    {{ grade }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item>
+                <a-select
+                  placeholder="授课科目"
+                  style="width: 120px"
+                  v-decorator="['subject2']"
+                >
+                  <a-select-option v-for="subject in subjects2" :key="subject">
+                    {{ subject }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-space>
+            <a-space class="layout">
+              <a-form-item>
+                <span slot="label">价格区间</span>
+              </a-form-item>
+              <a-form-item>
+                <a-input
+                  style="width: 100px"
+                  v-decorator="['lowPrice']"
+                ></a-input>
+              </a-form-item>
+              <a-form-item>
+                <span>至</span>
+              </a-form-item>
+              <a-form-item>
+                <a-input
+                  style="width: 100px"
+                  v-decorator="['highPrice']"
+                ></a-input>
+              </a-form-item>
+              <a-form-item>
+                <span>元/小时</span>
+              </a-form-item>
+            </a-space>
+            <a-form-item v-bind="formItemLayout">
+              <span slot="label">展示价格</span>
+              <span>倍数设置 </span>
+              <a-input
+                style="width: 100px"
+                v-decorator="['multiple']"
+              ></a-input>
+            </a-form-item>
+            <a-space class="layout">
+              <a-form-item>
+                <span slot="label">价格区间</span>
+              </a-form-item>
+              <a-form-item>
+                <a-input
+                  style="width: 100px"
+                  v-decorator="['lowPriceVerified']"
+                ></a-input>
+              </a-form-item>
+              <a-form-item>
+                <span>至</span>
+              </a-form-item>
+              <a-form-item>
+                <a-input
+                  style="width: 100px"
+                  v-decorator="['highPriceVerified']"
+                ></a-input>
+              </a-form-item>
+              <a-form-item>
+                <span>元/小时</span>
+              </a-form-item>
+            </a-space>
+            <a-form-item v-bind="formItemLayout">
+              <span slot="label"> 家教经历 </span>
+              <a-textarea
+                v-decorator="['teachingExperience']"
+                style="width: 500px"
+                :rows="4"
+              ></a-textarea> </a-form-item
+            ><a-form-item v-bind="formItemLayout">
+              <span slot="label"> 空闲时间 </span>
+              <span>{{ TeacherVerify.teachingTimes }}</span> </a-form-item
+            ><a-form-item v-bind="formItemLayout">
+              <span slot="label"> 区域 </span>
+              <span>{{ TeacherVerify.teachingAreas }}</span>
+            </a-form-item>
+            <a-form-item v-bind="formItemLayout">
+              <span slot="label"> 常住地址 </span>
+              <span>{{ TeacherVerify.residentAddress }}</span>
+            </a-form-item>
+            <a-form-item v-bind="formItemLayout">
+              <span slot="label"> 一句话标签 </span>
+              <a-input
+                v-decorator="['comment']"
+                style="width: 450px"
+                placeholder="请输入内容"
+              ></a-input>
+            </a-form-item>
+            <a-form-item v-bind="formItemLayout">
+              <span slot="label"> 授课课时数 </span>
+              <a-input
+                v-decorator="['teachingHours']"
+                style="width: 450px"
+                placeholder="请输入内容"
+              ></a-input>
+            </a-form-item>
+          </a-form>
+        </a-modal>
+        <!-- <a-button @click="test"></a-button>
       <a-button @click="test2"></a-button> -->
+      </div>
     </div>
-  </div>
+  </a-modal>
 </template>
 <script>
-import teachermodal from '../components/teachermodal.vue'
+import teachermodal from './teachermodal.vue'
 const columns = [
   {
     title: '教师姓名',
@@ -343,13 +345,47 @@ const columns = [
     scopedSlots: { customRender: 'verifyStatus' },
   },
   {
-    title: '操作人',
-    dataIndex: 'verifyAdmin',
-    key: 'verifyAdmin',
+    title: '操作',
+    key: 'operate',
     ellipsis: true,
+    scopedSlots: { customRender: 'operate' },
   },
 ]
+var datas = []
 var data = [
+  // {
+  //   key: '1',
+  //   name: 'John Brown',
+  //   gender: '男',
+  //   school: '电子科技大学',
+  //   SubjectsAndGrand: '高中数学',
+  //   // register: '查看',
+  //   // exhibit: '编辑',
+  //   dataStatus: '待审核',
+  //   operator: '无'
+  // },
+  // {
+  //   key: '2',
+  //   name: 'John Brown',
+  //   gender: '男',
+  //   school: '电子科技大学',
+  //   SubjectsAndGrand: '高中数学',
+  //   // register: '查看',
+  //   // exhibit: '编辑',
+  //   dataStatus: '待审核',
+  //   operator: '无'
+  // },
+  // {
+  //   key: '3',
+  //   name: 'John Brown',
+  //   gender: '男',
+  //   school: '电子科技大学',
+  //   SubjectsAndGrand: '高中数学',
+  //   // register: '查看',
+  //   // exhibit: '编辑',
+  //   dataStatus: '待审核',
+  //   operator: '无'
+  // }
 ]
 const gradeData = ['小学', '初中', '高中', '小语种', '艺术类', '其他']
 const subjectData = {
@@ -447,6 +483,11 @@ const gender = ['男', '女']
 var TeacherRegister = {}
 var TeacherVerify = {}
 export default {
+  name: 'modal',
+  props: {
+    ctmodalVisible: Boolean,
+    ctid: Number,
+  },
   created() {
     this.gettable()
   },
@@ -475,6 +516,7 @@ export default {
       modal2Visible: false,
       loading: false,
       data,
+      datas,
       columns,
       pagination: {
         displayPage: 1,
@@ -601,9 +643,9 @@ export default {
           })
           .then((res) => {
             console.log(res.data)
-            this.data = []
-            this.data = res.data
-            console.log(this.data)
+            this.datas = []
+            this.datas = res.data
+            console.log(this.datas)
           })
           .catch((error) => {
             console.log(error.response)
@@ -634,17 +676,17 @@ export default {
         })
         .then((res) => {
           console.log(res)
-          _this.data = []
-          _this.data = res.data
-          console.log(_this.data)
+          _this.datas = []
+          _this.datas = res.data
+          console.log(_this.datas)
         })
         .catch((error) => {
           console.log(error.response)
         })
     },
     // gettotal() {
-    //   console.log(this.data)
-    //   let arr = Object.keys(this.data)
+    //   console.log(this.datas)
+    //   let arr = Object.keys(this.datas)
     //   this.pagination.total = arr.length
     // },
     changeVisible(value) {
@@ -678,6 +720,9 @@ export default {
     },
     handleCancel(e) {
       this.modal1Visible = false
+    },
+    cthandleCancel() {
+      this.$emit('changeVisible', false)
     },
     showModal2(userInfo) {
       console.log(userInfo.verifyStatus)
@@ -793,6 +838,21 @@ export default {
       this.teacherInfo.pageNumber = displayPage
       this.gettable()
     },
+    replace(userInfo) {
+      console.log(userInfo.tid)
+      console.log(this.ctid)
+      this.$api.mode
+        .putAdminTeacher({
+          ctid: this.ctid,
+          tid: userInfo.tid
+        })
+        .then((res) => {
+          console.log(res.data)
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
+    },
   },
 }
 </script>
@@ -820,7 +880,7 @@ tr:last-child td {
   padding-bottom: 0;
 }
 .ant-modal-content {
-  width: 900px;
+  width: 100%;
 }
 .download {
   margin-left: 410px;

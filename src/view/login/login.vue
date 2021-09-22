@@ -93,7 +93,7 @@ export default {
       userToken: '',
       logging: false,
       error: '',
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
     }
   },
   methods: {
@@ -103,13 +103,9 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          this.axios({
-            method: 'post',
-            url: '/Api/Login/Admin',
-            data: {
-              username: values.name,
+          this.$api.mode.login({
+              nickname: values.name,
               password: values.password
-            }
           }).then((res) => {
             console.log(res.data)
             // this.userToken = 'Bearer ' + res.data.token
@@ -124,8 +120,8 @@ export default {
           })
         }
       })
-    }
-  }
+    },
+  },
 }
 </script>
 <style>
@@ -134,15 +130,9 @@ export default {
   flex-direction: column;
   height: 100vh;
   overflow: auto;
-  background-repeat: no-repeat;
-  background-position-x: center;
-  background-position-y: 110px;
-  background-size: 100%;
 }
-.common-layout .top,
-.login {
-  padding: 30px 0;
-  flex: 1;
+.common-layout .top {
+  margin: 30px;
 }
 @media (min-width: 768px) {
   .common-layout .top,
@@ -155,8 +145,8 @@ export default {
   text-align: center;
 }
 .common-layout .top .header {
-  height: 44px;
-  line-height: 44px;
+  height: 40px;
+  line-height: 40px;
 }
 .common-layout .top .header a {
   text-decoration: none;

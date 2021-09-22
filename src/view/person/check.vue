@@ -12,8 +12,10 @@
           退出
         </a-button>
       </template></a-page-header>
-<a-table :columns="columns" :data-source="datas" :pagination="pagination">
-    <a slot="name" slot-scope="text">{{ text }}</a>
+<a-table :columns="columns" :data-source="data" :pagination="pagination">
+    <a slot="operate" slot-scope="">
+      <a>更换密码</a>
+    </a>
 </a-table>
 </div>
         </div>
@@ -22,20 +24,19 @@
 const columns = [
   {
     title: '昵称',
-    dataIndex: 'name',
-    key: 'name',
-    scopedSlots: { customRender: 'name' }
+    dataIndex: 'username',
+    key: 'username'
   },
   {
-    title: '微信号',
-    dataIndex: 'wechatid',
-    key: 'wechatid',
+    title: '微信昵称',
+    dataIndex: 'wechat',
+    key: 'wechat',
     width: 200
   },
   {
     title: '账号',
-    dataIndex: 'account',
-    key: 'account',
+    dataIndex: 'aid',
+    key: 'aid',
     ellipsis: true
   },
   {
@@ -46,13 +47,12 @@ const columns = [
   },
   {
     title: '操作',
-    dataIndex: 'operate',
     key: 'operate',
-    ellipsis: true
+    ellipsis: true,
+    scopedSlots: { customRender: 'operate' }
   }
 ]
-const datas = []
-const data = [
+var data = [
   // {
   //   key: '1',
   //   name: 'John Brown',
@@ -85,7 +85,6 @@ export default {
   data () {
     return {
       data,
-      datas,
       columns,
       pagination: {
         pageSize: 10, // 默认每页显示数量
@@ -99,14 +98,14 @@ export default {
       _this.axios.get('/Api/Admin/Admins', {
         params: {
           pageNumber: 1,
-          pageSize: 5
+          pageSize: 10
         }
       })
         .then((res) => {
           console.log(res.data)
-          _this.datas = []
-          _this.datas = res.data.data
-          console.log(_this.datas)
+          _this.data = []
+          _this.data = res.data.data
+          console.log(_this.data)
         })
         .catch((error) => {
           console.log(error.response)
