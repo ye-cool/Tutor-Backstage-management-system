@@ -74,8 +74,27 @@
         :pagination="false"
         rowKey="did"
       >
+        <template slot="itemId" slot-scope="scope">
+          <a @click="showModal(scope)">编辑</a>
+        </template>
+        <template slot="studyArea" slot-scope="text">
+          <a>{{ areaId[text] }}</a>
+        </template>
         <template slot="need" slot-scope="scope">
           <a @click="showModal(scope)">编辑</a>
+        </template>
+        <template slot="verifyStatus" slot-scope="text">
+          <a>{{
+            text == 0
+              ? '待审核'
+              : text == 1
+              ? '待审核'
+              : text == 2
+              ? '已通过'
+              : text == 3
+              ? '不通过'
+              : '不通过'
+          }}</a>
         </template>
         <template slot="deliveryStatus" slot-scope="text, scope">
           <a @click="showModal2(scope)">已有{{ text }}人投递</a>
@@ -98,6 +117,7 @@
         title="家长需求"
         on-ok="handleOk"
         :closable="false"
+        width="700px"
       >
         <template slot="footer">
           <a-button key="back" @click="handleCancel"> 返回 </a-button>
@@ -151,13 +171,19 @@
           </a-form-item>
           <a-form-item v-bind="formItemLayout">
             <span slot="label"> 教师性别要求 </span>
-            <span>{{ demandRegister.teacherGender }}</span>
+            <span>{{
+              demandRegister.teacherGender == 0
+                ? '均可'
+                : demandRegister.teacherGender == 1
+                ? '男'
+                : '女'
+            }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout">
             <span slot="label"> 补习时长 </span>
             <a-input
               style="width: 500px"
-              v-decorator="['studytimes']"
+              v-decorator="['studyHours']"
             ></a-input>
           </a-form-item>
           <a-form-item v-bind="formItemLayout">
@@ -208,42 +234,48 @@
             </div>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="家长称谓">
-            <span>{{demandRegister.parentName}}</span>
+            <span>{{ demandRegister.parentName }}</span>
           </a-form-item>
           <a-form-item
             v-bind="formItemLayout"
             label="学生补习科目"
             has-feedback
           >
-            <span>{{itemId[demandRegister.itemId]==undefined ? null :itemId[demandRegister.itemId].item}}</span>
+            <span>{{
+              itemId[demandRegister.itemId] == undefined
+                ? null
+                : itemId[demandRegister.itemId].item
+            }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="学习情况" has-feedback>
-            <span>{{demandRegister.studentLearningSituation}}</span>
+            <span>{{ demandRegister.studentLearningSituation }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="联系电话" has-feedback>
-            <span>{{demandRegister.phone}}</span>
+            <span>{{ demandRegister.phone }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="家庭住址" has-feedback>
-            <span>{{demandRegister.address}}</span>
+            <span>{{ demandRegister.address }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="期望价格" has-feedback>
-            <span>{{demandRegister.price}}</span><span>元/小时</span>
+            <span>{{ demandRegister.price }}</span
+            ><span>元/小时</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="展示价格" has-feedback>
-            <span>{{demandRegister.parentName}}</span><span>元/小时</span>
+            <span>{{ demandRegister.parentName }}</span
+            ><span>元/小时</span>
           </a-form-item>
           <a-form-item
             v-bind="formItemLayout"
             label="教师性别要求"
             has-feedback
           >
-            <span>{{demandRegister.teacherGender}}</span>
+            <span>{{ demandRegister.teacherGender }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="补习时长" has-feedback>
-            <span>{{demandRegister.parentName}}</span>
+            <span>{{ demandRegister.parentName }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="空闲时间" has-feedback>
-            <span>{{demandRegister.studyTimes}}</span>
+            <span>{{ demandRegister.studyTimes }}</span>
           </a-form-item>
         </a-form>
       </a-modal>
@@ -263,6 +295,7 @@ const columns = [
     dataIndex: 'itemId',
     key: 'itemId',
     width: 200,
+    scopedSlots: { customRender: 'itemId' },
   },
   {
     title: '联系电话',
@@ -275,6 +308,7 @@ const columns = [
     dataIndex: 'studyArea',
     key: 'studyArea',
     ellipsis: true,
+    scopedSlots: { customRender: 'studyArea' },
   },
   {
     title: '需求查看',
@@ -287,11 +321,12 @@ const columns = [
     dataIndex: 'verifyStatus',
     key: 'verifyStatus',
     ellipsis: true,
+    scopedSlots: { customRender: 'verifyStatus' },
   },
   {
     title: '投递状态',
     dataIndex: 'applyNumber',
-    key: 'demandStatus',
+    key: 'deliveryStatus',
     ellipsis: true,
     scopedSlots: { customRender: 'deliveryStatus' },
   },
@@ -369,6 +404,7 @@ const itemId = [
 ]
 var demandRegister = {}
 var demandVerify = {}
+var verifyStatus = null
 export default {
   created() {
     this.gettable()
@@ -379,6 +415,7 @@ export default {
         pageNumber: 1,
         pageSize: 10,
       },
+      verifyStatus,
       demandRegister,
       demandVerify,
       areaId,
@@ -398,7 +435,7 @@ export default {
         displayPage: 1,
         displayRows: 10,
         pageSize: 10, // 默认每页显示数量
-        total: 10,
+        total: 0,
         pageSizeOptions: ['10', '20', '30', '50'],
       },
       formItemLayout: {
@@ -528,7 +565,7 @@ export default {
           .then((res) => {
             console.log(res.data)
             this.data = []
-            this.data = res.data
+            this.data = res.data.records
             console.log(this.data)
           })
           .catch((error) => {
@@ -549,7 +586,8 @@ export default {
         .then((res) => {
           console.log(res.data)
           _this.data = []
-          _this.data = res.data
+          _this.data = res.data.records
+          _this.pagination.total = res.data.total
           console.log(_this.data)
         })
         .catch((error) => {
@@ -565,17 +603,44 @@ export default {
     showModal(userInfo) {
       console.log(userInfo)
       this.modal1Visible = true
-      const _this = this
-      _this.$api.mode
-        .getDemandRegister(`${userInfo.did}`)
-        .then((res) => {
-          console.log(res.data)
-          _this.demandRegister = {}
-          _this.demandRegister = res.data
-        })
-        .catch((error) => {
-          console.log(error.response)
-        })
+      this.verifyStatus = userInfo.verifyStatus
+      if (userInfo.verifyStatus === 0 || 3) {
+        const _this = this
+        _this.$api.mode
+          .getDemandRegister(`${userInfo.did}`)
+          .then((res) => {
+            console.log(res.data)
+            _this.demandRegister = {}
+            _this.demandRegister = res.data
+            _this.form.setFieldsValue({
+              studentLearningSituation:
+                _this.demandRegister.studentLearningSituation,
+              detailadress: _this.demandRegister.address,
+            })
+          })
+          .catch((error) => {
+            console.log(error.response)
+          })
+      } else {
+        const _this = this
+        _this.$api.mode
+          .getDemandVerify(`${userInfo.did}`)
+          .then((res) => {
+            console.log(res.data)
+            _this.demandRegister = {}
+            _this.demandRegister = res.data
+            _this.form.setFieldsValue({
+              studentLearningSituation:
+                _this.demandRegister.studentLearningSituation,
+              detailadress: _this.demandRegister.address,
+              priority:_this.demandRegister.priority,
+              // studyHours:_this.demandRegister.
+            })
+          })
+          .catch((error) => {
+            console.log(error.response)
+          })
+      }
     },
     hideModal() {
       this.modal1Visible = false
@@ -585,6 +650,56 @@ export default {
       this.form.validateFields((error, values) => {
         console.log('error', error)
         console.log('Received values of form: ', values)
+        if (this.newTeacherStatus == 1) {
+          this.$api.mode
+            .postDemandVerify({
+              areaId: this.demandRegister.studyArea,
+              demandStatus: this.demandRegister.demandStatus,
+              did: this.demandRegister.did,
+              gradeId: this.demandRegister.gradeId,
+              itemId: this.demandRegister.itemId,
+              parentId: this.demandRegister.parentId,
+              parentName: this.demandRegister.parentName,
+              price: this.demandRegister.price,
+              studyTimes: this.demandRegister.studyTimes,
+              teacherGender: this.demandRegister.teacherGender,
+              address: values.detailadress,
+              priority: values.priority,
+              studentLearningSituation: values.studentLearningSituation,
+              verifiedPrice: 0,
+            })
+            .then((res) => {
+              console.log(res.data)
+            })
+            .catch((error) => {
+              console.log(error.response)
+            })
+        } else {
+          this.$api.mode
+            .putDemandVerify({
+              address: 'string',
+              areaId: 0,
+              demandStatus: 0,
+              did: 'string',
+              gradeId: 0,
+              itemId: 0,
+              parentId: 'string',
+              parentName: 'string',
+              price: 0,
+              priority: 0,
+              studentLearningSituation: 'string',
+              studyTimes: [0],
+              teacherGender: 0,
+              verifiedAdmin: 'string',
+              verifiedPrice: 0,
+            })
+            .then((res) => {
+              console.log(res.data)
+            })
+            .catch((error) => {
+              console.log(error.response)
+            })
+        }
         this.loading = true
         setTimeout(() => {
           this.modal1Visible = false

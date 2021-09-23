@@ -29,16 +29,36 @@ function getDemand(params) {
   return request.get(`Admin/Demands`, params)
 }
 
+function postDemandVerify(params) {
+  return request.post(`Admin/Demand/Verify`, params)
+}
+
+function putDemandVerify(params) {
+  return request.put(`Admin/Demand/Verify`, params)
+}
+
 function postVerify(params) {
   return request.post(`Admin/Teacher/Verify`, params)
+}
+
+function putVerify(params) {
+  return request.put(`Admin/Teacher/Verify`, params)
+}
+
+function getMatchedContracts(params) {
+  return request.get(`Admin/MatchedContracts`, params)
 }
 
 function getUnmatchedContracts(params) {
   return request.get(`Admin/UnmatchedContracts`, params)
 }
 
-function putAdmin(params) {
-  return request.put(`Admin/Admin`, params)
+function putAdmin(aid,params) {
+  return request.put(`Admin/Admin/${aid}`, params)
+}
+
+function deleteAdmin(aid,params) {
+  return request.delete(`Admin/Admin/${aid}`, params)
 }
 
 function deleteDemand(did,params) {
@@ -57,6 +77,26 @@ function getImage(params) {
   return request.get(`Admin/Config/Image/Upload`,params)
 }
 
+function getImages(params) {
+  return request.get(`Admin/Config/Images`,params)
+}
+
+function putImage(params) {
+  return request.put(`Admin/Config/Image`,params)
+}
+
+function getVerifyAdmins(params) {
+  return request.get(`Admin/Verify/Admins`,params)
+}
+
+function getAdmins(params) {
+  return request.get(`Admin/Admins`,params)
+}
+
+function changePassword(params) {
+  return request.put(`Admin/Admin`,params)
+}
+
 export default {
   login,
   getTeachers,
@@ -64,6 +104,10 @@ export default {
   getVerify,
   getDemand,
   postVerify,
+  putVerify,
+  postDemandVerify,
+  putDemandVerify,
+  getMatchedContracts,
   getUnmatchedContracts,
   putAdmin,
   getDemandRegister,
@@ -71,5 +115,11 @@ export default {
   deleteDemand,
   getAdminTeacher,
   putAdminTeacher,
-  getImage
+  getImage,
+  getImages,
+  putImage,
+  deleteAdmin,
+  getVerifyAdmins,
+  getAdmins,
+  changePassword
 };

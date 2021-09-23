@@ -1,5 +1,5 @@
     <template>
-  <a-modal :visible="modalVisible" :closable="false">
+  <a-modal :visible="modalVisible" :closable="false" width="900px">
     <template slot="footer">
       <a-button key="back" type="primary" @click="handleCancel">
         返回
@@ -16,15 +16,15 @@
         {{ teacherRegister.university }}
       </a-descriptions-item>
       <a-descriptions-item label="所教科目">
-        {{ teacherRegister.university }}
+        {{ teacherRegister.teachingItems }}
       </a-descriptions-item>
-      <a-descriptions-item label="家教经历">
+      <a-descriptions-item label="家教经历" :span="2">
         {{ teacherRegister.teachingExperience }}
       </a-descriptions-item>
-      <a-descriptions-item label="自我评价">
+      <a-descriptions-item label="自我评价" :span="2">
         {{ teacherRegister.comment }}
       </a-descriptions-item>
-      <a-descriptions-item label="价格区间" :span="2">
+      <a-descriptions-item label="价格区间">
         {{ teacherRegister.teachingPrice }}
       </a-descriptions-item>
       <a-descriptions-item label="空闲时间">

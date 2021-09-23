@@ -644,7 +644,7 @@ export default {
           .then((res) => {
             console.log(res.data)
             this.datas = []
-            this.datas = res.data
+            this.datas = res.data.records
             console.log(this.datas)
           })
           .catch((error) => {
@@ -677,7 +677,7 @@ export default {
         .then((res) => {
           console.log(res)
           _this.datas = []
-          _this.datas = res.data
+          _this.datas = res.data.records
           console.log(_this.datas)
         })
         .catch((error) => {
@@ -722,6 +722,7 @@ export default {
       this.modal1Visible = false
     },
     cthandleCancel() {
+      this.$emit('refreshList');
       this.$emit('changeVisible', false)
     },
     showModal2(userInfo) {

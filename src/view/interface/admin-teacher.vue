@@ -14,8 +14,8 @@
       <a-table
         :columns="columns"
         :data-source="data"
-        rowKey="tid"
-        :pagination="pagination"
+        rowKey="ctid"
+        :pagination="false"
       >
         <a slot="operate" slot-scope="scope">
           <a @click="change(scope)">更换</a>
@@ -25,6 +25,7 @@
         :ctmodalVisible="modalVisible"
         v-on:changeVisible="changeVisible"
         :ctid="ctid"
+        v-on:refreshList="gettable"
       >
       </changeteacher>
     </div>
@@ -56,12 +57,8 @@ export default {
     return {
       data,
       columns,
-      ctid : Number,
+      ctid : null,
       modalVisible: false,
-      pagination: {
-        pageSize: 10, // 默认每页显示数量
-        showTotal: (total) => `总共有 ${total} 名`, // 显示总数
-      },
     }
   },
   components: {
@@ -99,8 +96,8 @@ export default {
         (option) =>
           option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
       )
-    },
-  },
+    }
+  }
 }
 </script>
 <style>

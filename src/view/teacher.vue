@@ -85,6 +85,9 @@
         <template slot="gender" slot-scope="text">
           {{ text === 0 ? '男' : '女' }}
         </template>
+        <template slot="teachingItems" slot-scope="record">
+          {{ itemId.filter(item => item.iId == record.teachingItems[0])[0].item }}
+        </template>
         <template slot="verifyStatus" slot-scope="text">
           {{ text === 0 ? '待审核' : '已通过' }}
         </template>
@@ -117,6 +120,7 @@
         title="Title"
         on-ok="handleOk2"
         :closable="false"
+        width="850px"
       >
         <template slot="footer">
           <a-button key="back" @click="handleCancel2"> 取消 </a-button>
@@ -319,9 +323,9 @@ const columns = [
   },
   {
     title: '授课年级与科目',
-    dataIndex: 'teachingItem',
-    key: 'teachingItem',
+    key: 'teachingItems',
     ellipsis: true,
+    scopedSlots: { customRender: 'teachingItems' },
   },
   {
     title: '注册资料',
@@ -349,8 +353,7 @@ const columns = [
     ellipsis: true,
   },
 ]
-var data = [
-]
+var data = []
 const gradeData = ['小学', '初中', '高中', '小语种', '艺术类', '其他']
 const subjectData = {
   小学: ['全科', '语文', '奥数', '数学', '英语', '作业辅导'],
@@ -446,6 +449,8 @@ const graduateEducation = ['专科生', '本科生', '硕士生', '博士生']
 const gender = ['男', '女']
 var TeacherRegister = {}
 var TeacherVerify = {}
+var newTeacherStatus = null
+var teachingItem = null
 export default {
   created() {
     this.gettable()
@@ -456,10 +461,12 @@ export default {
         pageNumber: 1,
         pageSize: 10,
       },
+      newTeacherStatus,
       TeacherRegister,
       TeacherVerify,
       areaId,
       itemId,
+      teachingItem,
       certificateType,
       collegeStudentGrade,
       graduateEducation,
@@ -480,7 +487,7 @@ export default {
         displayPage: 1,
         displayRows: 10,
         pageSize: 10, // 默认每页显示数量
-        total: 10,
+        total: 0,
         pageSizeOptions: ['10', '20', '30', '50'],
       },
       formItemLayout: {
@@ -602,7 +609,7 @@ export default {
           .then((res) => {
             console.log(res.data)
             this.data = []
-            this.data = res.data
+            this.data = res.data.records
             console.log(this.data)
           })
           .catch((error) => {
@@ -635,7 +642,8 @@ export default {
         .then((res) => {
           console.log(res)
           _this.data = []
-          _this.data = res.data
+          _this.data = res.data.records
+          _this.pagination.total = res.data.total
           console.log(_this.data)
         })
         .catch((error) => {
@@ -680,9 +688,9 @@ export default {
       this.modal1Visible = false
     },
     showModal2(userInfo) {
-      console.log(userInfo.verifyStatus)
       this.modal2Visible = true
-      if (userInfo.verifyStatus === 0) {
+      this.newTeacherStatus = userInfo.newTeacherStatus
+      if (userInfo.newTeacherStatus === 1) {
         const _this = this
         _this.$api.mode
           .getRegister(`${userInfo.tid}`)
@@ -693,6 +701,8 @@ export default {
             _this.form.setFieldsValue({
               teachingExperience: _this.TeacherVerify.teachingExperience,
               comment: _this.TeacherVerify.comment,
+              lowPrice: _this.TeacherVerify.teachingPriceLow,
+              highPrice: _this.TeacherVerify.teachingPriceHigh,
             })
           })
           .catch((error) => {
@@ -706,6 +716,36 @@ export default {
             console.log(res.data)
             _this.TeacherVerify = {}
             _this.TeacherVerify = res.data
+            _this.form.setFieldsValue({
+              teachingExperience: _this.TeacherVerify.teachingExperience,
+              comment: _this.TeacherVerify.comment,
+              lowPrice: _this.TeacherVerify.teachingPriceLow,
+              highPrice: _this.TeacherVerify.teachingPriceHigh,
+              lowPriceVerified: _this.TeacherVerify.teachingPriceLowVerified,
+              highPriceVerified: _this.TeacherVerify.teachingPriceHighVerified,
+              multiple: _this.TeacherVerify.coefficient,
+              teachingHours: _this.TeacherVerify.classHours,
+              grade:
+                _this.gradeData[
+                  parseInt(_this.TeacherVerify.teachingItems[0] / 10 - 1)
+                ],
+              subject:
+                _this.subjectData[
+                  _this.gradeData[
+                    parseInt(_this.TeacherVerify.teachingItems[0] / 10 - 1)
+                  ]
+                ][_this.TeacherVerify.teachingItems[0] % 10],
+              grade2:
+                _this.gradeData[
+                  parseInt(_this.TeacherVerify.teachingItems[1] / 10 - 1)
+                ],
+              subject2:
+                _this.subjectData[
+                  _this.gradeData[
+                    parseInt(_this.TeacherVerify.teachingItems[1] / 10 - 1)
+                  ]
+                ][_this.TeacherVerify.teachingItems[1] % 10],
+            })
           })
           .catch((error) => {
             console.log(error.response)
@@ -726,46 +766,87 @@ export default {
         var j = itemId.find(function (item) {
           return item.item == values.grade2 + values.subject2
         })
-        console.log(i)
-        this.$api.mode
-          .postVerify({
-            avatar: this.TeacherVerify.avatar,
-            awards: this.TeacherVerify.awards,
-            certificateType: this.TeacherVerify.certificateType,
-            coefficient: values.multiple,
-            collegeStudentGrade: this.TeacherVerify.collegeStudentGrade,
-            comment: values.comment,
-            gender: this.TeacherVerify.gender,
-            graduateEducation: this.TeacherVerify.graduateEducation,
-            graduateProfession: this.TeacherVerify.graduateProfession,
-            isCollegeStudent: this.TeacherVerify.isCollegeStudent,
-            isOnBusiness: this.TeacherVerify.isOnBusiness,
-            major: this.TeacherVerify.major,
-            name: this.TeacherVerify.name,
-            residentAddress: this.TeacherVerify.residentAddress,
-            teachingAreas: this.TeacherVerify.teachingAreas,
-            teachingExperience: values.teachingExperience,
-            teachingItem: this.TeacherVerify.teachingItem,
-            teachingItems: [
-              i == undefined ? null : i.iId,
-              j == undefined ? null : j.iId,
-            ],
-            teachingPriceHigh: values.highPrice,
-            teachingPriceHighVerified: values.highPriceVerify,
-            teachingPriceLow: values.lowPrice,
-            teachingPriceLowVerified: values.lowPriceVerify,
-            teachingTimes: this.TeacherVerify.teachingTimes,
-            tid: this.TeacherVerify.tid,
-            university: this.TeacherVerify.university,
-            verifyAdmin: this.TeacherVerify.verifyAdmin,
-            version: 0,
-          })
-          .then((res) => {
-            console.log(res.data)
-          })
-          .catch((error) => {
-            console.log(error.response)
-          })
+        if (this.newTeacherStatus == 1) {
+          this.$api.mode
+            .postVerify({
+              avatar: this.TeacherVerify.avatar,
+              awards: this.TeacherVerify.awards,
+              certificateType: this.TeacherVerify.certificateType,
+              classHours: values.teachingHours,
+              coefficient: values.multiple,
+              collegeStudentGrade: this.TeacherVerify.collegeStudentGrade,
+              comment: values.comment,
+              gender: this.TeacherVerify.gender,
+              graduateEducation: this.TeacherVerify.graduateEducation,
+              graduateProfession: this.TeacherVerify.graduateProfession,
+              isCollegeStudent: this.TeacherVerify.isCollegeStudent,
+              major: this.TeacherVerify.major,
+              name: this.TeacherVerify.name,
+              residentAddress: this.TeacherVerify.residentAddress,
+              teachingAreas: this.TeacherVerify.teachingAreas,
+              teachingExperience: values.teachingExperience,
+              teachingItem: this.TeacherVerify.teachingItem,
+              teachingItems: [
+                i == undefined ? null : i.iId,
+                j == undefined ? null : j.iId,
+              ],
+              teachingPriceHigh: values.highPrice,
+              teachingPriceLow: values.lowPrice,
+              teachingPriceHighVerified: values.highPriceVerified,
+              teachingPriceLowVerified: values.lowPriceVerified,
+              teachingTimes: this.TeacherVerify.teachingTimes,
+              tid: this.TeacherVerify.tid,
+              university: this.TeacherVerify.university,
+              verifyAdmin: this.TeacherVerify.verifyAdmin,
+              version: 0,
+            })
+            .then((res) => {
+              console.log(res.data)
+            })
+            .catch((error) => {
+              console.log(error.response)
+            })
+        } else {
+          this.$api.mode
+            .putVerify({
+              avatar: this.TeacherVerify.avatar,
+              awards: this.TeacherVerify.awards,
+              certificateType: this.TeacherVerify.certificateType,
+              classHours: values.teachingHours,
+              coefficient: values.multiple,
+              collegeStudentGrade: this.TeacherVerify.collegeStudentGrade,
+              comment: values.comment,
+              gender: this.TeacherVerify.gender,
+              graduateEducation: this.TeacherVerify.graduateEducation,
+              graduateProfession: this.TeacherVerify.graduateProfession,
+              isCollegeStudent: this.TeacherVerify.isCollegeStudent,
+              major: this.TeacherVerify.major,
+              name: this.TeacherVerify.name,
+              residentAddress: this.TeacherVerify.residentAddress,
+              teachingAreas: this.TeacherVerify.teachingAreas,
+              teachingExperience: values.teachingExperience,
+              teachingItem: this.TeacherVerify.teachingItem,
+              teachingItems: [
+                i == undefined ? null : i.iId,
+                j == undefined ? null : j.iId,
+              ],
+              teachingPriceHigh: values.highPrice,
+              teachingPriceLow: values.lowPrice,
+              teachingPriceHighVerified: values.highPriceVerified,
+              teachingPriceLowVerified: values.lowPriceVerified,
+              teachingTimes: this.TeacherVerify.teachingTimes,
+              tid: this.TeacherVerify.tid,
+              university: this.TeacherVerify.university,
+              verifyAdmin: this.TeacherVerify.verifyAdmin,
+              version: 0,
+            })
+            .then((res) => {
+              console.log(res.data)
+            })
+            .catch((error) => {
+              console.log(error.response)
+            })
+        }
         this.loading = true
         setTimeout(() => {
           this.modal2Visible = false

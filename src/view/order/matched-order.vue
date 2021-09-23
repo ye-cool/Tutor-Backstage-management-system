@@ -11,17 +11,36 @@
           <a-button key="1" type="primary"> 退出 </a-button>
         </template></a-page-header
       >
-      <a-table :columns="columns" :data-source="data" :pagination="pagination">
-        <template slot="teacherProfile" slot-scope="text">
-          <a @click="showModal1">{{ text }}</a>
+      <a-table :columns="columns" :data-source="data" :pagination="false">
+        <template slot="teacherProfile">
+          <a @click="showModal1">查看</a>
         </template>
-        <template slot="parentneed" slot-scope="text">
-          <a @click="showModal2">{{ text }}</a>
+        <template slot="parentneed">
+          <a @click="showModal2">查看</a>
         </template>
-        <template slot="operate" slot-scope="text">
-          <a>{{ text }}</a>
+        <template slot="contractStatus" slot-scope="text">
+          <a>{{ text == 1 ? '家长预约' : '教师投递' }}</a>
+        </template>
+        <template slot="processStatus" slot-scope="text">
+          <a>{{ text == 0 ? '待处理' : '已完成' }}</a>
+        </template>
+        <template slot="operate" slot-scope="scope">
+          <a @click="reject(scope)">结束订单 </a>
+          <a>添加备注</a>
         </template>
       </a-table>
+      <a-pagination
+        :current="pagination.displayPage"
+        :pageSize="pagination.displayRows"
+        :total="pagination.total"
+        :pageSizeOptions="pagination.pageSizeOptions"
+        :showTotal="(total) => `共 ${total} 条数据`"
+        showSizeChanger
+        showQuickJumper
+        @change="handlePageChange"
+        @showSizeChange="showSizeChange"
+        style="margin: 16px 0; text-align: right"
+      />
     </div>
   </div>
 </template>
@@ -29,57 +48,56 @@
 const columns = [
   {
     title: '家长联系方式',
-    dataIndex: 'parentContact',
-    key: 'parentContact',
+    dataIndex: 'parentPhone',
+    key: 'parentPhone',
     width: 150,
   },
   {
     title: '教师联系方式',
-    dataIndex: 'teacherContact',
-    key: 'teacherContact',
+    dataIndex: 'teacherPhone',
+    key: 'teacherPhone',
     width: 150,
   },
   {
     title: '教师资料',
-    dataIndex: 'teacherProfile',
     key: 'teacherProfile',
     ellipsis: true,
     scopedSlots: { customRender: 'teacherProfile' },
   },
   {
     title: '家长需求',
-    dataIndex: 'parentneed',
     key: 'parentneed',
     ellipsis: true,
     scopedSlots: { customRender: 'parentneed' },
   },
   {
     title: '匹配方式',
-    dataIndex: 'matchingMethod',
-    key: 'matchingMethod',
+    dataIndex: 'contractStatus',
+    key: 'contractStatus',
     ellipsis: true,
+    scopedSlots: { customRender: 'contractStatus' },
   },
   {
     title: '匹配时间',
-    dataIndex: 'matchingTime',
-    key: 'matchingTime',
+    dataIndex: 'contractTime',
+    key: 'contractTime',
     ellipsis: true,
   },
   {
     title: '处理状态',
-    dataIndex: 'processingStatus',
-    key: 'processingStatus',
+    dataIndex: 'processStatus',
+    key: 'processStatus',
     ellipsis: true,
+    scopedSlots: { customRender: 'processStatus' },
   },
   {
     title: '操作人',
-    dataIndex: 'operater',
-    key: 'operater',
+    dataIndex: 'admin',
+    key: 'admin',
     ellipsis: true,
   },
   {
     title: '操作',
-    dataIndex: 'operate',
     key: 'operate',
     ellipsis: true,
     width: 200,
@@ -93,11 +111,18 @@ export default {
   },
   data() {
     return {
+      orderInfo: {
+        pageNumber: 1,
+        pageSize: 10,
+      },
       data,
       columns,
       pagination: {
+        displayPage: 1,
+        displayRows: 10,
         pageSize: 10, // 默认每页显示数量
-        showTotal: (total) => `总共有 ${total} 名`, // 显示总数
+        total: 0,
+        pageSizeOptions: ['10', '20', '30', '50'],
       },
     }
   },
@@ -105,17 +130,15 @@ export default {
   methods: {
     gettable() {
       const _this = this
-      _this.axios
-        .get('/Api/Admin/MatchedContracts', {
-          params: {
-            pageNumber: 1,
-            pageSize: 5,
-          },
+      _this.$api.mode
+        .getMatchedContracts({
+          params: _this.orderInfo,
         })
         .then((res) => {
-          console.log(res.data)
+          console.log(res)
           _this.data = []
-          _this.data = res.data.data
+          _this.data = res.data.records
+          _this.pagination.total = res.data.total
           console.log(_this.data)
         })
         .catch((error) => {
@@ -131,6 +154,31 @@ export default {
           option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
       )
     },
+    reject(userInfo) {
+      console.log(userInfo)
+      this.$api.mode
+        .deleteDemand(`${userInfo.did}`)
+        .then((res) => {
+          console.log(res)
+          this.gettable()
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
+    },
+    showSizeChange(current, pagesize) {
+      this.pagination.displayRows = pagesize
+      this.orderInfo.pageSize = pagesize
+      this.gettable()
+    },
+    handlePageChange(displayPage) {
+      console.log(displayPage)
+      this.pagination.displayPage = displayPage
+      this.orderInfo.pageNumber = displayPage
+      this.gettable()
+    },
+    showModal1() {},
+    showModal2() {},
   },
 }
 </script>

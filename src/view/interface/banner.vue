@@ -15,10 +15,10 @@
         :columns="columns"
         :data-source="data1"
         rowKey="ciid"
-        :pagination="pagination"
+        :pagination="false"
       >
-        <a slot="operate">
-          <a @click="parentOperate">编辑</a>
+        <a slot="operate" slot-scope="scope">
+          <a @click="parentOperate(scope)">编辑</a>
         </a>
       </a-table>
     </div>
@@ -34,10 +34,10 @@
         :columns="columns"
         :data-source="data2"
         rowKey="ciid"
-        :pagination="pagination"
+        :pagination="false"
       >
-        <a slot="operate">
-          <a @click="teacherOperate">编辑</a>
+        <a slot="operate" slot-scope="scope">
+          <a @click="teacherOperate(scope)">编辑</a>
         </a>
       </a-table>
       <a-modal :visible="modalVisible" :closable="false" title="banner设置">
@@ -54,26 +54,19 @@
             保存
           </a-button>
         </template>
-        <a-form class="form">
+        <a-form class="form" :form="form">
           <a-form-item v-bind="formItemLayout" label="海报" has-feedback>
-            <a-upload
-              name="avatar"
-              list-type="picture-card"
-              class="avatar-uploader"
-              :show-upload-list="false"
-              action=""
-              :before-upload="beforeUpload"
-              @change="handleChange"
-            >
-              <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
-              <div v-else>
-                <a-icon :type="loading ? 'loading' : 'plus'" />
-                <div class="ant-upload-text">Upload</div>
-              </div>
-            </a-upload>
+            <img class="previewImg" style :src="valueUrl" v-if="valueUrl" />
+            <input
+              class="file"
+              name="file"
+              type="file"
+              accept="image/png,image/gif,image/jpeg"
+              @change="update"
+            />
           </a-form-item>
-          <a-form-item v-bind="formItemLayout" label="链接" has-feedback>
-            <input />
+          <a-form-item v-bind="formItemLayout" label="跳转链接" has-feedback>
+            <input type="text" v-decorator="['link']" />
           </a-form-item>
         </a-form>
       </a-modal>
@@ -102,11 +95,8 @@ const columns = [
 ]
 var data1 = []
 var data2 = []
-function getBase64(img, callback) {
-  const reader = new FileReader()
-  reader.addEventListener('load', () => callback(reader.result))
-  reader.readAsDataURL(img)
-}
+var Url = null
+var ciid = null
 export default {
   created() {
     this.gettable()
@@ -116,30 +106,29 @@ export default {
       data1,
       data2,
       columns,
+      form: this.$form.createForm(this),
       modalVisible: false,
       loading: false,
-      imageUrl: '',
-      pagination: {
-        pageSize: 10, // 默认每页显示数量
-        showTotal: (total) => `总共有 ${total} 名`, // 显示总数
-      },
       formItemLayout: {
         labelCol: {
           span: 6,
         },
       },
+      Url,
+      ciid,
+      valueUrl: null,
     }
   },
   methods: {
     gettable() {
       const _this = this
-      _this.axios
-        .get('/Api/Admin/Config/Images', {})
+      _this.$api.mode
+        .getImages()
         .then((res) => {
           console.log(res.data)
           _this.data1 = []
           _this.data2 = []
-          res.data.data.forEach((item, ciid) => {
+          res.data.forEach((item, ciid) => {
             if (ciid <= 2) {
               _this.data1.push(item)
             } else {
@@ -162,43 +151,84 @@ export default {
           option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
       )
     },
-    parentOperate() {
+    parentOperate(userInfo) {
+      console.log(userInfo)
       this.modalVisible = true
+      this.valueUrl = null
+      this.valueUrl = userInfo.image
+      this.Url = null
+      this.Url = userInfo.url
+      this.ciid = null
+      this.ciid = userInfo.ciid
+      this.form.setFieldsValue({
+        link: this.Url,
+      })
     },
-    teacherOperate() {
+    teacherOperate(userInfo) {
+      console.log(userInfo)
       this.modalVisible = true
+      this.valueUrl = null
+      this.valueUrl = userInfo.image
+      this.Url = null
+      this.Url = userInfo.url
+      this.ciid = null
+      this.ciid = userInfo.ciid
+      this.form.setFieldsValue({
+        link: this.Url,
+      })
     },
     handleCancel() {
       this.modalVisible = false
     },
-    handleOk() {
-      ;(this.loading = true),
-        (this.loading = false),
-        (this.modalVisible = false)
+    handleOk(e) {
+      this.loading = true
+      e.preventDefault()
+      this.form.validateFields((error, values) => {
+        console.log('error', error)
+        console.log('Received values of form: ', values)
+        this.$api.mode
+          .putImage({
+            ciid: this.ciid,
+            url: values.link,
+          })
+          .then((res) => {
+            console.log(res.data)
+          })
+          .catch((error) => {
+            console.log(error.response)
+          })
+      })
+      this.loading = false
+      this.modalVisible = false
     },
-    handleChange(info) {
-      if (info.file.status === 'uploading') {
-        this.loading = true
-        return
+    update(event) {
+      let file = event.target.files[0]
+      const that = this
+      const reader = new FileReader() // 创建读取文件对象
+      reader.readAsDataURL(event.target.files[0]) // 发起异步请求，读取文件
+      reader.onload = function () {
+        // 文件读取完成后
+        // 读取完成后，将结果赋值给img的src
+        that.valueUrl = this.result
+        console.log(this.result)
       }
-      if (info.file.status === 'done') {
-        // Get this url from response in real world.
-        getBase64(info.file.originFileObj, (imageUrl) => {
-          this.imageUrl = imageUrl
-          this.loading = false
+      event.preventDefault()
+      let formData = new FormData()
+      formData.append('uploadFile', file)
+      let config = {
+        headers: {
+          'Content-Type':
+            'multipart/form-data; boundary=<calculated when request is sent>',
+          'Content-Length': '<calculated when request is sent>',
+        },
+      }
+      this.axios
+        .post('Api/Admin/Config/Image/Upload', { uploadFile: file }, config)
+        .then(function (response) {
+          if (response.status === 200) {
+            console.log(response.data)
+          }
         })
-      }
-    },
-    beforeUpload(file) {
-      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
-      if (!isJpgOrPng) {
-        this.$message.error('You can only upload JPG file!')
-      }
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isLt2M) {
-        this.$message.error('Image must smaller than 2MB!')
-      }
-      return isJpgOrPng && isLt2M
     },
   },
 }
@@ -231,17 +261,7 @@ export default {
 tr:last-child td {
   padding-bottom: 0;
 }
-.avatar-uploader > .ant-upload {
-  width: 128px;
-  height: 128px;
-}
-.ant-upload-select-picture-card i {
-  font-size: 32px;
-  color: #999;
-}
-
-.ant-upload-select-picture-card .ant-upload-text {
-  margin-top: 8px;
-  color: #666;
+.previewImg {
+  width: 120px;
 }
 </style>
