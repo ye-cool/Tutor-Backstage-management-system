@@ -17,6 +17,15 @@ function getVerify(tid,params) {
   return request.get(`Admin/Teacher/Verify/${tid}`, params)
 }
 
+function postVerify(params) {
+  return request.post(`Admin/Teacher/Verify`, params)
+}
+
+function putVerify(params) {
+  return request.put(`Admin/Teacher/Verify`, params)
+}
+
+
 function getDemandRegister(did,params) {
   return request.get(`Admin/Demand/Register/${did}`, params)
 }
@@ -37,12 +46,8 @@ function putDemandVerify(params) {
   return request.put(`Admin/Demand/Verify`, params)
 }
 
-function postVerify(params) {
-  return request.post(`Admin/Teacher/Verify`, params)
-}
-
-function putVerify(params) {
-  return request.put(`Admin/Teacher/Verify`, params)
+function deleteDemand(did,params) {
+  return request.delete(`Admin/Demand/${did}`, params)
 }
 
 function getMatchedContracts(params) {
@@ -59,10 +64,6 @@ function putAdmin(aid,params) {
 
 function deleteAdmin(aid,params) {
   return request.delete(`Admin/Admin/${aid}`, params)
-}
-
-function deleteDemand(did,params) {
-  return request.delete(`Admin/Demand/${did}`, params)
 }
 
 function getAdminTeacher() {

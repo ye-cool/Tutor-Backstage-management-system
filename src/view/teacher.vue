@@ -1,16 +1,6 @@
 <template>
   <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
     <div class="content">
-      <a-page-header
-        style="border: 1px solid rgb(235, 237, 240)"
-        title="Title"
-        sub-title="This is a subtitle"
-      >
-        <template slot="extra">
-          <span>管理员A</span>
-          <a-button key="1" type="primary"> 退出 </a-button>
-        </template></a-page-header
-      >
       <a-form class="search" :form="form" @submit="handleSearch">
         <a-space>
           <a-form-item>

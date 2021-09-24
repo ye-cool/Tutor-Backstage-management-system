@@ -74,14 +74,14 @@ const router = new VueRouter({
 })
 // 路由权限守卫
 router.beforeEach((to, from, next) => {
-  NProgress.start();
-  if(!to.meta.requireAuth) {
-    next()
+  if (to.path === '/login') {
+    next();
   } else {
-    if(localStorage.getItem('token')) {
-      next()
+    let token = localStorage.getItem('Authorization');
+    if (token === null || token === '') {
+      next('/login');
     } else {
-      next({path: '/login'})
+      next();
     }
   }
 });

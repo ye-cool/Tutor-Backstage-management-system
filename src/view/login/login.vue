@@ -45,7 +45,7 @@
             <a-form-item>
               <a-input
                 size="large"
-                placeholder="888888"
+                placeholder="admin"
                 autocomplete="autocomplete"
                 type="password"
                 v-decorator="[
@@ -103,21 +103,34 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          this.$api.mode.login({
-              nickname: values.name,
-              password: values.password
-          }).then((res) => {
-            console.log(res.data)
-            // this.userToken = 'Bearer ' + res.data.token
-            // 将用户token保存到vuex中
-            // this.changeLogin({ Authorization: this.userToken })
-            this.$router.push('/home')
-            if (res.data.code === 200) {
-              alert('登陆成功')
-            } else {
-              alert('密码错误')
-            }
-          })
+          this.$api.mode
+            .login({
+              username: values.name,
+              password: values.password,
+            })
+            .then((res) => {
+              console.log(res)
+              this.userToken = res.data
+              let strings = this.userToken.split('.') //截取token，获取载体
+              let userinfo = JSON.parse(
+                decodeURIComponent(
+                  escape(
+                    window.atob(
+                      strings[1].replace(/-/g, '+').replace(/_/g, '/')
+                    )
+                  )
+                )
+              ) //解析，需要吧‘_’,'-'进行转换否则会无法解析
+              console.log(userinfo.authority)
+              // 将用户token保存到vuex中
+              this.changeLogin({ Authorization: this.userToken })
+              this.$router.push('/admin')
+              if (res.code === 200) {
+                alert('登陆成功')
+              } else {
+                alert('密码错误')
+              }
+            })
         }
       })
     },
