@@ -31,8 +31,8 @@ const service = axios.create({
 //请求拦截
 service.interceptors.request.use(
   config => {
-    if (sessionStorage.getItem('Authorization')) {
-      config.headers.Authorization = sessionStorage.getItem('Authorization')
+    if (localStorage.getItem('Authorization')) {
+      config.headers.Authorization = localStorage.getItem('Authorization')
     }
     // else if (config.url.indexOf('/user') != -1) {
     //   if(store.state.isLoggedin) {

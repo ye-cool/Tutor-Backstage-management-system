@@ -99,6 +99,7 @@ export default {
   methods: {
     ...mapMutations(['changeLogin']),
     onSubmit(e) {
+      this.logging = true
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
@@ -124,6 +125,7 @@ export default {
               console.log(userinfo.authority)
               // 将用户token保存到vuex中
               this.changeLogin({ Authorization: this.userToken })
+              this.logging = false
               this.$router.push('/admin')
               if (res.code === 200) {
                 alert('登陆成功')

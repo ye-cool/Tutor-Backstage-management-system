@@ -107,7 +107,7 @@
       ></teachermodal>
       <a-modal
         :visible="modal2Visible"
-        title="Title"
+        title="教师展示资料"
         on-ok="handleOk2"
         :closable="false"
         width="850px"
@@ -894,7 +894,7 @@ tr:last-child td {
   width: 900px;
 }
 .download {
-  margin-left: 410px;
+  margin-left: 340px;
 }
 .form-ant-form-ant-form-horizontal {
   height: 0;
