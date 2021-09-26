@@ -10,19 +10,31 @@
         teacherRegister.name
       }}</a-descriptions-item>
       <a-descriptions-item label="学历">{{
-        teacherRegister.graduateEducation
+        teacherRegister.graduateEducation == 0
+          ? '专科生'
+          : teacherRegister.graduateEducation == 1
+          ? '本科生'
+          : teacherRegister.graduateEducation == 2
+          ? '硕士生'
+          : '博士生'
       }}</a-descriptions-item>
       <a-descriptions-item label="学校">
         {{ teacherRegister.university }}
       </a-descriptions-item>
       <a-descriptions-item label="所教科目">
-        {{ teacherRegister.teachingItems }}
+        {{
+          teacherRegister.teachingItems.length == 0
+            ? null
+            : itemId.filter(
+                (item) => item.iId == teacherRegister.teachingItems[0]
+              )[0].item
+        }}
       </a-descriptions-item>
       <a-descriptions-item label="家教经历" :span="2">
         {{ teacherRegister.teachingExperience }}
       </a-descriptions-item>
       <a-descriptions-item label="自我评价" :span="2">
-        {{ teacherRegister.comment }}
+        {{ teacherRegister.selfEvaluation }}
       </a-descriptions-item>
       <a-descriptions-item label="价格区间">
         {{ teacherRegister.teachingPrice }}
@@ -41,15 +53,51 @@
 </template>
 
 <script>
+const itemId = [
+  { iId: 10, item: '小学全科' },
+  { iId: 11, item: '小学语文' },
+  { iId: 12, item: '小学奥数' },
+  { iId: 13, item: '小学数学' },
+  { iId: 14, item: '小学英语' },
+  { iId: 15, item: '小学作业辅导' },
+  { iId: 20, item: '初中全科' },
+  { iId: 21, item: '初中语文' },
+  { iId: 22, item: '初中英语' },
+  { iId: 23, item: '初中数学' },
+  { iId: 24, item: '初中物理' },
+  { iId: 25, item: '初中化学' },
+  { iId: 30, item: '高中数学' },
+  { iId: 31, item: '高中语文' },
+  { iId: 32, item: '高中英语' },
+  { iId: 33, item: '高中物理' },
+  { iId: 34, item: '高中化学' },
+  { iId: 35, item: '高中生物' },
+  { iId: 36, item: '高中历史' },
+  { iId: 37, item: '高中政治' },
+  { iId: 38, item: '高中地理' },
+  { iId: 40, item: '小语种法语' },
+  { iId: 41, item: '小语种德语' },
+  { iId: 42, item: '小语种西班牙语' },
+  { iId: 43, item: '小语种日语' },
+  { iId: 44, item: '小语种葡萄牙语' },
+  { iId: 45, item: '小语种韩语' },
+  { iId: 50, item: '艺体类音乐' },
+  { iId: 51, item: '艺体类美术' },
+  { iId: 52, item: '艺体类舞蹈' },
+  { iId: 53, item: '艺体类体育' },
+  { iId: 54, item: '艺体类其他' },
+  { iId: 60, item: '其他' },
+]
 export default {
   name: 'modal',
   props: {
     modalVisible: Boolean,
-    teacherRegister: {}
+    teacherRegister: {},
   },
   data() {
     return {
-      loading: false
+      loading: false,
+      itemId,
     }
   },
   methods: {

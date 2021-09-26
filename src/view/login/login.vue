@@ -66,7 +66,7 @@
             </a-form-item>
           </a-tab-pane>
         </a-tabs>
-        <div></div>
+
         <a-form-item>
           <a-button
             :loading="logging"
@@ -80,6 +80,14 @@
         <div>
           <router-link style="float: left" to="/signup">注册新账户</router-link>
         </div>
+        <Verify
+          @success="success"
+          mode="pop"
+          captchaType="blockPuzzle"
+          :imgSize="{ width: '330px', height: '155px' }"
+          ref="verify"
+        ></Verify>
+        <button @click="useVerify">调用验证组件</button>
       </a-form>
     </div>
   </div>
@@ -87,6 +95,7 @@
 
 <script>
 import { mapMutations } from 'vuex'
+import Verify from '../../components/verifition/Verify.vue'
 export default {
   data() {
     return {
@@ -96,10 +105,18 @@ export default {
       form: this.$form.createForm(this),
     }
   },
+  components: {
+    Verify,
+  },
   methods: {
+    success(params) {
+      // params 返回的二次验证参数, 和登录参数一起回传给登录接口，方便后台进行二次验证
+    },
+    useVerify() {
+      this.$refs.verify.show()
+    },
     ...mapMutations(['changeLogin']),
     onSubmit(e) {
-      this.logging = true
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
@@ -111,6 +128,7 @@ export default {
             })
             .then((res) => {
               console.log(res)
+              this.logging = true
               this.userToken = res.data
               let strings = this.userToken.split('.') //截取token，获取载体
               let userinfo = JSON.parse(
@@ -122,16 +140,16 @@ export default {
                   )
                 )
               ) //解析，需要吧‘_’,'-'进行转换否则会无法解析
-              console.log(userinfo.authority)
+              console.log(userinfo)
               // 将用户token保存到vuex中
               this.changeLogin({ Authorization: this.userToken })
               this.logging = false
-              this.$router.push('/admin')
               if (res.code === 200) {
-                alert('登陆成功')
+                this.$message.success('登陆成功')
               } else {
-                alert('密码错误')
+                this.$message.info('密码错误')
               }
+              this.$router.push('/admin')
             })
         }
       })

@@ -25,6 +25,9 @@ function putVerify(params) {
   return request.put(`Admin/Teacher/Verify`, params)
 }
 
+function postAvatar(tid,params,config) {
+  return request.post(`Admin/Teacher/Avatar/${tid}`,params,config)
+}
 
 function getDemandRegister(did,params) {
   return request.get(`Admin/Demand/Register/${did}`, params)
@@ -78,6 +81,10 @@ function getImage(params) {
   return request.get(`Admin/Config/Image/Upload`,params)
 }
 
+function postImage(params,config) {
+  return request.post(`Admin/Config/Image/Upload`,params,config)
+}
+
 function getImages(params) {
   return request.get(`Admin/Config/Images`,params)
 }
@@ -96,6 +103,10 @@ function getAdmins(params) {
 
 function changePassword(params) {
   return request.put(`Admin/Admin`,params)
+}
+
+function getApplyTeacher(did,params) {
+  return request.get(`Admin/Apply/Teachers/${did}`,params)
 }
 
 export default {
@@ -117,10 +128,13 @@ export default {
   getAdminTeacher,
   putAdminTeacher,
   getImage,
+  postImage,
   getImages,
   putImage,
   deleteAdmin,
   getVerifyAdmins,
   getAdmins,
-  changePassword
+  changePassword,
+  getApplyTeacher,
+  postAvatar
 };

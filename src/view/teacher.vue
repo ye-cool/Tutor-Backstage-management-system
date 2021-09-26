@@ -21,6 +21,7 @@
               style="width: 120px"
               @change="handlegradeChange"
               v-decorator="['TeachingGrade']"
+              :allowClear="true"
             >
               <a-select-option v-for="grade in gradeData" :key="grade">
                 {{ grade }}
@@ -33,6 +34,7 @@
               placeholder="授课科目"
               style="width: 150px"
               v-decorator="['TeachingSubject']"
+              :allowClear="true"
             >
               <a-select-option v-if="istrue" :key="1000000" disabled>
                 请先选择授课年级
@@ -76,7 +78,12 @@
           {{ text === 0 ? '男' : '女' }}
         </template>
         <template slot="teachingItems" slot-scope="record">
-          {{ itemId.filter(item => item.iId == record.teachingItems[0])[0].item }}
+          {{
+            record.teachingItems[0] == undefined
+              ? null
+              : itemId.filter((item) => item.iId == record.teachingItems[0])[0]
+                  .item
+          }}
         </template>
         <template slot="verifyStatus" slot-scope="text">
           {{ text === 0 ? '待审核' : '已通过' }}
@@ -105,185 +112,11 @@
         v-on:changeVisible="changeVisible"
         :teacherRegister="TeacherRegister"
       ></teachermodal>
-      <a-modal
-        :visible="modal2Visible"
-        title="教师展示资料"
-        on-ok="handleOk2"
-        :closable="false"
-        width="850px"
-      >
-        <template slot="footer">
-          <a-button key="back" @click="handleCancel2"> 取消 </a-button>
-          <a-button
-            key="submit"
-            type="primary"
-            :loading="loading"
-            @click="handleOk2"
-          >
-            审核通过，发布资料
-          </a-button>
-        </template>
-        <a-form :form="form">
-          <a-form-item v-bind="formItemLayout" label="称谓">
-            <span> {{ TeacherVerify.name }} </span>
-            <a-button type="primary" icon="download" class="download">
-              下载展示资料
-            </a-button>
-          </a-form-item>
-          <a-form-item v-bind="formItemLayout" label="学校">
-            <span>{{ TeacherVerify.university }} </span>
-          </a-form-item>
-          <a-form-item v-bind="formItemLayout" label="学历">
-            <span>
-              {{
-                TeacherVerify.graduateEducation == 0
-                  ? '专科生'
-                  : TeacherVerify.graduateEducation == 1
-                  ? '本科生'
-                  : TeacherVerify.graduateEducation == 2
-                  ? '硕士生'
-                  : '博士生'
-              }}</span
-            >
-          </a-form-item>
-          <a-space class="layout">
-            <a-form-item>
-              <span slot="label">授课科目</span>
-            </a-form-item>
-            <a-form-item>
-              <a-select
-                placeholder="授课年级"
-                style="width: 120px"
-                @change="handlegradeChange1"
-                v-decorator="['grade']"
-              >
-                <a-select-option v-for="grade in gradeData" :key="grade">
-                  {{ grade }}
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-            <a-form-item>
-              <a-select
-                placeholder="授课科目"
-                style="width: 120px"
-                v-decorator="['subject']"
-              >
-                <a-select-option v-for="subject in subjects1" :key="subject">
-                  {{ subject }}
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-            <a-form-item>
-              <a-select
-                placeholder="授课年级"
-                style="width: 120px"
-                @change="handlegradeChange2"
-                v-decorator="['grade2']"
-              >
-                <a-select-option v-for="grade in gradeData" :key="grade">
-                  {{ grade }}
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-            <a-form-item>
-              <a-select
-                placeholder="授课科目"
-                style="width: 120px"
-                v-decorator="['subject2']"
-              >
-                <a-select-option v-for="subject in subjects2" :key="subject">
-                  {{ subject }}
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-space>
-          <a-space class="layout">
-            <a-form-item>
-              <span slot="label">价格区间</span>
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                style="width: 100px"
-                v-decorator="['lowPrice']"
-              ></a-input>
-            </a-form-item>
-            <a-form-item>
-              <span>至</span>
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                style="width: 100px"
-                v-decorator="['highPrice']"
-              ></a-input>
-            </a-form-item>
-            <a-form-item>
-              <span>元/小时</span>
-            </a-form-item>
-          </a-space>
-          <a-form-item v-bind="formItemLayout">
-            <span slot="label">展示价格</span>
-            <span>倍数设置 </span>
-            <a-input style="width: 100px" v-decorator="['multiple']"></a-input>
-          </a-form-item>
-          <a-space class="layout">
-            <a-form-item>
-              <span slot="label">价格区间</span>
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                style="width: 100px"
-                v-decorator="['lowPriceVerified']"
-              ></a-input>
-            </a-form-item>
-            <a-form-item>
-              <span>至</span>
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                style="width: 100px"
-                v-decorator="['highPriceVerified']"
-              ></a-input>
-            </a-form-item>
-            <a-form-item>
-              <span>元/小时</span>
-            </a-form-item>
-          </a-space>
-          <a-form-item v-bind="formItemLayout">
-            <span slot="label"> 家教经历 </span>
-            <a-textarea
-              v-decorator="['teachingExperience']"
-              style="width: 500px"
-              :rows="4"
-            ></a-textarea> </a-form-item
-          ><a-form-item v-bind="formItemLayout">
-            <span slot="label"> 空闲时间 </span>
-            <span>{{ TeacherVerify.teachingTimes }}</span> </a-form-item
-          ><a-form-item v-bind="formItemLayout">
-            <span slot="label"> 区域 </span>
-            <span>{{ TeacherVerify.teachingAreas }}</span>
-          </a-form-item>
-          <a-form-item v-bind="formItemLayout">
-            <span slot="label"> 常住地址 </span>
-            <span>{{ TeacherVerify.residentAddress }}</span>
-          </a-form-item>
-          <a-form-item v-bind="formItemLayout">
-            <span slot="label"> 一句话标签 </span>
-            <a-input
-              v-decorator="['comment']"
-              style="width: 450px"
-              placeholder="请输入内容"
-            ></a-input>
-          </a-form-item>
-          <a-form-item v-bind="formItemLayout">
-            <span slot="label"> 授课课时数 </span>
-            <a-input
-              v-decorator="['teachingHours']"
-              style="width: 450px"
-              placeholder="请输入内容"
-            ></a-input>
-          </a-form-item>
-        </a-form>
-      </a-modal>
+      <teacherVrifyModal
+        :modal2Visible="modal2Visible"
+        v-on:changeVisible2="changeVisible2"
+        :TeacherVerify="TeacherVerify"
+      ></teacherVrifyModal>
       <!-- <a-button @click="test"></a-button>
       <a-button @click="test2"></a-button> -->
     </div>
@@ -291,6 +124,7 @@
 </template>
 <script>
 import teachermodal from '../components/teachermodal.vue'
+import teacherVrifyModal from '../components/teacherVerifyModal.vue'
 const columns = [
   {
     title: '教师姓名',
@@ -364,8 +198,7 @@ const subjectData = {
   其他: [],
 }
 var subjects = []
-var subjects1 = []
-var subjects2 = []
+
 const areaId = [
   '锦江区',
   '金牛区',
@@ -466,8 +299,6 @@ export default {
       gradeData,
       subjectData,
       subjects,
-      subjects1,
-      subjects2,
       modal1Visible: false,
       modal2Visible: false,
       loading: false,
@@ -482,7 +313,7 @@ export default {
       },
       formItemLayout: {
         labelCol: {
-          span: 5,
+          span: 7,
         },
         wrapperCol: {
           xs: { span: 24 },
@@ -557,6 +388,7 @@ export default {
   },
   components: {
     teachermodal,
+    teacherVrifyModal,
   },
   methods: {
     handleSearch(e) {
@@ -565,7 +397,11 @@ export default {
         console.log('error', error)
         console.log('Received values of form: ', values)
         var i = itemId.find(function (item) {
-          return item.item == values.TeachingGrade + values.TeachingSubject
+          if (values.TeachingSubject == '') {
+            return item.item == values.TeachingGrade + ''
+          } else {
+            return item.item == values.TeachingGrade + values.TeachingSubject
+          }
         })
         this.$api.mode
           .getTeachers({
@@ -609,19 +445,14 @@ export default {
     },
     handlegradeChange(value) {
       this.istrue = false
-      this.subjects = subjectData[value]
-      // this.secondsubject = subjectData[value][0]
-      // this.form.setFieldsValue({
-      //   TeachingSubject: secondsubject,
-      // })
-    },
-    handlegradeChange1(value) {
-      this.istrue = false
-      this.subjects1 = subjectData[value]
-    },
-    handlegradeChange2(value) {
-      this.istrue = false
-      this.subjects2 = subjectData[value]
+      if (value == undefined) this.subjects = []
+      else {
+        this.subjects = subjectData[value]
+        this.form.setFieldsValue({
+          TeachingSubject:
+            subjectData[value][0] == undefined ? '' : subjectData[value][0],
+        })
+      }
     },
     gettable() {
       const _this = this
@@ -648,24 +479,28 @@ export default {
     changeVisible(value) {
       this.modal1Visible = value
     },
+    changeVisible2(value) {
+      this.modal2Visible = value
+    },
     showModal(userInfo) {
       console.log(userInfo)
-      this.modal1Visible = true
-      const _this = this
-      _this.$api.mode
-        .getRegister(`${userInfo.tid}`)
-        .then((res) => {
-          console.log(res.data)
-          _this.TeacherRegister = {}
-          _this.TeacherRegister = res.data
-          // console.log(_this.TeacherRegister.name)
-        })
-        .catch((error) => {
-          console.log(error.response)
-        })
-    },
-    hideModal() {
-      this.modal1Visible = false
+      if (userInfo.newTeacherStatus === 0) {
+        this.$message.info('该教师还未完成注册')
+      } else {
+        const _this = this
+        _this.$api.mode
+          .getRegister(`${userInfo.tid}`)
+          .then((res) => {
+            console.log(res.data)
+            _this.TeacherRegister = {}
+            _this.TeacherRegister = res.data
+            this.modal1Visible = true
+            // console.log(_this.TeacherRegister.name)
+          })
+          .catch((error) => {
+            console.log(error.response)
+          })
+      }
     },
     handleOk(e) {
       this.loading = true
@@ -678,9 +513,10 @@ export default {
       this.modal1Visible = false
     },
     showModal2(userInfo) {
-      this.modal2Visible = true
       this.newTeacherStatus = userInfo.newTeacherStatus
-      if (userInfo.newTeacherStatus === 1) {
+      if (userInfo.newTeacherStatus === 0) {
+        this.$message.info('该教师还未完成注册')
+      } else if (userInfo.newTeacherStatus === 1) {
         const _this = this
         _this.$api.mode
           .getRegister(`${userInfo.tid}`)
@@ -688,12 +524,13 @@ export default {
             console.log(res.data)
             _this.TeacherVerify = {}
             _this.TeacherVerify = res.data
-            _this.form.setFieldsValue({
-              teachingExperience: _this.TeacherVerify.teachingExperience,
-              comment: _this.TeacherVerify.comment,
-              lowPrice: _this.TeacherVerify.teachingPriceLow,
-              highPrice: _this.TeacherVerify.teachingPriceHigh,
-            })
+            this.modal2Visible = true
+            // _this.form.setFieldsValue({
+            //   teachingExperience: _this.TeacherVerify.teachingExperience,
+            //   comment: _this.TeacherVerify.comment,
+            //   lowPrice: _this.TeacherVerify.teachingPriceLow,
+            //   highPrice: _this.TeacherVerify.teachingPriceHigh,
+            // })
           })
           .catch((error) => {
             console.log(error.response)
@@ -706,146 +543,42 @@ export default {
             console.log(res.data)
             _this.TeacherVerify = {}
             _this.TeacherVerify = res.data
-            _this.form.setFieldsValue({
-              teachingExperience: _this.TeacherVerify.teachingExperience,
-              comment: _this.TeacherVerify.comment,
-              lowPrice: _this.TeacherVerify.teachingPriceLow,
-              highPrice: _this.TeacherVerify.teachingPriceHigh,
-              lowPriceVerified: _this.TeacherVerify.teachingPriceLowVerified,
-              highPriceVerified: _this.TeacherVerify.teachingPriceHighVerified,
-              multiple: _this.TeacherVerify.coefficient,
-              teachingHours: _this.TeacherVerify.classHours,
-              grade:
-                _this.gradeData[
-                  parseInt(_this.TeacherVerify.teachingItems[0] / 10 - 1)
-                ],
-              subject:
-                _this.subjectData[
-                  _this.gradeData[
-                    parseInt(_this.TeacherVerify.teachingItems[0] / 10 - 1)
-                  ]
-                ][_this.TeacherVerify.teachingItems[0] % 10],
-              grade2:
-                _this.gradeData[
-                  parseInt(_this.TeacherVerify.teachingItems[1] / 10 - 1)
-                ],
-              subject2:
-                _this.subjectData[
-                  _this.gradeData[
-                    parseInt(_this.TeacherVerify.teachingItems[1] / 10 - 1)
-                  ]
-                ][_this.TeacherVerify.teachingItems[1] % 10],
-            })
+            _this.modal2Visible = true
+            // _this.form.setFieldsValue({
+            //   teachingExperience: _this.TeacherVerify.teachingExperience,
+            //   comment: _this.TeacherVerify.comment,
+            //   lowPrice: _this.TeacherVerify.teachingPriceLow,
+            //   highPrice: _this.TeacherVerify.teachingPriceHigh,
+            //   lowPriceVerified: _this.TeacherVerify.teachingPriceLowVerified,
+            //   highPriceVerified: _this.TeacherVerify.teachingPriceHighVerified,
+            //   multiple: _this.TeacherVerify.coefficient,
+            //   teachingHours: _this.TeacherVerify.classHours,
+            //   grade:
+            //     _this.gradeData[
+            //       parseInt(_this.TeacherVerify.teachingItems[0] / 10 - 1)
+            //     ],
+            //   subject:
+            //     _this.subjectData[
+            //       _this.gradeData[
+            //         parseInt(_this.TeacherVerify.teachingItems[0] / 10 - 1)
+            //       ]
+            //     ][_this.TeacherVerify.teachingItems[0] % 10],
+            //   grade2:
+            //     _this.gradeData[
+            //       parseInt(_this.TeacherVerify.teachingItems[1] / 10 - 1)
+            //     ],
+            //   subject2:
+            //     _this.subjectData[
+            //       _this.gradeData[
+            //         parseInt(_this.TeacherVerify.teachingItems[1] / 10 - 1)
+            //       ]
+            //     ][_this.TeacherVerify.teachingItems[1] % 10],
+            // })
           })
           .catch((error) => {
             console.log(error.response)
           })
       }
-    },
-    hideModal2() {
-      this.modal2Visible = false
-    },
-    handleOk2(e) {
-      e.preventDefault()
-      this.form.validateFields((error, values) => {
-        console.log('error', error)
-        console.log('Received values of form: ', values)
-        var i = itemId.find(function (item) {
-          return item.item == values.grade + values.subject
-        })
-        var j = itemId.find(function (item) {
-          return item.item == values.grade2 + values.subject2
-        })
-        if (this.newTeacherStatus == 1) {
-          this.$api.mode
-            .postVerify({
-              avatar: this.TeacherVerify.avatar,
-              awards: this.TeacherVerify.awards,
-              certificateType: this.TeacherVerify.certificateType,
-              classHours: values.teachingHours,
-              coefficient: values.multiple,
-              collegeStudentGrade: this.TeacherVerify.collegeStudentGrade,
-              comment: values.comment,
-              gender: this.TeacherVerify.gender,
-              graduateEducation: this.TeacherVerify.graduateEducation,
-              graduateProfession: this.TeacherVerify.graduateProfession,
-              isCollegeStudent: this.TeacherVerify.isCollegeStudent,
-              major: this.TeacherVerify.major,
-              name: this.TeacherVerify.name,
-              residentAddress: this.TeacherVerify.residentAddress,
-              teachingAreas: this.TeacherVerify.teachingAreas,
-              teachingExperience: values.teachingExperience,
-              teachingItem: this.TeacherVerify.teachingItem,
-              teachingItems: [
-                i == undefined ? null : i.iId,
-                j == undefined ? null : j.iId,
-              ],
-              teachingPriceHigh: values.highPrice,
-              teachingPriceLow: values.lowPrice,
-              teachingPriceHighVerified: values.highPriceVerified,
-              teachingPriceLowVerified: values.lowPriceVerified,
-              teachingTimes: this.TeacherVerify.teachingTimes,
-              tid: this.TeacherVerify.tid,
-              university: this.TeacherVerify.university,
-              verifyAdmin: this.TeacherVerify.verifyAdmin,
-              version: 0,
-            })
-            .then((res) => {
-              console.log(res.data)
-            })
-            .catch((error) => {
-              console.log(error.response)
-            })
-        } else {
-          this.$api.mode
-            .putVerify({
-              avatar: this.TeacherVerify.avatar,
-              awards: this.TeacherVerify.awards,
-              certificateType: this.TeacherVerify.certificateType,
-              classHours: values.teachingHours,
-              coefficient: values.multiple,
-              collegeStudentGrade: this.TeacherVerify.collegeStudentGrade,
-              comment: values.comment,
-              gender: this.TeacherVerify.gender,
-              graduateEducation: this.TeacherVerify.graduateEducation,
-              graduateProfession: this.TeacherVerify.graduateProfession,
-              isCollegeStudent: this.TeacherVerify.isCollegeStudent,
-              major: this.TeacherVerify.major,
-              name: this.TeacherVerify.name,
-              residentAddress: this.TeacherVerify.residentAddress,
-              teachingAreas: this.TeacherVerify.teachingAreas,
-              teachingExperience: values.teachingExperience,
-              teachingItem: this.TeacherVerify.teachingItem,
-              teachingItems: [
-                i == undefined ? null : i.iId,
-                j == undefined ? null : j.iId,
-              ],
-              teachingPriceHigh: values.highPrice,
-              teachingPriceLow: values.lowPrice,
-              teachingPriceHighVerified: values.highPriceVerified,
-              teachingPriceLowVerified: values.lowPriceVerified,
-              teachingTimes: this.TeacherVerify.teachingTimes,
-              tid: this.TeacherVerify.tid,
-              university: this.TeacherVerify.university,
-              verifyAdmin: this.TeacherVerify.verifyAdmin,
-              version: 0,
-            })
-            .then((res) => {
-              console.log(res.data)
-            })
-            .catch((error) => {
-              console.log(error.response)
-            })
-        }
-        this.loading = true
-        setTimeout(() => {
-          this.modal2Visible = false
-          this.loading = false
-        }, 3000)
-      })
-    },
-    handleCancel2(e) {
-      this.modal2Visible = false
     },
     filter(inputValue, path) {
       return path.some(
@@ -900,6 +633,10 @@ tr:last-child td {
   height: 0;
 }
 .layout {
-  margin-left: 110px;
+  margin-left: 180px;
+}
+.avater {
+  width: 180px;
+  position: absolute;
 }
 </style>

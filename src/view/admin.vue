@@ -70,11 +70,7 @@
     </a-layout-sider>
     <a-layout :style="{ marginLeft: '200px' }">
       <a-layout-header :style="{ background: '#fff', padding: 0 }">
-        <a-page-header
-          style="border: 1px solid rgb(235, 237, 240)"
-          title="Title"
-          sub-title="This is a subtitle"
-        >
+        <a-page-header>
           <template slot="extra">
             <span>管理员A</span>
             <a-button key="1" type="primary"> 退出 </a-button>

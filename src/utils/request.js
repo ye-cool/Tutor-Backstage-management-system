@@ -51,7 +51,7 @@ service.interceptors.response.use(
     if (response.data.code === 200) {
       return response.data
     } else {
-      errHandle(response.data.code, response.data.info)
+      errHandle(response.data.code, response.data.msg)
     }
   },
   error => {

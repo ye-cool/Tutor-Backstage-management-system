@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UCompatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教师展示资料</title>
+    <style>
+        .layout {
+            margin-left: 100px;
+            margin-top: 15px;
+        }
+
+        .layout>span {
+            margin-left: 40px;
+            font-size: 20px;
+            color: white;
+        }
+
+        .comment {
+            margin-left: 40px;
+            font-size: 22px;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .info {
+            background-color: #22b186;
+            padding-top: 20px;
+            height: 150px;
+        }
+
+        .teacher {
+            display: flex;
+        }
+
+        .avater {
+            position: absolute;
+            margin-left: 30px;
+            width: 100px;
+        }
+
+        .title {
+            color: gray;
+            margin-left: 30px;
+            margin-right: 20px;
+            font-size: 22px;
+        }
+
+        .main {
+            font-size: 22px;
+            margin-top: 50px;
+        }
+
+        .price {
+            margin-top: 80px;
+            margin-left: 270px;
+            font-size: 30px;
+            color: #22b186;
+        }
+
+        .icon {
+            border-right: 5px solid rgb(48, 146, 100);
+            border-radius: 20%;
+            margin-right: 10px;
+        }
+        .hours{
+            position: absolute;
+            margin-left: 350px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <div class="info">
+            <div class="comment">3对3一年经验的川大老王</div>
+            <div class="teacher">
+                <img class="avater"
+                    src="data:image/jpeg;base64,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">
+                <div>
+                    <div class="layout">
+                        <span> 王老师 </span>
+                    </div>
+                    <div class="layout">
+                        <span>电子科技大学</span><span>本科生</span>
+                    </div>
+                </div>
+                <div class=hours>
+                    <div class="layout">
+                        <span>累计课时</span>
+                    </div>
+                    <div class="layout">
+                        <span>212</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="main">
+                <span class="title"> <span class="icon"></span>教学科目</span>
+                <span>高中数学</span>
+                <span>高中语文</span>
+            </div>
+            <div class="main">
+                <span class="title"> <span class="icon"></span>家教经历 </span>
+                <span>做家教15年，带出过上百名985高材生</span>
+                <br>
+                <br>
+                <br>
+            </div>
+            <div class="main">
+                <span class="title"> <span class="icon"></span>自我评价 </span>
+                <span>幽默风趣，有耐心</span>
+                <br>
+                <br>
+                <br>
+            </div>
+            <div class="main">
+                <span class="title"> <span class="icon"></span> 空闲时间 </span>
+                <span>寒暑假均可</span>
+            </div>
+            <div class="main">
+                <span class="title"> <span class="icon"></span> 授课区域 </span>
+                <span>金涅区</span>
+            </div>
+            <div class="main">
+                <span class="title"> <span class="icon"></span> 常住地址 </span>
+                <span>金牛区二十中附近</span>
+            </div>
+        </div>
+        <div class="price">
+            课时费 90元/小时-120元/小时
+        </div>
+    </div>
+</body>
+
+</html>

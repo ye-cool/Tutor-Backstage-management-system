@@ -23,6 +23,7 @@
                 style="width: 120px"
                 @change="handlegradeChange"
                 v-decorator="['StudentGrade']"
+                :allowClear="true"
               >
                 <a-select-option v-for="grade in gradeData" :key="grade">
                   {{ grade }}
@@ -35,6 +36,7 @@
                 placeholder="补习科目"
                 style="width: 150px"
                 v-decorator="['StudentSubject']"
+                :allowClear="true"
               >
                 <a-select-option v-if="istrue" :key="1000000" disabled>
                   请先选择授课年级
@@ -64,8 +66,12 @@
         :pagination="false"
         rowKey="did"
       >
-        <template slot="itemId" slot-scope="scope">
-          <a @click="showModal(scope)">编辑</a>
+        <template slot="itemId" slot-scope="record">
+          {{
+            record.itemId == null || 0
+              ? null
+              : itemId.filter((item) => item.iId == record.itemId)[0].item
+          }}
         </template>
         <template slot="studyArea" slot-scope="text">
           <a>{{ areaId[text] }}</a>
@@ -154,19 +160,21 @@
             ></a-input> </a-form-item
           ><a-form-item v-bind="formItemLayout">
             <span slot="label"> 预期价格 </span>
-            <span>{{ demandRegister.price }}</span> </a-form-item
+            <span>{{ demandRegister.price }}</span>
+            <span>元/小时</span> </a-form-item
           ><a-form-item v-bind="formItemLayout">
             <span slot="label"> 展示价格 </span>
-            <span>{{ demandRegister.applyNumber }}</span>
+            <a-input style="width: 50px" v-decorator="['verifyPrice']"></a-input
+            ><span>元/小时</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout">
             <span slot="label"> 教师性别要求 </span>
             <span>{{
               demandRegister.teacherGender == 0
-                ? '均可'
-                : demandRegister.teacherGender == 1
                 ? '男'
-                : '女'
+                : demandRegister.teacherGender == 1
+                ? '女'
+                : '均可'
             }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout">
@@ -206,21 +214,14 @@
         </template>
         <a-form class="form">
           <a-form-item v-bind="formItemLayout" label="投递老师">
-            <teachermodal
-              :modalVisible="modalVisible"
-              v-on:changeVisible="changeVisible"
-            ></teachermodal>
             <div class="taechername">
               <a
-                style="float: left; margin-right: 10px"
-                @click="showteacherModal"
-                >王老师</a
+                v-for="item in teachers"
+                :key="item.name"
+                @click="showteacherModal(item)"
+                >{{ item.name == undefined ? '无' : item.name }}</a
               >
-              <a
-                style="float: left; margin-right: 10px"
-                @click="showteacherModal"
-                >李老师</a
-              >
+              <div v-if="teachers.length==0">无</div>
             </div>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="家长称谓">
@@ -251,7 +252,7 @@
             ><span>元/小时</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="展示价格" has-feedback>
-            <span>{{ demandRegister.parentName }}</span
+            <span>{{ demandRegister.verifiedPrice }}</span
             ><span>元/小时</span>
           </a-form-item>
           <a-form-item
@@ -259,21 +260,32 @@
             label="教师性别要求"
             has-feedback
           >
-            <span>{{ demandRegister.teacherGender }}</span>
+            <span>{{
+              demandRegister.teacherGender == 0
+                ? '男'
+                : demandRegister.teacherGender == 1
+                ? '女'
+                : '均可'
+            }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="补习时长" has-feedback>
-            <span>{{ demandRegister.parentName }}</span>
+            <span>{{ demandRegister.classHours }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="空闲时间" has-feedback>
             <span>{{ demandRegister.studyTimes }}</span>
           </a-form-item>
         </a-form>
       </a-modal>
+      <teacherVrifyModal
+        :modal2Visible="modalVisible"
+        v-on:changeVisible2="changeVisible2"
+        :TeacherVerify="TeacherVerify"
+      ></teacherVrifyModal>
     </div>
   </div>
 </template>
 <script>
-import teachermodal from '../components/teachermodal.vue'
+import teacherVrifyModal from '../components/teacherVerifyModal.vue'
 const columns = [
   {
     title: '家长称谓',
@@ -394,7 +406,9 @@ const itemId = [
 ]
 var demandRegister = {}
 var demandVerify = {}
+var TeacherVerify = {}
 var verifyStatus = null
+var teachers = []
 export default {
   created() {
     this.gettable()
@@ -405,9 +419,11 @@ export default {
         pageNumber: 1,
         pageSize: 10,
       },
+      teachers,
       verifyStatus,
       demandRegister,
       demandVerify,
+      TeacherVerify,
       areaId,
       itemId,
       data,
@@ -522,7 +538,7 @@ export default {
     }
   },
   components: {
-    teachermodal,
+    teacherVrifyModal,
   },
   methods: {
     handleSearch(e) {
@@ -531,7 +547,11 @@ export default {
         console.log('error', error)
         console.log('Received values of form: ', values)
         var i = itemId.find(function (item) {
-          return item.item == values.StudentGrade + values.StudentSubject
+          if (values.StudentSubject == '') {
+            return item.item == values.StudentSubject + ''
+          } else {
+            return item.item == values.StudentSubject + values.StudentSubject
+          }
         })
         this.$api.mode
           .getDemand({
@@ -565,7 +585,15 @@ export default {
     },
     handlegradeChange(value) {
       this.istrue = false
-      this.subjects = subjectData[value]
+      if (value == undefined) this.subjects = []
+      else {
+        this.subjects = subjectData[value]
+        // this.secondsubject = subjectData[value][0]
+        this.form.setFieldsValue({
+          StudentSubject:
+            subjectData[value][0] == undefined ? '' : subjectData[value][0],
+        })
+      }
     },
     gettable() {
       const _this = this
@@ -587,12 +615,41 @@ export default {
     changeVisible(value) {
       this.modalVisible = value
     },
-    showteacherModal() {
-      this.modalVisible = true
+    changeVisible2(value) {
+      this.modal2Visible = value
+    },
+    showteacherModal(userInfo) {
+      console.log(userInfo)
+      if (userInfo.newTeacherStatus === 1) {
+        const _this = this
+        _this.$api.mode
+          .getRegister(`${userInfo.tid}`)
+          .then((res) => {
+            console.log(res.data)
+            _this.TeacherVerify = {}
+            _this.TeacherVerify = res.data
+            this.modalVisible = true
+          })
+          .catch((error) => {
+            console.log(error.response)
+          })
+      } else {
+        const _this = this
+        _this.$api.mode
+          .getVerify(`${userInfo.tid}`)
+          .then((res) => {
+            console.log(res.data)
+            _this.TeacherVerify = {}
+            _this.TeacherVerify = res.data
+            _this.modalVisible = true
+          })
+          .catch((error) => {
+            console.log(error.response)
+          })
+      }
     },
     showModal(userInfo) {
       console.log(userInfo)
-      this.modal1Visible = true
       this.verifyStatus = userInfo.verifyStatus
       if (userInfo.verifyStatus === 0 || 3) {
         const _this = this
@@ -607,6 +664,7 @@ export default {
                 _this.demandRegister.studentLearningSituation,
               detailadress: _this.demandRegister.address,
             })
+            _this.modal1Visible = true
           })
           .catch((error) => {
             console.log(error.response)
@@ -623,9 +681,11 @@ export default {
               studentLearningSituation:
                 _this.demandRegister.studentLearningSituation,
               detailadress: _this.demandRegister.address,
-              priority:_this.demandRegister.priority,
-              // studyHours:_this.demandRegister.
+              priority: _this.demandRegister.priority,
+              studyHours: _this.demandRegister.classHours,
+              verifyPrice: _this.demandRegister.verifiedPrice,
             })
+            _this.modal1Visible = true
           })
           .catch((error) => {
             console.log(error.response)
@@ -640,11 +700,10 @@ export default {
       this.form.validateFields((error, values) => {
         console.log('error', error)
         console.log('Received values of form: ', values)
-        if (this.newTeacherStatus == 1) {
+        if (this.verifyStatus === 0 || 3) {
           this.$api.mode
             .postDemandVerify({
               areaId: this.demandRegister.studyArea,
-              demandStatus: this.demandRegister.demandStatus,
               did: this.demandRegister.did,
               gradeId: this.demandRegister.gradeId,
               itemId: this.demandRegister.itemId,
@@ -653,10 +712,11 @@ export default {
               price: this.demandRegister.price,
               studyTimes: this.demandRegister.studyTimes,
               teacherGender: this.demandRegister.teacherGender,
+              classHours: values.studyHours,
               address: values.detailadress,
-              priority: values.priority,
+              priority: values.priority[0],
               studentLearningSituation: values.studentLearningSituation,
-              verifiedPrice: 0,
+              verifiedPrice: values.verifyPrice,
             })
             .then((res) => {
               console.log(res.data)
@@ -667,21 +727,20 @@ export default {
         } else {
           this.$api.mode
             .putDemandVerify({
-              address: 'string',
-              areaId: 0,
-              demandStatus: 0,
-              did: 'string',
-              gradeId: 0,
-              itemId: 0,
-              parentId: 'string',
-              parentName: 'string',
-              price: 0,
-              priority: 0,
-              studentLearningSituation: 'string',
-              studyTimes: [0],
-              teacherGender: 0,
-              verifiedAdmin: 'string',
-              verifiedPrice: 0,
+              areaId: this.demandRegister.studyArea,
+              did: this.demandRegister.did,
+              gradeId: this.demandRegister.gradeId,
+              itemId: this.demandRegister.itemId,
+              parentId: this.demandRegister.parentId,
+              parentName: this.demandRegister.parentName,
+              price: this.demandRegister.price,
+              studyTimes: this.demandRegister.studyTimes,
+              teacherGender: this.demandRegister.teacherGender,
+              classHours: values.studyHours,
+              address: values.detailadress,
+              priority: values.priority,
+              studentLearningSituation: values.studentLearningSituation,
+              verifiedPrice: values.verifyPrice,
             })
             .then((res) => {
               console.log(res.data)
@@ -701,7 +760,6 @@ export default {
       this.modal1Visible = false
     },
     showModal2(userInfo) {
-      this.modal2Visible = true
       const _this = this
       _this.$api.mode
         .getDemandRegister(`${userInfo.did}`)
@@ -709,6 +767,16 @@ export default {
           console.log(res.data)
           _this.demandRegister = {}
           _this.demandRegister = res.data
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
+      _this.$api.mode
+        .getApplyTeacher(`${userInfo.did}`)
+        .then((res) => {
+          console.log(res.data)
+          _this.teachers = res.data
+          _this.modal2Visible = true
         })
         .catch((error) => {
           console.log(error.response)

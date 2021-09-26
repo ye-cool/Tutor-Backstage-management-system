@@ -1,6 +1,12 @@
 <template>
   <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
     <div class="content">
+      <a-page-header
+        style="border: 1px solid rgb(235, 237, 240)"
+        title="家长端banner"
+      >
+        <template slot="extra"> </template
+      ></a-page-header>
       <a-table
         :columns="columns"
         :data-source="data1"
@@ -16,7 +22,6 @@
       <a-page-header
         style="border: 1px solid rgb(235, 237, 240)"
         title="教师端banner"
-        sub-title="This is a subtitle"
       >
         <template slot="extra"> </template
       ></a-page-header>
@@ -49,11 +54,11 @@
             <img class="previewImg" style :src="valueUrl" v-if="valueUrl" />
             <input
               class="file"
-              name="file"
               type="file"
               accept="image/png,image/gif,image/jpeg"
               @change="update"
             />
+            <a-button class="btn"> 更换海报 </a-button>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="跳转链接" has-feedback>
             <input type="text" v-decorator="['link']" />
@@ -193,6 +198,7 @@ export default {
     },
     update(event) {
       let file = event.target.files[0]
+      console.log(file)
       const that = this
       const reader = new FileReader() // 创建读取文件对象
       reader.readAsDataURL(event.target.files[0]) // 发起异步请求，读取文件
@@ -200,23 +206,21 @@ export default {
         // 文件读取完成后
         // 读取完成后，将结果赋值给img的src
         that.valueUrl = this.result
-        console.log(this.result)
+        // console.log(this.result)
       }
       event.preventDefault()
       let formData = new FormData()
       formData.append('uploadFile', file)
       let config = {
         headers: {
-          'Content-Type':
-            'multipart/form-data; boundary=<calculated when request is sent>',
-          'Content-Length': '<calculated when request is sent>',
+          Authorization: localStorage.getItem('Authorization'),
         },
       }
       this.axios
-        .post('Api/Admin/Config/Image/Upload', { uploadFile: file }, config)
+        .post('Api/Admin/Config/Image/Upload', formData, config)
         .then(function (response) {
           if (response.status === 200) {
-            console.log(response.data)
+            // console.log(response.data)
           }
         })
     },
@@ -253,5 +257,17 @@ tr:last-child td {
 }
 .previewImg {
   width: 120px;
+}
+.file {
+  position: absolute;
+  margin-top: 6px;
+  margin-left: 100px;
+  opacity: 0;
+  z-index: 100;
+}
+.btn {
+  position: absolute;
+  margin-top: 6px;
+  margin-left: 100px;
 }
 </style>
