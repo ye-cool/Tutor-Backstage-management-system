@@ -5,6 +5,10 @@ function login(params) {
   return request.post(`User/Admin/Login`, params);
 }
 
+function singUp(params) {
+  return request.post(`/User/Admin/SignUp`, params);
+}
+
 function getTeachers(params) {
   return request.get(`Admin/Teachers`, params);
 }
@@ -109,8 +113,13 @@ function getApplyTeacher(did,params) {
   return request.get(`Admin/Apply/Teachers/${did}`,params)
 }
 
+function getPdf(tid,params) {
+  return request.get(`Admin/Pdf/${tid}`,params)
+}
+
 export default {
   login,
+  singUp,
   getTeachers,
   getRegister,
   getVerify,
@@ -136,5 +145,6 @@ export default {
   getAdmins,
   changePassword,
   getApplyTeacher,
-  postAvatar
+  postAvatar,
+  getPdf
 };

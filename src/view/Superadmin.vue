@@ -12,27 +12,27 @@
         :open-keys="openKeys"
         router
       >
-        <a-menu-item key="/admin/teacher" class="teacher">
+        <a-menu-item key="/Superadmin/teacher" class="teacher">
           <a-icon type="team" />
           <span class="nav-text">教师信息管理</span>
-          <router-link to="/admin/teacher"></router-link>
+          <router-link to="/Superadmin/teacher"></router-link>
         </a-menu-item>
-        <a-menu-item key="/admin/parent" class="parent">
+        <a-menu-item key="/Superadmin/parent" class="parent">
           <a-icon type="team" />
           <span class="nav-text">家长需求管理</span>
-          <router-link to="/admin/parent"></router-link>
+          <router-link to="/Superadmin/parent"></router-link>
         </a-menu-item>
         <a-sub-menu key="sub1">
           <span slot="title">
             <a-icon type="book" />
             <span class="nav-text">订单信息管理</span>
           </span>
-          <a-menu-item key="/admin/matched-order">
-            <router-link to="/admin/matched-order"></router-link>
+          <a-menu-item key="/Superadmin/matched-order">
+            <router-link to="/Superadmin/matched-order"></router-link>
             已匹配订单
           </a-menu-item>
-          <a-menu-item key="/admin/pending-order">
-            <router-link to="/admin/pending-order"></router-link>
+          <a-menu-item key="/Superadmin/pending-order">
+            <router-link to="/Superadmin/pending-order"></router-link>
             待匹配订单
           </a-menu-item>
         </a-sub-menu>
@@ -42,13 +42,28 @@
               >界面设置管理</span
             ></span
           >
-          <a-menu-item key="/admin/admin-teacher">
-            <router-link to="/admin/admin-teacher"></router-link>
+          <a-menu-item key="/Superadmin/admin-teacher">
+            <router-link to="/Superadmin/admin-teacher"></router-link>
             首页教师展示
           </a-menu-item>
-          <a-menu-item key="/admin/banner">
-            <router-link to="/admin/banner"></router-link>
+          <a-menu-item key="/Superadmin/banner">
+            <router-link to="/Superadmin/banner"></router-link>
             banner设置
+          </a-menu-item>
+        </a-sub-menu>
+        <a-sub-menu key="sub3">
+          <span slot="title"
+            ><a-icon type="control" /><span class="nav-text"
+              >人员管理</span
+            ></span
+          >
+          <a-menu-item key="/Superadmin/audit">
+            <router-link to="/Superadmin/audit"></router-link>
+            审核管理员注册
+          </a-menu-item>
+          <a-menu-item key="/Superadmin/check">
+            <router-link to="/Superadmin/check"></router-link>
+            查看管理员信息
           </a-menu-item>
         </a-sub-menu>
       </a-menu>

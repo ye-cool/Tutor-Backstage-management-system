@@ -87,7 +87,6 @@
           :imgSize="{ width: '330px', height: '155px' }"
           ref="verify"
         ></Verify>
-        <button @click="useVerify">调用验证组件</button>
       </a-form>
     </div>
   </div>
@@ -95,7 +94,7 @@
 
 <script>
 import { mapMutations } from 'vuex'
-import Verify from '../../components/verifition/Verify.vue'
+import Verify from '../../components/verifition/Verify'
 export default {
   data() {
     return {
@@ -103,6 +102,8 @@ export default {
       logging: false,
       error: '',
       form: this.$form.createForm(this),
+      username: '',
+      password: '',
     }
   },
   components: {
@@ -110,7 +111,48 @@ export default {
   },
   methods: {
     success(params) {
+      console.log(params)
       // params 返回的二次验证参数, 和登录参数一起回传给登录接口，方便后台进行二次验证
+      this.$api.mode
+        .login({
+          username: this.username,
+          password: this.password,
+          captchaVerification: params.captchaVerification,
+        })
+        .then((res) => {
+          console.log(res)
+          this.logging = true
+          this.userToken = res.data
+          let strings = this.userToken.split('.') //截取token，获取载体
+          let userinfo = JSON.parse(
+            decodeURIComponent(
+              escape(
+                window.atob(strings[1].replace(/-/g, '+').replace(/_/g, '/'))
+              )
+            )
+          ) //解析，需要吧‘_’,'-'进行转换否则会无法解析
+          console.log(userinfo)
+          // 将用户token保存到vuex中
+          // localStorage.setItem('roles', userinfo.authority)
+          this.changeLogin({ Authorization: this.userToken })
+          this.logging = false
+          if (res.code === 200) {
+            this.$message.success('登陆成功')
+          } else {
+            this.$message.info('密码错误')
+          }
+          if (userinfo.authority == 0) {
+            this.$router.push({
+              path: '/Superadmin',
+              query: { username: this.username },
+            })
+          } else {
+            this.$router.push({
+              path: '/admin',
+              query: { username: this.username },
+            })
+          }
+        })
     },
     useVerify() {
       this.$refs.verify.show()
@@ -121,36 +163,9 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          this.$api.mode
-            .login({
-              username: values.name,
-              password: values.password,
-            })
-            .then((res) => {
-              console.log(res)
-              this.logging = true
-              this.userToken = res.data
-              let strings = this.userToken.split('.') //截取token，获取载体
-              let userinfo = JSON.parse(
-                decodeURIComponent(
-                  escape(
-                    window.atob(
-                      strings[1].replace(/-/g, '+').replace(/_/g, '/')
-                    )
-                  )
-                )
-              ) //解析，需要吧‘_’,'-'进行转换否则会无法解析
-              console.log(userinfo)
-              // 将用户token保存到vuex中
-              this.changeLogin({ Authorization: this.userToken })
-              this.logging = false
-              if (res.code === 200) {
-                this.$message.success('登陆成功')
-              } else {
-                this.$message.info('密码错误')
-              }
-              this.$router.push('/admin')
-            })
+          ;(this.username = values.name),
+            (this.password = values.password),
+            this.$refs.verify.show()
         }
       })
     },

@@ -355,6 +355,7 @@ export default {
         ts: Date.now(), // 现在的时间戳
       }
       reqGet(data).then(res => {
+        console.log(res)
         if (res.repCode == '0000') {
           this.backImgBase = res.repData.originalImageBase64
           this.blockBackImgBase = res.repData.jigsawImageBase64

@@ -20,10 +20,10 @@ const routes = [
     component: () => import('@/view/signup')
   },
   {
-    path: '/admin',
+    path: '/Superadmin',
     name: '主页',
-    redirect: '/admin/teacher',
-    component: () => import('@/view/admin'),
+    redirect: '/Superadmin/teacher',
+    component: () => import('@/view/Superadmin'),
     children: [
       {
         path: 'teacher',
@@ -66,6 +66,44 @@ const routes = [
         component: () => import('@/view/person/check')
       }
     ]
+  },
+  {
+    path: '/admin',
+    name: '主页',
+    redirect: '/admin/teacher',
+    component: () => import('@/view/admin'),
+    children: [
+      {
+        path: 'teacher',
+        name: '教师信息管理',
+        component: () => import('@/view/teacher')
+      },
+      {
+        path: 'parent',
+        name: '家长需求管理',
+        component: () => import('@/view/parent')
+      },
+      {
+        path: 'matched-order',
+        name: '已匹配订单',
+        component: () => import('@/view/order/matched-order')
+      },
+      {
+        path: 'pending-order',
+        name: '待匹配订单',
+        component: () => import('@/view/order/pending-order')
+      },
+      {
+        path: 'admin-teacher',
+        name: '首页教师展示',
+        component: () => import('@/view/interface/admin-teacher')
+      },
+      {
+        path: 'banner',
+        name: 'banner设置',
+        component: () => import('@/view/interface/banner')
+      }
+    ]
   }
 ]
 
@@ -78,9 +116,14 @@ router.beforeEach((to, from, next) => {
     next();
   } else {
     let token = localStorage.getItem('Authorization');
+    // let roles = localStorage.getItem('roles');
     if (token === null || token === '') {
       next('/login');
-    } else {
+    }
+    // else if(roles == 0 ){
+    //   next('/Superadmin');
+    // }
+     else {
       next();
     }
   }

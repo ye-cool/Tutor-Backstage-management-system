@@ -15,6 +15,14 @@ module.exports = {
         pathRewrite: { // ---->>>并将/api换成/
           '^/Api': 'http://47.95.237.117:8090/Api'
         }
+      },
+      '/captcha': {
+        target: 'http://47.95.237.117:8090',
+        ws: true,
+        changOrigin: true,
+        pathRewrite: { // ---->>>并将/api换成/
+          '^/captcha': 'http://47.95.237.117:8090/captcha'
+        }
       }
     },
     overlay: {

@@ -1,10 +1,10 @@
 <template>
   <a-form :form="form" @submit="handleSubmit" class="form">
-    <a-form-item v-bind="formItemLayout" class="nickname">
+    <a-form-item v-bind="formItemLayout" class="wechat">
       <span slot="label"> 微信昵称 </span>
       <a-input
         v-decorator="[
-          'nickname',
+          'wechat',
           {
             rules: [
               {
@@ -16,7 +16,7 @@
         ]"
       />
     </a-form-item>
-    <a-form-item v-bind="formItemLayout" class="nickname">
+    <a-form-item v-bind="formItemLayout" class="username">
       <span slot="label"> 用户姓名 </span>
       <a-input
         v-decorator="[
@@ -146,29 +146,28 @@ export default {
     },
     hideModal() {
       this.visible = false
+      this.$router.push('/login')
     },
     handleSubmit(e) {
       e.preventDefault()
       this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          this.showModal()
           const _this = this
-          _this
-            .axios({
-              method: 'POST',
-              url: '/Api/User/Admin/SignUp',
-              data: {
-                nickname: values.nickname,
-                password: values.password,
-                username: values.username
-              },
+          _this.$api.mode
+            .singUp({
+              wechat: values.wechat,
+              password: values.password,
+              username: values.username,
             })
             .then((res) => {
-              console.log(res.data)
+              console.log(res)
+              if(res.code == 200){
+                this.showModal()
+              }
             })
             .catch((error) => {
-              console.log(error.response)
+              console.log(error)
             })
         }
       })
@@ -204,12 +203,12 @@ export default {
   overflow: auto;
   margin-top: 150px;
 }
-.nickname,
+.wechat,
+.username,
 .pwd,
-.cpwd,
-.WeChatid {
-  width: 60%;
-  margin-left: 160px;
+.cpwd {
+  width: 30%;
+  margin-left: 400px;
   overflow: hidden;
 }
 .signup {

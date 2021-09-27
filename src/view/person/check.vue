@@ -159,7 +159,7 @@ export default {
         this.$api.mode
           .changePassword({
             aid: this.aid,
-            newPassword: values.newPassword,
+            newPassword: values.NewPassword,
           })
           .then((res) => {
             console.log(res.data)

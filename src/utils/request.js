@@ -58,7 +58,7 @@ service.interceptors.response.use(
     if (error) {
       // console.log(error)
       if (error.response) {
-        message.error(error.response.statusText)
+        message.error(error.response.data.msg)
       } else {
         message.error('请求超时，请重试！', 3)
       }

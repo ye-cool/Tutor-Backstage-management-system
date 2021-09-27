@@ -35,7 +35,7 @@
           <a @click="teacherOperate(scope)">编辑</a>
         </a>
       </a-table>
-      <a-modal :visible="modalVisible" :closable="false" title="banner设置">
+      <a-modal width="600px" :visible="modalVisible" :closable="false" title="banner设置">
         <template slot="footer">
           <a-button key="back" type="primary" @click="handleCancel">
             返回
@@ -58,7 +58,6 @@
               accept="image/png,image/gif,image/jpeg"
               @change="update"
             />
-            <a-button class="btn"> 更换海报 </a-button>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="跳转链接" has-feedback>
             <input type="text" v-decorator="['link']" />
@@ -112,6 +111,7 @@ export default {
       Url,
       ciid,
       valueUrl: null,
+      image: '',
     }
   },
   methods: {
@@ -150,7 +150,11 @@ export default {
       console.log(userInfo)
       this.modalVisible = true
       this.valueUrl = null
-      this.valueUrl = userInfo.image
+      if (userInfo.image == null) {
+        this.valueUrl = ''
+      } else {
+        this.valueUrl = 'http://47.95.237.117:8090/' + userInfo.image
+      }
       this.Url = null
       this.Url = userInfo.url
       this.ciid = null
@@ -163,7 +167,7 @@ export default {
       console.log(userInfo)
       this.modalVisible = true
       this.valueUrl = null
-      this.valueUrl = userInfo.image
+      this.valueUrl = 'http://47.95.237.117:8090/' + userInfo.image
       this.Url = null
       this.Url = userInfo.url
       this.ciid = null
@@ -184,6 +188,7 @@ export default {
         this.$api.mode
           .putImage({
             ciid: this.ciid,
+            image: this.image,
             url: values.link,
           })
           .then((res) => {
@@ -194,20 +199,12 @@ export default {
           })
       })
       this.loading = false
+      this.gettable()
       this.modalVisible = false
     },
     update(event) {
       let file = event.target.files[0]
       console.log(file)
-      const that = this
-      const reader = new FileReader() // 创建读取文件对象
-      reader.readAsDataURL(event.target.files[0]) // 发起异步请求，读取文件
-      reader.onload = function () {
-        // 文件读取完成后
-        // 读取完成后，将结果赋值给img的src
-        that.valueUrl = this.result
-        // console.log(this.result)
-      }
       event.preventDefault()
       let formData = new FormData()
       formData.append('uploadFile', file)
@@ -216,12 +213,15 @@ export default {
           Authorization: localStorage.getItem('Authorization'),
         },
       }
-      this.axios
-        .post('Api/Admin/Config/Image/Upload', formData, config)
-        .then(function (response) {
-          if (response.status === 200) {
-            // console.log(response.data)
-          }
+      this.$api.mode
+        .postImage(formData, config)
+        .then((res) => {
+          console.log(res.data)
+          this.image = res.data
+          this.valueUrl = 'http://47.95.237.117:8090/' + res.data
+        })
+        .catch((error) => {
+          console.log(error.response)
         })
     },
   },
@@ -257,17 +257,5 @@ tr:last-child td {
 }
 .previewImg {
   width: 120px;
-}
-.file {
-  position: absolute;
-  margin-top: 6px;
-  margin-left: 100px;
-  opacity: 0;
-  z-index: 100;
-}
-.btn {
-  position: absolute;
-  margin-top: 6px;
-  margin-left: 100px;
 }
 </style>

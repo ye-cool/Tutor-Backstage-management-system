@@ -18,7 +18,10 @@
       </a-button>
     </template>
     <a-form :form="form">
-      <img class="avatar" :src="TeacherVerify.avatar" />
+      <img
+        class="avatar"
+        :src="'http://47.95.237.117:8090/' + TeacherVerify.avatar"
+      />
       <input
         class="file"
         type="file"
@@ -28,7 +31,12 @@
       <a-button class="btn"> 更换头像 </a-button>
       <a-form-item v-bind="formItemLayout" label="称谓">
         <span> {{ TeacherVerify.name }} </span>
-        <a-button type="primary" icon="download" class="download">
+        <a-button
+          type="primary"
+          icon="download"
+          class="download"
+          @click="download(TeacherVerify.tid)"
+        >
           下载展示资料
         </a-button>
       </a-form-item>
@@ -242,6 +250,19 @@
           ]"
           style="width: 500px"
           :rows="4"
+        ></a-textarea>
+      </a-form-item>
+      <a-form-item v-bind="formItemLayout">
+        <span slot="label"> 自我评价 </span>
+        <a-textarea
+          v-decorator="[
+            'selfEvaluation',
+            {
+              initialValue: TeacherVerify.selfEvaluation,
+            },
+          ]"
+          style="width: 500px"
+          :rows="4"
         ></a-textarea> </a-form-item
       ><a-form-item v-bind="formItemLayout">
         <span slot="label"> 空闲时间 </span>
@@ -386,7 +407,6 @@ export default {
         if (this.newTeacherStatus == 1) {
           this.$api.mode
             .postVerify({
-              avatar: this.TeacherVerify.avatar,
               awards: this.TeacherVerify.awards,
               certificateType: this.TeacherVerify.certificateType,
               classHours: values.teachingHours,
@@ -402,6 +422,7 @@ export default {
               residentAddress: this.TeacherVerify.residentAddress,
               teachingAreas: this.TeacherVerify.teachingAreas,
               teachingExperience: values.teachingExperience,
+              selfEvaluation: values.selfEvaluation,
               teachingItem: this.TeacherVerify.teachingItem,
               teachingItems: [
                 i == undefined ? null : i.iId,
@@ -426,7 +447,6 @@ export default {
         } else {
           this.$api.mode
             .putVerify({
-              avatar: this.TeacherVerify.avatar,
               awards: this.TeacherVerify.awards,
               certificateType: this.TeacherVerify.certificateType,
               classHours: values.teachingHours,
@@ -442,6 +462,7 @@ export default {
               residentAddress: this.TeacherVerify.residentAddress,
               teachingAreas: this.TeacherVerify.teachingAreas,
               teachingExperience: values.teachingExperience,
+              selfEvaluation: values.selfEvaluation,
               teachingItem: this.TeacherVerify.teachingItem,
               teachingItems: [
                 i == undefined ? null : i.iId,
@@ -484,17 +505,6 @@ export default {
     },
     update(event) {
       let file = event.target.files[0]
-      console.log(file)
-      const that = this
-      const reader = new FileReader() // 创建读取文件对象
-      reader.readAsDataURL(event.target.files[0]) // 发起异步请求，读取文件
-      reader.onload = function () {
-        // 文件读取完成后
-        // 读取完成后，将结果赋值给img的src
-        that.TeacherVerify.avatar = null
-        that.TeacherVerify.avatar = this.result
-        // console.log(this.result)
-      }
       event.preventDefault()
       let formData = new FormData()
       formData.append('uploadFile', file)
@@ -503,17 +513,18 @@ export default {
           Authorization: localStorage.getItem('Authorization'),
         },
       }
-      this.axios
-        .post(
-          `Api/Admin/Teacher/Avatar/${this.TeacherVerify.tid}`,
-          formData,
-          config
-        )
-        .then(function (response) {
-          if (response.status === 200) {
-            // console.log(response.data)
-          }
+      this.$api.mode
+        .postAvatar(this.TeacherVerify.tid, formData, config)
+        .then((res) => {
+          console.log(res.data)
+          this.TeacherVerify.avatar = res.data
         })
+        .catch((error) => {
+          console.log(error.response)
+        })
+    },
+    download(tid) {
+      window.open(`http://47.95.237.117:8090/Api/Admin/Pdf/${tid}`)
     },
   },
 }

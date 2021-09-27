@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-axios.defaults.baseURL = process.env.BASE_API
+axios.defaults.baseURL = '/captcha'
 
 const service = axios.create({
   timeout: 40000,
