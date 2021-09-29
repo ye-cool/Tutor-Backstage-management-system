@@ -133,7 +133,7 @@ export default {
           ) //解析，需要吧‘_’,'-'进行转换否则会无法解析
           console.log(userinfo)
           // 将用户token保存到vuex中
-          // localStorage.setItem('roles', userinfo.authority)
+          localStorage.setItem('admin', this.username)
           this.changeLogin({ Authorization: this.userToken })
           this.logging = false
           if (res.code === 200) {
@@ -144,12 +144,10 @@ export default {
           if (userinfo.authority == 0) {
             this.$router.push({
               path: '/Superadmin',
-              query: { username: this.username },
             })
           } else {
             this.$router.push({
               path: '/admin',
-              query: { username: this.username },
             })
           }
         })

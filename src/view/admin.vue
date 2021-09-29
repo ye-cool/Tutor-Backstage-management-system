@@ -71,7 +71,7 @@
 <script>
 export default {
   created() {
-    this.admin = this.$route.query.username
+    this.admin = localStorage.getItem('admin');
   },
   data() {
     return {

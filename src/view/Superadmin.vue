@@ -72,7 +72,7 @@
       <a-layout-header :style="{ background: '#fff', padding: 0 }">
         <a-page-header>
           <template slot="extra">
-            <span>{{ admin }}</span>
+            <span>{{ this.admin }}</span>
             <a-button key="1" type="primary" @click="signOut"> 退出 </a-button>
           </template></a-page-header
         >
@@ -86,7 +86,7 @@
 <script>
 export default {
   created() {
-    this.admin = this.$route.query.username
+    this.admin = localStorage.getItem('admin');
   },
   data() {
     return {

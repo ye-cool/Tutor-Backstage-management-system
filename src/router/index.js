@@ -21,48 +21,48 @@ const routes = [
   },
   {
     path: '/Superadmin',
-    name: '主页',
+    name: 'Superadmin',
     redirect: '/Superadmin/teacher',
     component: () => import('@/view/Superadmin'),
     children: [
       {
         path: 'teacher',
-        name: '教师信息管理',
+        name: 'teacher',
         component: () => import('@/view/teacher')
       },
       {
         path: 'parent',
-        name: '家长需求管理',
+        name: 'teacher',
         component: () => import('@/view/parent')
       },
       {
         path: 'matched-order',
-        name: '已匹配订单',
+        name: 'matched-order',
         component: () => import('@/view/order/matched-order')
       },
       {
         path: 'pending-order',
-        name: '待匹配订单',
+        name: 'pending-order',
         component: () => import('@/view/order/pending-order')
       },
       {
         path: 'admin-teacher',
-        name: '首页教师展示',
+        name: 'admin-teacher',
         component: () => import('@/view/interface/admin-teacher')
       },
       {
         path: 'banner',
-        name: 'banner设置',
+        name: 'banner',
         component: () => import('@/view/interface/banner')
       },
       {
         path: 'audit',
-        name: '审核管理员注册',
+        name: 'audit',
         component: () => import('@/view/person/audit')
       },
       {
         path: 'check',
-        name: '查看管理员信息',
+        name: 'check',
         component: () => import('@/view/person/check')
       }
     ]

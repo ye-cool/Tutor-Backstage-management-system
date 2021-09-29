@@ -35,7 +35,12 @@
           <a @click="teacherOperate(scope)">编辑</a>
         </a>
       </a-table>
-      <a-modal width="600px" :visible="modalVisible" :closable="false" title="banner设置">
+      <a-modal
+        width="600px"
+        :visible="modalVisible"
+        :closable="false"
+        title="banner设置"
+      >
         <template slot="footer">
           <a-button key="back" type="primary" @click="handleCancel">
             返回
@@ -59,6 +64,7 @@
               @change="update"
             />
           </a-form-item>
+          <a-button class="btn">更换海报</a-button>
           <a-form-item v-bind="formItemLayout" label="跳转链接" has-feedback>
             <input type="text" v-decorator="['link']" />
           </a-form-item>
@@ -257,5 +263,17 @@ tr:last-child td {
 }
 .previewImg {
   width: 120px;
+}
+.file {
+  position: absolute;
+  margin-left: 360px;
+  margin-top: -56px;
+  opacity: 0;
+  z-index: 100;
+}
+.btn {
+  position: absolute;
+  margin-left: 360px;
+  margin-top: -68px;
 }
 </style>

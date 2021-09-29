@@ -113,6 +113,10 @@ function getApplyTeacher(did,params) {
   return request.get(`Admin/Apply/Teachers/${did}`,params)
 }
 
+function putRemark(did,params) {
+  return request.put(`Admin/Apply/Remark/${did}`,params)
+}
+
 function getPdf(tid,params) {
   return request.get(`Admin/Pdf/${tid}`,params)
 }
@@ -145,6 +149,7 @@ export default {
   getAdmins,
   changePassword,
   getApplyTeacher,
+  putRemark,
   postAvatar,
   getPdf
 };

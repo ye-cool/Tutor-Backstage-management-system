@@ -221,7 +221,7 @@
                 @click="showteacherModal(item)"
                 >{{ item.name == undefined ? '无' : item.name }}</a
               >
-              <div v-if="teachers.length==0">无</div>
+              <div v-if="teachers.length == 0">无</div>
             </div>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="家长称谓">
@@ -720,6 +720,7 @@ export default {
             })
             .then((res) => {
               console.log(res.data)
+              this.gettable()
             })
             .catch((error) => {
               console.log(error.response)
@@ -744,6 +745,7 @@ export default {
             })
             .then((res) => {
               console.log(res.data)
+              this.gettable()
             })
             .catch((error) => {
               console.log(error.response)
