@@ -94,15 +94,6 @@ export default {
           console.log(error.response)
         })
     },
-    onChange(value, selectedOptions) {
-      console.log(value, selectedOptions)
-    },
-    filter(inputValue, path) {
-      return path.some(
-        (option) =>
-          option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
-      )
-    },
     agree(userInfo) {
       console.log(userInfo)
       const _this = this
@@ -148,17 +139,6 @@ export default {
 </script>
 
 <style>
-#components-layout-demo-fixed-sider .logo {
-  height: 32px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px;
-}
-.teacher,
-.parent,
-.book,
-.interface {
-  padding-top: 20px;
-}
 .comtemt {
   padding: 24px;
 }

@@ -189,6 +189,7 @@
         <span>倍数设置 </span>
         <a-input
           style="width: 100px"
+          @change="coefficientChange"
           v-decorator="[
             'multiple',
             {
@@ -199,46 +200,46 @@
             },
           ]"
         ></a-input>
+        <a-space class="layout1">
+          <a-form-item>
+            <span>价格区间</span>
+          </a-form-item>
+          <a-form-item>
+            <a-input
+              style="width: 100px"
+              v-decorator="[
+                'lowPriceVerified',
+                {
+                  initialValue:
+                    TeacherVerify.teachingPriceLowVerified == undefined
+                      ? null
+                      : TeacherVerify.teachingPriceLowVerified,
+                },
+              ]"
+            ></a-input>
+          </a-form-item>
+          <a-form-item>
+            <span>至</span>
+          </a-form-item>
+          <a-form-item>
+            <a-input
+              style="width: 100px"
+              v-decorator="[
+                'highPriceVerified',
+                {
+                  initialValue:
+                    TeacherVerify.teachingPriceHighVerified == undefined
+                      ? null
+                      : TeacherVerify.teachingPriceHighVerified,
+                },
+              ]"
+            ></a-input>
+          </a-form-item>
+          <a-form-item>
+            <span>元/小时</span>
+          </a-form-item>
+        </a-space>
       </a-form-item>
-      <a-space class="layout">
-        <a-form-item>
-          <span slot="label">价格区间</span>
-        </a-form-item>
-        <a-form-item>
-          <a-input
-            style="width: 100px"
-            v-decorator="[
-              'lowPriceVerified',
-              {
-                initialValue:
-                  TeacherVerify.teachingPriceLowVerified == undefined
-                    ? null
-                    : TeacherVerify.teachingPriceLowVerified,
-              },
-            ]"
-          ></a-input>
-        </a-form-item>
-        <a-form-item>
-          <span>至</span>
-        </a-form-item>
-        <a-form-item>
-          <a-input
-            style="width: 100px"
-            v-decorator="[
-              'highPriceVerified',
-              {
-                initialValue:
-                  TeacherVerify.teachingPriceHighVerified == undefined
-                    ? null
-                    : TeacherVerify.teachingPriceHighVerified,
-              },
-            ]"
-          ></a-input>
-        </a-form-item>
-        <a-form-item>
-          <span>元/小时</span>
-        </a-form-item>
-      </a-space>
       <a-form-item v-bind="formItemLayout">
         <span slot="label"> 家教经历 </span>
         <a-textarea
@@ -266,10 +267,12 @@
         ></a-textarea> </a-form-item
       ><a-form-item v-bind="formItemLayout">
         <span slot="label"> 空闲时间 </span>
-        <span>{{ TeacherVerify.teachingTimes }}</span> </a-form-item
+        <span v-for="time in TeacherVerify.teachingTimes" :key="time"
+          >{{ timeId[time] }}；</span
+        ></a-form-item
       ><a-form-item v-bind="formItemLayout">
         <span slot="label"> 区域 </span>
-        <span>{{ TeacherVerify.teachingAreas }}</span>
+        <span>{{ areaId[TeacherVerify.teachingAreas[0]] }}</span>
       </a-form-item>
       <a-form-item v-bind="formItemLayout">
         <span slot="label"> 常住地址 </span>
@@ -365,6 +368,32 @@ const itemId = [
   { iId: 54, item: '艺体类其他' },
   { iId: 60, item: '其他' },
 ]
+const areaId = [
+  '锦江区',
+  '金牛区',
+  '武侯区',
+  '青羊区',
+  '成华区',
+  '高新区',
+  '天府新区',
+  '新都区',
+  '郫都区',
+  '双流区',
+  '龙泉驿区',
+  '温江区',
+  '其他',
+]
+const timeId = [
+  '周一到周五晚上',
+  '周一到周五全天',
+  '周六上午',
+  '周六下午',
+  '周六晚上',
+  '周日上午',
+  '周日下午',
+  '周日晚上',
+  '寒暑假均可',
+]
 export default {
   name: 'modal',
   props: {
@@ -375,6 +404,8 @@ export default {
   data() {
     return {
       itemId,
+      timeId,
+      areaId,
       subjects1,
       subjects2,
       gradeData,
@@ -404,7 +435,7 @@ export default {
         var j = itemId.find(function (item) {
           return item.item == values.grade2 + values.subject2
         })
-        if (this.newTeacherStatus == 1) {
+        if (this.TeacherVerify.verifyStatus == 0) {
           this.$api.mode
             .postVerify({
               awards: this.TeacherVerify.awards,
@@ -436,10 +467,12 @@ export default {
               tid: this.TeacherVerify.tid,
               university: this.TeacherVerify.university,
               verifyAdmin: this.TeacherVerify.verifyAdmin,
-              version: 0,
+              version: this.TeacherVerify.version,
             })
             .then((res) => {
               console.log(res.data)
+              this.$message.success('审核通过，发布资料')
+              this.gettable()
             })
             .catch((error) => {
               console.log(error.response)
@@ -475,11 +508,12 @@ export default {
               teachingTimes: this.TeacherVerify.teachingTimes,
               tid: this.TeacherVerify.tid,
               university: this.TeacherVerify.university,
-              verifyAdmin: this.TeacherVerify.verifyAdmin,
-              version: 0,
+              version: this.TeacherVerify.version,
             })
             .then((res) => {
               console.log(res.data)
+              this.$message.success('审核通过，发布资料')
+              this.gettable()
             })
             .catch((error) => {
               console.log(error.response)
@@ -491,6 +525,9 @@ export default {
           this.loading = false
         }, 3000)
       })
+    },
+    gettable() {
+      this.$emit('gettable')
     },
     handleCancel2() {
       this.$emit('changeVisible2', false)
@@ -526,6 +563,23 @@ export default {
     download(tid) {
       window.open(`http://47.95.237.117:8090/Api/Admin/Pdf/${tid}`)
     },
+    coefficientChange(e) {
+      console.log(e.target.value)
+      this.form.setFieldsValue({
+        multiple: 0,
+      })
+      if (e.target.value == 0) {
+      }else{
+      this.form.setFieldsValue({
+        lowPriceVerified: parseInt(
+          this.TeacherVerify.teachingPriceLow * e.target.value
+        ),
+        highPriceVerified: parseInt(
+          this.TeacherVerify.teachingPriceHigh * e.target.value
+        ),
+      })
+      }
+    },
   },
 }
 </script>
@@ -533,6 +587,9 @@ export default {
 <style >
 .layout {
   margin-left: 180px;
+}
+.layout1 {
+  margin-right: 80px;
 }
 .avatar {
   width: 160px;
@@ -547,5 +604,8 @@ export default {
 .btn {
   position: absolute;
   margin-top: 270px;
+}
+.download{
+  margin-left: 300px;
 }
 </style>

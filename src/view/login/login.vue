@@ -25,7 +25,7 @@
               <a-input
                 autocomplete="autocomplete"
                 size="large"
-                placeholder="admin"
+                placeholder="账户名"
                 v-decorator="[
                   'name',
                   {
@@ -33,7 +33,6 @@
                       {
                         required: true,
                         message: '请输入账户名',
-                        whitespace: true,
                       },
                     ],
                   },
@@ -45,7 +44,7 @@
             <a-form-item>
               <a-input
                 size="large"
-                placeholder="admin"
+                placeholder="密码"
                 autocomplete="autocomplete"
                 type="password"
                 v-decorator="[
@@ -55,7 +54,6 @@
                       {
                         required: true,
                         message: '请输入密码',
-                        whitespace: true,
                       },
                     ],
                   },
@@ -161,8 +159,8 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          ;(this.username = values.name),
-            (this.password = values.password),
+          this.username = values.name,
+            this.password = values.password,
             this.$refs.verify.show()
         }
       })

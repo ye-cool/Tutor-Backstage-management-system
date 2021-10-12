@@ -64,8 +64,13 @@
               />
             </a-form-item>
             <a-form-item>
-              <a-button type="primary" icon="search" html-type="submit">
-                Search
+              <a-button
+                :loading="loading"
+                type="primary"
+                icon="search"
+                html-type="submit"
+              >
+                搜索
               </a-button>
             </a-form-item>
           </a-space>
@@ -610,7 +615,11 @@ export default {
         console.log('error', error)
         console.log('Received values of form: ', values)
         var i = itemId.find(function (item) {
-          return item.item == values.TeachingGrade + values.TeachingSubject
+          if (values.TeachingSubject == '') {
+            return item.item == values.TeachingGrade + ''
+          } else {
+            return item.item == values.TeachingGrade + values.TeachingSubject
+          }
         })
         this.$api.mode
           .getTeachers({
@@ -646,6 +655,9 @@ export default {
             this.datas = []
             this.datas = res.data.records
             console.log(this.datas)
+            this.pagination.total = res.data.total
+            this.$message.success('搜索成功')
+            this.loading = false
           })
           .catch((error) => {
             console.log(error.response)
@@ -654,11 +666,14 @@ export default {
     },
     handlegradeChange(value) {
       this.istrue = false
-      this.subjects = subjectData[value]
-      // this.secondsubject = subjectData[value][0]
-      // this.form.setFieldsValue({
-      //   TeachingSubject: secondsubject,
-      // })
+      if (value == undefined) this.subjects = []
+      else {
+        this.subjects = subjectData[value]
+        this.form.setFieldsValue({
+          TeachingSubject:
+            subjectData[value][0] == undefined ? '' : subjectData[value][0],
+        })
+      }
     },
     handlegradeChange1(value) {
       this.istrue = false
@@ -678,6 +693,7 @@ export default {
           console.log(res)
           _this.datas = []
           _this.datas = res.data.records
+          _this.pagination.total = res.data.total
           console.log(_this.datas)
         })
         .catch((error) => {
@@ -711,18 +727,8 @@ export default {
     hideModal() {
       this.modal1Visible = false
     },
-    handleOk(e) {
-      this.loading = true
-      setTimeout(() => {
-        this.modal1Visible = false
-        this.loading = false
-      }, 3000)
-    },
-    handleCancel(e) {
-      this.modal1Visible = false
-    },
     cthandleCancel() {
-      this.$emit('refreshList');
+      this.$emit('refreshList')
       this.$emit('changeVisible', false)
     },
     showModal2(userInfo) {
@@ -845,10 +851,11 @@ export default {
       this.$api.mode
         .putAdminTeacher({
           ctid: this.ctid,
-          tid: userInfo.tid
+          tid: userInfo.tid,
         })
         .then((res) => {
           console.log(res.data)
+          this.$message.success('已更换教师')
         })
         .catch((error) => {
           console.log(error.response)

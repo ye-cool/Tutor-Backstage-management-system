@@ -91,17 +91,6 @@ export default {
 }
 </script>
 <style>
-#components-layout-demo-fixed-sider .logo {
-  height: 32px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px;
-}
-.teacher,
-.parent,
-.book,
-.interface {
-  padding-top: 20px;
-}
 .comtemt {
   padding: 24px;
 }

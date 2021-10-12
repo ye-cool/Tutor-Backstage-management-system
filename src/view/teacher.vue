@@ -54,6 +54,7 @@
               v-decorator="['gender']"
             />
           </a-form-item>
+          <br /><br />
           <a-form-item>
             <a-input
               placeholder="姓名/学校"
@@ -61,9 +62,15 @@
               v-decorator="['nameorschool']"
             />
           </a-form-item>
+          <br /><br />
           <a-form-item>
-            <a-button type="primary" icon="search" html-type="submit">
-              Search
+            <a-button
+              type="primary"
+              icon="search"
+              html-type="submit"
+              :loading="loading"
+            >
+              搜索
             </a-button>
           </a-form-item>
         </a-space>
@@ -80,6 +87,8 @@
         <template slot="teachingItems" slot-scope="record">
           {{
             record.teachingItems[0] == undefined
+              ? null
+              : itemId.filter((item) => item.iId == record.teachingItems[0]) == []
               ? null
               : itemId.filter((item) => item.iId == record.teachingItems[0])[0]
                   .item
@@ -115,6 +124,7 @@
       <teacherVrifyModal
         :modal2Visible="modal2Visible"
         v-on:changeVisible2="changeVisible2"
+        v-on:gettable="gettable"
         :TeacherVerify="TeacherVerify"
       ></teacherVrifyModal>
       <!-- <a-button @click="test"></a-button>
@@ -392,6 +402,7 @@ export default {
   },
   methods: {
     handleSearch(e) {
+      this.loading = true
       e.preventDefault()
       this.form.validateFields((error, values) => {
         console.log('error', error)
@@ -437,6 +448,9 @@ export default {
             this.data = []
             this.data = res.data.records
             console.log(this.data)
+            this.pagination.total = res.data.total
+            this.$message.success('搜索成功')
+            this.loading = false
           })
           .catch((error) => {
             console.log(error.response)
@@ -495,6 +509,7 @@ export default {
             _this.TeacherRegister = {}
             _this.TeacherRegister = res.data
             this.modal1Visible = true
+            this.$message.success('成功查看')
             // console.log(_this.TeacherRegister.name)
           })
           .catch((error) => {
@@ -502,21 +517,14 @@ export default {
           })
       }
     },
-    handleOk(e) {
-      this.loading = true
-      setTimeout(() => {
-        this.modal1Visible = false
-        this.loading = false
-      }, 3000)
-    },
     handleCancel(e) {
       this.modal1Visible = false
     },
     showModal2(userInfo) {
       this.newTeacherStatus = userInfo.newTeacherStatus
-      if (userInfo.newTeacherStatus === 0) {
+      if (userInfo.newTeacherStatus == 0) {
         this.$message.info('该教师还未完成注册')
-      } else if (userInfo.newTeacherStatus === 1) {
+      } else if (userInfo.verifyStatus == 0) {
         const _this = this
         _this.$api.mode
           .getRegister(`${userInfo.tid}`)
@@ -525,12 +533,7 @@ export default {
             _this.TeacherVerify = {}
             _this.TeacherVerify = res.data
             this.modal2Visible = true
-            // _this.form.setFieldsValue({
-            //   teachingExperience: _this.TeacherVerify.teachingExperience,
-            //   comment: _this.TeacherVerify.comment,
-            //   lowPrice: _this.TeacherVerify.teachingPriceLow,
-            //   highPrice: _this.TeacherVerify.teachingPriceHigh,
-            // })
+             this.$message.success('请编辑')
           })
           .catch((error) => {
             console.log(error.response)
@@ -544,36 +547,7 @@ export default {
             _this.TeacherVerify = {}
             _this.TeacherVerify = res.data
             _this.modal2Visible = true
-            // _this.form.setFieldsValue({
-            //   teachingExperience: _this.TeacherVerify.teachingExperience,
-            //   comment: _this.TeacherVerify.comment,
-            //   lowPrice: _this.TeacherVerify.teachingPriceLow,
-            //   highPrice: _this.TeacherVerify.teachingPriceHigh,
-            //   lowPriceVerified: _this.TeacherVerify.teachingPriceLowVerified,
-            //   highPriceVerified: _this.TeacherVerify.teachingPriceHighVerified,
-            //   multiple: _this.TeacherVerify.coefficient,
-            //   teachingHours: _this.TeacherVerify.classHours,
-            //   grade:
-            //     _this.gradeData[
-            //       parseInt(_this.TeacherVerify.teachingItems[0] / 10 - 1)
-            //     ],
-            //   subject:
-            //     _this.subjectData[
-            //       _this.gradeData[
-            //         parseInt(_this.TeacherVerify.teachingItems[0] / 10 - 1)
-            //       ]
-            //     ][_this.TeacherVerify.teachingItems[0] % 10],
-            //   grade2:
-            //     _this.gradeData[
-            //       parseInt(_this.TeacherVerify.teachingItems[1] / 10 - 1)
-            //     ],
-            //   subject2:
-            //     _this.subjectData[
-            //       _this.gradeData[
-            //         parseInt(_this.TeacherVerify.teachingItems[1] / 10 - 1)
-            //       ]
-            //     ][_this.TeacherVerify.teachingItems[1] % 10],
-            // })
+            this.$message.success('请编辑')
           })
           .catch((error) => {
             console.log(error.response)
@@ -602,14 +576,6 @@ export default {
 </script>
 
 <style>
-#components-layout-demo-fixed-sider .logo {
-  height: 32px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px;
-}
-.comtemt {
-  padding: 24px;
-}
 .search {
   display: flex;
   flex-wrap: wrap;

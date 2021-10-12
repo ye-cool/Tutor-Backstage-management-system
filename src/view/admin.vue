@@ -1,9 +1,10 @@
 <template>
+<a-locale-provider :locale="locale">
   <a-layout id="components-layout-demo-fixed-sider">
     <a-layout-sider
       :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }"
     >
-      <div class="logo" />
+      <div class="logo">家教后台管理系统</div>
       <a-menu
         theme="dark"
         mode="inline"
@@ -67,22 +68,26 @@
       </a-layout-content>
     </a-layout>
   </a-layout>
+   </a-locale-provider>
 </template>
 <script>
+import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN';
 export default {
   created() {
-    this.admin = localStorage.getItem('admin');
+    this.admin = localStorage.getItem('admin')
   },
   data() {
     return {
+      locale: zhCN,
       rootSubmenuKeys: ['sub1', 'sub2', 'sub3'],
       openKeys: [],
-      admin: ''
+      admin: '',
     }
   },
   methods: {
     signOut() {
       window.localStorage.clear()
+      this.$message.success('成功退出')
       this.$router.push('/login')
     },
     onOpenChange(openKeys) {
@@ -102,6 +107,10 @@ export default {
 <style>
 #components-layout-demo-fixed-sider .logo {
   height: 32px;
+  text-align: center;
+  font-size: 15px;
+  line-height: 32px;
+  color: white;
   background: rgba(255, 255, 255, 0.2);
   margin: 16px;
 }

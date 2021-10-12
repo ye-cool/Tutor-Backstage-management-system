@@ -13,6 +13,16 @@
         rowKey="ciid"
         :pagination="false"
       >
+        <a slot="banner" slot-scope="text">
+          <img class="image" :src="'http://47.95.237.117:8090/' + text" />
+        </a>
+        <a slot="url" slot-scope="text">{{ text }}</a>
+        <span slot="customTitle">
+          <a-tooltip placement="topLeft" title="只允许绑定公众号链接">
+            <a-icon type="info-circle" />
+          </a-tooltip>
+          链接</span
+        >
         <a slot="operate" slot-scope="scope">
           <a @click="parentOperate(scope)">编辑</a>
         </a>
@@ -31,6 +41,16 @@
         rowKey="ciid"
         :pagination="false"
       >
+        <a slot="banner" slot-scope="text">
+          <img class="image" :src="'http://47.95.237.117:8090/' + text" />
+        </a>
+        <a slot="url" slot-scope="text">{{ text }}</a>
+        <span slot="customTitle">
+          <a-tooltip placement="topLeft" title="只允许绑定公众号链接">
+            <a-icon type="info-circle" />
+          </a-tooltip>
+          链接</span
+        >
         <a slot="operate" slot-scope="scope">
           <a @click="teacherOperate(scope)">编辑</a>
         </a>
@@ -55,7 +75,7 @@
           </a-button>
         </template>
         <a-form class="form" :form="form">
-          <a-form-item v-bind="formItemLayout" label="海报" has-feedback>
+          <a-form-item v-bind="formItemLayout" label="海报">
             <img class="previewImg" style :src="valueUrl" v-if="valueUrl" />
             <input
               class="file"
@@ -65,8 +85,16 @@
             />
           </a-form-item>
           <a-button class="btn">更换海报</a-button>
-          <a-form-item v-bind="formItemLayout" label="跳转链接" has-feedback>
-            <input type="text" v-decorator="['link']" />
+          <a-form-item v-bind="formItemLayout" label="跳转链接">
+            <input
+              type="text"
+              v-decorator="[
+                'link',
+                {
+                  initialValue: this.Url,
+                },
+              ]"
+            />
           </a-form-item>
         </a-form>
       </a-modal>
@@ -82,10 +110,12 @@ const columns = [
   {
     title: 'banner海报',
     dataIndex: 'image',
+    scopedSlots: { customRender: 'banner' },
   },
   {
-    title: '链接',
     dataIndex: 'url',
+    slots: { title: 'customTitle' },
+    scopedSlots: { customRender: 'url' },
   },
   {
     title: '操作',
@@ -154,7 +184,7 @@ export default {
     },
     parentOperate(userInfo) {
       console.log(userInfo)
-      this.modalVisible = true
+      this.image = userInfo.image
       this.valueUrl = null
       if (userInfo.image == null) {
         this.valueUrl = ''
@@ -165,22 +195,18 @@ export default {
       this.Url = userInfo.url
       this.ciid = null
       this.ciid = userInfo.ciid
-      this.form.setFieldsValue({
-        link: this.Url,
-      })
+      this.modalVisible = true
     },
     teacherOperate(userInfo) {
       console.log(userInfo)
-      this.modalVisible = true
+      this.image = userInfo.image
       this.valueUrl = null
       this.valueUrl = 'http://47.95.237.117:8090/' + userInfo.image
       this.Url = null
       this.Url = userInfo.url
       this.ciid = null
       this.ciid = userInfo.ciid
-      this.form.setFieldsValue({
-        link: this.Url,
-      })
+      this.modalVisible = true
     },
     handleCancel() {
       this.modalVisible = false
@@ -199,6 +225,8 @@ export default {
           })
           .then((res) => {
             console.log(res.data)
+            this.$message.success('已保存')
+            this.gettable()
           })
           .catch((error) => {
             console.log(error.response)
@@ -234,17 +262,6 @@ export default {
 }
 </script>
 <style>
-#components-layout-demo-fixed-sider .logo {
-  height: 32px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px;
-}
-.teacher,
-.parent,
-.book,
-.interface {
-  padding-top: 20px;
-}
 .comtemt {
   padding: 24px;
 }
@@ -275,5 +292,8 @@ tr:last-child td {
   position: absolute;
   margin-left: 360px;
   margin-top: -68px;
+}
+.image {
+  width: 100px;
 }
 </style>

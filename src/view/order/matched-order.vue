@@ -14,7 +14,7 @@
           <a @click="showModal1(scope)">查看</a>
         </template>
         <template slot="contractStatus" slot-scope="text">
-          <a>{{ text == 1 ? '家长预约' : '教师投递' }}</a>
+          <span>{{ text == 1 ? '家长预约' : '教师投递' }}</span>
         </template>
         <template slot="processStatus" slot-scope="text">
           <a>{{ text == 0 ? '待处理' : '已完成' }}</a>
@@ -49,14 +49,6 @@
       >
         <template slot="footer">
           <a-button key="back" @click="handleCancel2"> 返回 </a-button>
-          <a-button
-            key="submit"
-            type="primary"
-            :loading="loading"
-            @click="handleOk2"
-          >
-            发布
-          </a-button>
         </template>
         <a-form :form="form">
           <a-form-item v-bind="formItemLayout" label="家长称谓">
@@ -65,9 +57,15 @@
           <a-form-item v-bind="formItemLayout" label="学生补习科目">
             <span>
               {{
-                itemId[demandRegister.itemId] == undefined
+                demandRegister.itemId == undefined
                   ? null
-                  : itemId[demandRegister.itemId].item
+                  : itemId.filter(
+                      (item) => item.iId == demandRegister.itemId
+                    ) == []
+                  ? null
+                  : itemId.filter(
+                      (item) => item.iId == demandRegister.itemId
+                    )[0].item
               }}
             </span>
           </a-form-item>
@@ -80,7 +78,7 @@
             <span>{{ demandRegister.phone }} </span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="家庭住址" has-feedback>
-            <span> {{ demandRegister.studyArea }}</span>
+            <span> {{ areaId[demandRegister.areaId] }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout">
             <span slot="label"> 详细地址 </span>
@@ -110,7 +108,9 @@
           </a-form-item>
           <a-form-item v-bind="formItemLayout">
             <span slot="label"> 空闲时间 </span>
-            <span>{{ demandRegister.studyTimes }}</span>
+            <span v-for="time in demandRegister.studyTimes" :key="time">{{
+              timeId[time]
+            }}；</span>
           </a-form-item>
         </a-form>
       </a-modal>
@@ -123,14 +123,6 @@
       >
         <template slot="footer">
           <a-button key="back" @click="handleCancel3"> 返回 </a-button>
-          <a-button
-            key="submit"
-            type="primary"
-            :loading="loading"
-            @click="handleOk3"
-          >
-            发布
-          </a-button>
         </template>
         <a-form :form="form">
           <a-form-item v-bind="formItemLayout" label="家长称谓">
@@ -225,6 +217,7 @@ const columns = [
     dataIndex: 'contractTime',
     key: 'contractTime',
     ellipsis: true,
+    width: 180,
   },
   {
     title: '处理状态',
@@ -282,6 +275,32 @@ const itemId = [
   { iId: 54, item: '艺体类其他' },
   { iId: 60, item: '其他' },
 ]
+const timeId = [
+  '周一到周五晚上',
+  '周一到周五全天',
+  '周六上午',
+  '周六下午',
+  '周六晚上',
+  '周日上午',
+  '周日下午',
+  '周日晚上',
+  '寒暑假均可',
+]
+const areaId = [
+  '锦江区',
+  '金牛区',
+  '武侯区',
+  '青羊区',
+  '成华区',
+  '高新区',
+  '天府新区',
+  '新都区',
+  '郫都区',
+  '双流区',
+  '龙泉驿区',
+  '温江区',
+  '其他',
+]
 var data = []
 var TeacherVerify = {}
 var demandRegister = {}
@@ -298,6 +317,8 @@ export default {
       data,
       columns,
       itemId,
+      areaId,
+      timeId,
       notes: '',
       did: null,
       loading: false,
@@ -363,6 +384,7 @@ export default {
         .then((res) => {
           console.log(res)
           this.gettable()
+          this.$message.success('已结束订单')
         })
         .catch((error) => {
           console.log(error.response)
@@ -389,6 +411,7 @@ export default {
             _this.demandRegister = {}
             _this.demandRegister = res.data
             _this.modal3Visible = true
+            this.$message.success('查看成功')
           })
           .catch((error) => {
             console.log(error.response)
@@ -402,6 +425,7 @@ export default {
             _this.demandRegister = {}
             _this.demandRegister = res.data
             _this.modal1Visible = true
+            this.$message.success('查看成功')
           })
           .catch((error) => {
             console.log(error.response)
@@ -417,6 +441,7 @@ export default {
           _this.TeacherVerify = {}
           _this.TeacherVerify = res.data
           _this.modal2Visible = true
+          this.$message.success('查看成功')
         })
         .catch((error) => {
           console.log(error.response)
@@ -430,6 +455,7 @@ export default {
       this.notes = userInfo.remark
       this.did = userInfo.did
       this.modalVisible = true
+      this.$message.success('查看备注')
     },
     handleOk(e) {
       this.loading = true
@@ -444,6 +470,7 @@ export default {
           .then((res) => {
             console.log(res)
             this.gettable()
+            this.$message.success('已保存')
           })
           .catch((error) => {
             console.log(error.response)
@@ -457,18 +484,8 @@ export default {
     handleCancel() {
       this.modalVisible = false
     },
-    handleOk2(e) {
-      this.loading = true
-      this.modal1Visible = false
-      this.loading = false
-    },
     handleCancel2() {
       this.modal1Visible = false
-    },
-    handleOk3(e) {
-      this.loading = true
-      this.modal3Visible = false
-      this.loading = false
     },
     handleCancel3() {
       this.modal3Visible = false
@@ -478,17 +495,6 @@ export default {
 </script>
 
 <style>
-#components-layout-demo-fixed-sider .logo {
-  height: 32px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px;
-}
-.teacher,
-.parent,
-.book,
-.interface {
-  padding-top: 20px;
-}
 .comtemt {
   padding: 24px;
 }

@@ -37,13 +37,15 @@
         {{ teacherRegister.selfEvaluation }}
       </a-descriptions-item>
       <a-descriptions-item label="价格区间">
-        {{ teacherRegister.teachingPrice }}
+        {{ teacherRegister.teachingPriceLow+"至"+teacherRegister.teachingPriceHigh+"元/小时" }}
       </a-descriptions-item>
       <a-descriptions-item label="空闲时间">
-        {{ teacherRegister.teachingtimes }}
+        <span v-for="time in teacherRegister.teachingTimes" :key="time"
+          >{{ timeId[time] }}；</span
+        >
       </a-descriptions-item>
       <a-descriptions-item label="授课区域">
-        {{ teacherRegister.teachingAreas }}
+        {{ areaId[teacherRegister.teachingAreas[0]] }}
       </a-descriptions-item>
       <a-descriptions-item label="常住地址">
         {{ teacherRegister.residentAddress }}
@@ -53,6 +55,21 @@
 </template>
 
 <script>
+const areaId = [
+  '锦江区',
+  '金牛区',
+  '武侯区',
+  '青羊区',
+  '成华区',
+  '高新区',
+  '天府新区',
+  '新都区',
+  '郫都区',
+  '双流区',
+  '龙泉驿区',
+  '温江区',
+  '其他',
+]
 const itemId = [
   { iId: 10, item: '小学全科' },
   { iId: 11, item: '小学语文' },
@@ -88,6 +105,17 @@ const itemId = [
   { iId: 54, item: '艺体类其他' },
   { iId: 60, item: '其他' },
 ]
+const timeId = [
+  '周一到周五晚上',
+  '周一到周五全天',
+  '周六上午',
+  '周六下午',
+  '周六晚上',
+  '周日上午',
+  '周日下午',
+  '周日晚上',
+  '寒暑假均可',
+]
 export default {
   name: 'modal',
   props: {
@@ -98,6 +126,8 @@ export default {
     return {
       loading: false,
       itemId,
+      timeId,
+      areaId
     }
   },
   methods: {

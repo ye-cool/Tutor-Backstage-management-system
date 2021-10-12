@@ -4,9 +4,11 @@
       <div class="search">
         <a-form class="search" :form="form" @submit="handleSearch">
           <a-space>
+            <br /><br />
             <a-form-item>
               <span class="search-condition">搜索条件</span>
             </a-form-item>
+            <br /><br />
             <a-form-item>
               <a-cascader
                 :options="options1"
@@ -46,15 +48,22 @@
                 </a-select-option>
               </a-select>
             </a-form-item>
+            <br /><br />
             <a-form-item>
               <a-input
                 placeholder="家长称谓/联系电话"
                 style="width: 200px"
                 v-decorator="['nameortel']"
             /></a-form-item>
+            <br /><br />
             <a-form-item>
-              <a-button type="primary" icon="search" html-type="submit">
-                Search
+              <a-button
+                :loading="loading"
+                type="primary"
+                icon="search"
+                html-type="submit"
+              >
+                搜索
               </a-button>
             </a-form-item>
           </a-space>
@@ -63,18 +72,20 @@
       <a-table
         :columns="columns"
         :data-source="data"
-        :pagination="false"
         rowKey="did"
+        :pagination="false"
       >
-        <template slot="itemId" slot-scope="record">
+        <template slot="itemId" slot-scope="scope">
           {{
-            record.itemId == null || 0
+            scope.itemId == undefined
               ? null
-              : itemId.filter((item) => item.iId == record.itemId)[0].item
+              : itemId.filter((item) => item.iId == scope.itemId) == []
+              ? null
+              : itemId.filter((item) => item.iId == scope.itemId)[0].item
           }}
         </template>
-        <template slot="studyArea" slot-scope="text">
-          <a>{{ areaId[text] }}</a>
+        <template slot="areaId" slot-scope="text">
+          <span>{{ areaId[text] }}</span>
         </template>
         <template slot="need" slot-scope="scope">
           <a @click="showModal(scope)">编辑</a>
@@ -133,9 +144,15 @@
           <a-form-item v-bind="formItemLayout" label="学生补习科目">
             <span>
               {{
-                itemId[demandRegister.itemId] == undefined
+                demandRegister.itemId == undefined
                   ? null
-                  : itemId[demandRegister.itemId].item
+                  : itemId.filter(
+                      (item) => item.iId == demandRegister.itemId
+                    ) == []
+                  ? null
+                  : itemId.filter(
+                      (item) => item.iId == demandRegister.itemId
+                    )[0].item
               }}
             </span>
           </a-form-item>
@@ -143,20 +160,30 @@
             <a-textarea
               style="width: 500px"
               :rows="4"
-              v-decorator="['studentLearningSituation']"
+              v-decorator="[
+                'studentLearningSituation',
+                {
+                  initialValue: demandRegister.studentLearningSituation,
+                },
+              ]"
             ></a-textarea>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="联系电话" has-feedback>
             <span>{{ demandRegister.phone }} </span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="家庭住址" has-feedback>
-            <span> {{ demandRegister.studyArea }}</span>
+            <span> {{ areaId[demandRegister.areaId] }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout">
             <span slot="label"> 详细地址 </span>
             <a-input
               style="width: 500px"
-              v-decorator="['detailadress']"
+              v-decorator="[
+                'detailadress',
+                {
+                  initialValue: demandRegister.address,
+                },
+              ]"
             ></a-input> </a-form-item
           ><a-form-item v-bind="formItemLayout">
             <span slot="label"> 预期价格 </span>
@@ -164,7 +191,18 @@
             <span>元/小时</span> </a-form-item
           ><a-form-item v-bind="formItemLayout">
             <span slot="label"> 展示价格 </span>
-            <a-input style="width: 50px" v-decorator="['verifyPrice']"></a-input
+            <a-input
+              style="width: 50px"
+              v-decorator="[
+                'verifyPrice',
+                {
+                  initialValue:
+                    demandRegister.verifiedPrice == null
+                      ? null
+                      : demandRegister.verifiedPrice,
+                },
+              ]"
+            ></a-input
             ><span>元/小时</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout">
@@ -181,23 +219,43 @@
             <span slot="label"> 补习时长 </span>
             <a-input
               style="width: 500px"
-              v-decorator="['studyHours']"
+              v-decorator="[
+                'studyHours',
+                {
+                  initialValue:
+                    demandRegister.classHours == null
+                      ? null
+                      : demandRegister.classHours,
+                },
+              ]"
             ></a-input>
           </a-form-item>
           <a-form-item v-bind="formItemLayout">
             <span slot="label"> 空闲时间 </span>
-            <span>{{ demandRegister.studyTimes }}</span>
+            <span v-for="time in demandRegister.studyTimes" :key="time"
+              >{{ timeId[time] }}；</span
+            >
           </a-form-item>
           <a-form-item v-bind="formItemLayout">
             <span slot="label"> 设置优先级 </span>
-            <a-cascader
-              :options="options2"
-              :show-search="{ filter }"
+            <a-select
               placeholder="优先级"
-              @change="onChange"
-              style="width: 200px"
-              v-decorator="['priority']"
-            />
+              style="width: 100px"
+              v-decorator="[
+                'priority',
+                {
+                  initialValue:
+                    demandRegister.priority == null
+                      ? null
+                      : demandRegister.priority,
+                },
+              ]"
+              :allowClear="true"
+            >
+              <a-select-option v-for="option in options2" :key="option">
+                {{ option }}
+              </a-select-option>
+            </a-select>
           </a-form-item>
         </a-form>
       </a-modal>
@@ -214,12 +272,12 @@
         </template>
         <a-form class="form">
           <a-form-item v-bind="formItemLayout" label="投递老师">
-            <div class="taechername">
+            <div class="teachername">
               <a
                 v-for="item in teachers"
                 :key="item.name"
                 @click="showteacherModal(item)"
-                >{{ item.name == undefined ? '无' : item.name }}</a
+                >{{ item.name == undefined ? '无' : item.name }}；</a
               >
               <div v-if="teachers.length == 0">无</div>
             </div>
@@ -233,9 +291,13 @@
             has-feedback
           >
             <span>{{
-              itemId[demandRegister.itemId] == undefined
+              demandRegister.itemId == undefined
                 ? null
-                : itemId[demandRegister.itemId].item
+                : itemId.filter((item) => item.iId == demandRegister.itemId) ==
+                  []
+                ? null
+                : itemId.filter((item) => item.iId == demandRegister.itemId)[0]
+                    .item
             }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="学习情况" has-feedback>
@@ -272,12 +334,14 @@
             <span>{{ demandRegister.classHours }}</span>
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="空闲时间" has-feedback>
-            <span>{{ demandRegister.studyTimes }}</span>
+            <span v-for="time in demandRegister.studyTimes" :key="time"
+              >{{ timeId[time] }}；</span
+            >
           </a-form-item>
         </a-form>
       </a-modal>
       <teacherVrifyModal
-        :modal2Visible="modalVisible"
+        :modal2Visible="modal3Visible"
         v-on:changeVisible2="changeVisible2"
         :TeacherVerify="TeacherVerify"
       ></teacherVrifyModal>
@@ -294,7 +358,6 @@ const columns = [
   },
   {
     title: '学生年级与补习科目',
-    dataIndex: 'itemId',
     key: 'itemId',
     width: 200,
     scopedSlots: { customRender: 'itemId' },
@@ -307,10 +370,10 @@ const columns = [
   },
   {
     title: '家庭住址范围',
-    dataIndex: 'studyArea',
-    key: 'studyArea',
+    dataIndex: 'areaId',
+    key: 'areaId',
     ellipsis: true,
-    scopedSlots: { customRender: 'studyArea' },
+    scopedSlots: { customRender: 'areaId' },
   },
   {
     title: '需求查看',
@@ -404,6 +467,17 @@ const itemId = [
   { iId: 54, item: '艺体类其他' },
   { iId: 60, item: '其他' },
 ]
+const timeId = [
+  '周一到周五晚上',
+  '周一到周五全天',
+  '周六上午',
+  '周六下午',
+  '周六晚上',
+  '周日上午',
+  '周日下午',
+  '周日晚上',
+  '寒暑假均可',
+]
 var demandRegister = {}
 var demandVerify = {}
 var TeacherVerify = {}
@@ -426,6 +500,7 @@ export default {
       TeacherVerify,
       areaId,
       itemId,
+      timeId,
       data,
       istrue: true,
       loading: false,
@@ -433,6 +508,7 @@ export default {
       modalVisible: false,
       modal1Visible: false,
       modal2Visible: false,
+      modal3Visible: false,
       gradeData,
       subjectData,
       subjects,
@@ -515,26 +591,7 @@ export default {
           label: '其他',
         },
       ],
-      options2: [
-        {
-          value: '1',
-          label: '1',
-        },
-        {
-          value: '2',
-          label: '2',
-        },
-        {
-          value: '3',
-          label: '3',
-        },
-      ],
-      options3: [
-        {
-          value: '锦江区',
-          label: '锦江区',
-        },
-      ],
+      options2: [1, 2, 3],
     }
   },
   components: {
@@ -542,6 +599,7 @@ export default {
   },
   methods: {
     handleSearch(e) {
+      this.loading = true
       e.preventDefault()
       this.form.validateFields((error, values) => {
         console.log('error', error)
@@ -577,6 +635,9 @@ export default {
             this.data = []
             this.data = res.data.records
             console.log(this.data)
+            this.pagination.total = res.data.total
+            this.$message.success('搜索成功')
+            this.loading = false
           })
           .catch((error) => {
             console.log(error.response)
@@ -612,11 +673,8 @@ export default {
           console.log(error.response)
         })
     },
-    changeVisible(value) {
-      this.modalVisible = value
-    },
     changeVisible2(value) {
-      this.modal2Visible = value
+      this.modal3Visible = value
     },
     showteacherModal(userInfo) {
       console.log(userInfo)
@@ -628,7 +686,7 @@ export default {
             console.log(res.data)
             _this.TeacherVerify = {}
             _this.TeacherVerify = res.data
-            this.modalVisible = true
+            this.modal3Visible = true
           })
           .catch((error) => {
             console.log(error.response)
@@ -641,7 +699,7 @@ export default {
             console.log(res.data)
             _this.TeacherVerify = {}
             _this.TeacherVerify = res.data
-            _this.modalVisible = true
+            _this.modal3Visible = true
           })
           .catch((error) => {
             console.log(error.response)
@@ -651,7 +709,7 @@ export default {
     showModal(userInfo) {
       console.log(userInfo)
       this.verifyStatus = userInfo.verifyStatus
-      if (userInfo.verifyStatus === 0 || 3) {
+      if (userInfo.verifyStatus == 0 || userInfo.verifyStatus == 3) {
         const _this = this
         _this.$api.mode
           .getDemandRegister(`${userInfo.did}`)
@@ -659,12 +717,8 @@ export default {
             console.log(res.data)
             _this.demandRegister = {}
             _this.demandRegister = res.data
-            _this.form.setFieldsValue({
-              studentLearningSituation:
-                _this.demandRegister.studentLearningSituation,
-              detailadress: _this.demandRegister.address,
-            })
             _this.modal1Visible = true
+            this.$message.success('请编辑')
           })
           .catch((error) => {
             console.log(error.response)
@@ -677,58 +731,23 @@ export default {
             console.log(res.data)
             _this.demandRegister = {}
             _this.demandRegister = res.data
-            _this.form.setFieldsValue({
-              studentLearningSituation:
-                _this.demandRegister.studentLearningSituation,
-              detailadress: _this.demandRegister.address,
-              priority: _this.demandRegister.priority,
-              studyHours: _this.demandRegister.classHours,
-              verifyPrice: _this.demandRegister.verifiedPrice,
-            })
             _this.modal1Visible = true
+            this.$message.success('请编辑')
           })
           .catch((error) => {
             console.log(error.response)
           })
       }
     },
-    hideModal() {
-      this.modal1Visible = false
-    },
     handleOk(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
         console.log('error', error)
         console.log('Received values of form: ', values)
-        if (this.verifyStatus === 0 || 3) {
+        if (this.verifyStatus == 0 || this.verifyStatus == 3) {
           this.$api.mode
             .postDemandVerify({
-              areaId: this.demandRegister.studyArea,
-              did: this.demandRegister.did,
-              gradeId: this.demandRegister.gradeId,
-              itemId: this.demandRegister.itemId,
-              parentId: this.demandRegister.parentId,
-              parentName: this.demandRegister.parentName,
-              price: this.demandRegister.price,
-              studyTimes: this.demandRegister.studyTimes,
-              teacherGender: this.demandRegister.teacherGender,
-              classHours: values.studyHours,
-              address: values.detailadress,
-              priority: values.priority[0],
-              studentLearningSituation: values.studentLearningSituation,
-              verifiedPrice: values.verifyPrice,
-            })
-            .then((res) => {
-              console.log(res.data)
-              this.gettable()
-            })
-            .catch((error) => {
-              console.log(error.response)
-            })
-        } else {
-          this.$api.mode
-            .putDemandVerify({
-              areaId: this.demandRegister.studyArea,
+              areaId: this.demandRegister.areaId,
               did: this.demandRegister.did,
               gradeId: this.demandRegister.gradeId,
               itemId: this.demandRegister.itemId,
@@ -742,9 +761,38 @@ export default {
               priority: values.priority,
               studentLearningSituation: values.studentLearningSituation,
               verifiedPrice: values.verifyPrice,
+              version: this.demandRegister.version,
             })
             .then((res) => {
               console.log(res.data)
+              this.$message.success('已发布')
+              this.gettable()
+            })
+            .catch((error) => {
+              console.log(error.response)
+            })
+        } else {
+          this.$api.mode
+            .putDemandVerify({
+              areaId: this.demandRegister.areaId,
+              did: this.demandRegister.did,
+              gradeId: this.demandRegister.gradeId,
+              itemId: this.demandRegister.itemId,
+              parentId: this.demandRegister.parentId,
+              parentName: this.demandRegister.parentName,
+              price: this.demandRegister.price,
+              studyTimes: this.demandRegister.studyTimes,
+              teacherGender: this.demandRegister.teacherGender,
+              classHours: values.studyHours,
+              address: values.detailadress,
+              priority: values.priority,
+              studentLearningSituation: values.studentLearningSituation,
+              verifiedPrice: values.verifyPrice,
+              version: this.demandRegister.version,
+            })
+            .then((res) => {
+              console.log(res.data)
+              this.$message.success('已发布')
               this.gettable()
             })
             .catch((error) => {
@@ -762,30 +810,32 @@ export default {
       this.modal1Visible = false
     },
     showModal2(userInfo) {
-      const _this = this
-      _this.$api.mode
-        .getDemandRegister(`${userInfo.did}`)
-        .then((res) => {
-          console.log(res.data)
-          _this.demandRegister = {}
-          _this.demandRegister = res.data
-        })
-        .catch((error) => {
-          console.log(error.response)
-        })
-      _this.$api.mode
-        .getApplyTeacher(`${userInfo.did}`)
-        .then((res) => {
-          console.log(res.data)
-          _this.teachers = res.data
-          _this.modal2Visible = true
-        })
-        .catch((error) => {
-          console.log(error.response)
-        })
-    },
-    hideModal2() {
-      this.modal2Visible = false
+      if (this.verifyStatus == 0 || this.verifyStatus == 3) {
+        this.$message.warning('该需求还未审核通过')
+      } else {
+        const _this = this
+        _this.$api.mode
+          .getDemandVerify(`${userInfo.did}`)
+          .then((res) => {
+            console.log(res.data)
+            _this.demandRegister = {}
+            _this.demandRegister = res.data
+          })
+          .catch((error) => {
+            console.log(error.response)
+          })
+        _this.$api.mode
+          .getApplyTeacher(`${userInfo.did}`)
+          .then((res) => {
+            console.log(res.data)
+            _this.teachers = res.data
+            _this.modal2Visible = true
+            this.$message.success('查看投递状态成功')
+          })
+          .catch((error) => {
+            console.log(error.response)
+          })
+      }
     },
     handleOk2(e) {
       this.loading = true
@@ -822,20 +872,6 @@ export default {
 </script>
 
 <style>
-#components-layout-demo-fixed-sider .logo {
-  height: 32px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px;
-}
-.teacher,
-.parent,
-.book,
-.interface {
-  padding-top: 20px;
-}
-.comtemt {
-  padding: 24px;
-}
 .search {
   display: flex;
   flex-wrap: wrap;

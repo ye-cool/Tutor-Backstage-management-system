@@ -8,7 +8,8 @@
         rowKey="aid"
       >
         <a slot="operate" slot-scope="scope">
-          <a @click="showModal(scope)">更换密码</a>
+          <a class="change" @click="showModal(scope)">更换密码</a>
+          <a @click="remove(scope)">删除</a>
         </a>
       </a-table>
       <a-pagination
@@ -23,7 +24,12 @@
         @showSizeChange="showSizeChange"
         style="margin: 16px 0; text-align: right"
       />
-      <a-modal width="500px" :visible="modalVisible" :closable="false" title="更换密码">
+      <a-modal
+        width="500px"
+        :visible="modalVisible"
+        :closable="false"
+        title="更换密码"
+      >
         <template slot="footer">
           <a-button key="back" type="primary" @click="handleCancel">
             返回
@@ -39,7 +45,20 @@
         </template>
         <a-form class="form" :form="form">
           <a-form-item label="新密码">
-            <a-input v-decorator="['NewPassword']" type="text" />
+            <a-input
+              v-decorator="[
+                'NewPassword',
+                {
+                  rules: [
+                    {
+                      required: true,
+                      message: '请输入密码',
+                    },
+                  ],
+                },
+              ]"
+              type="text"
+            />
           </a-form-item>
         </a-form>
       </a-modal>
@@ -122,15 +141,6 @@ export default {
           console.log(error.response)
         })
     },
-    onChange(value, selectedOptions) {
-      console.log(value, selectedOptions)
-    },
-    filter(inputValue, path) {
-      return path.some(
-        (option) =>
-          option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
-      )
-    },
     showModal(userInfo) {
       this.aid = null
       this.aid = userInfo.aid
@@ -151,43 +161,45 @@ export default {
       this.modalVisible = false
     },
     handleOk(e) {
-      this.loading = true
       e.preventDefault()
       this.form.validateFields((error, values) => {
-        console.log('error', error)
-        console.log('Received values of form: ', values)
-        this.$api.mode
-          .changePassword({
-            aid: this.aid,
-            newPassword: values.NewPassword,
-          })
-          .then((res) => {
-            console.log(res.data)
-            this.gettable()
-          })
-          .catch((error) => {
-            console.log(error.response)
-          })
+        if (!error) {
+          this.loading = true
+          console.log('Received values of form: ', values)
+          this.$api.mode
+            .changePassword({
+              aid: this.aid,
+              newPassword: values.NewPassword,
+            })
+            .then((res) => {
+              console.log(res.data)
+              this.gettable()
+              this.loading = false
+              this.modalVisible = false
+            })
+            .catch((error) => {
+              console.log(error.response)
+            })
+        }
       })
-      this.loading = false
-      this.modalVisible = false
+    },
+    remove(userInfo) {
+      console.log(userInfo)
+      this.$api.mode
+        .deleteAdmin(userInfo.aid)
+        .then((res) => {
+          console.log(res.data)
+          this.gettable()
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
     },
   },
 }
 </script>
 
 <style>
-#components-layout-demo-fixed-sider .logo {
-  height: 32px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px;
-}
-.teacher,
-.parent,
-.book,
-.interface {
-  padding-top: 20px;
-}
 .comtemt {
   padding: 24px;
 }
@@ -200,6 +212,9 @@ export default {
   text-align: center;
   height: 35px;
   line-height: 35px;
+}
+.change {
+  margin-right: 10px;
 }
 tr:last-child td {
   padding-bottom: 0;
