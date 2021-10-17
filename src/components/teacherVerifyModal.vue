@@ -20,15 +20,15 @@
     <a-form :form="form">
       <img
         class="avatar"
-        :src="'http://47.95.237.117:8090/' + TeacherVerify.avatar"
+        :src="'https://wechatapp.cdjjwang.com/' + TeacherVerify.avatar"
       />
       <input
-        class="file"
+        class="file1"
         type="file"
         accept="image/png,image/gif,image/jpeg"
         @change="update"
       />
-      <a-button class="btn"> 更换头像 </a-button>
+      <a-button class="btn1"> 更换头像 </a-button>
       <a-form-item v-bind="formItemLayout" label="称谓">
         <span> {{ TeacherVerify.name }} </span>
         <a-button
@@ -561,7 +561,7 @@ export default {
         })
     },
     download(tid) {
-      window.open(`http://47.95.237.117:8090/Api/Admin/Pdf/${tid}`)
+      window.open(`https://wechatapp.cdjjwang.com/Api/Admin/Pdf/${tid}`)
     },
     coefficientChange(e) {
       console.log(e.target.value)
@@ -569,15 +569,15 @@ export default {
         multiple: 0,
       })
       if (e.target.value == 0) {
-      }else{
-      this.form.setFieldsValue({
-        lowPriceVerified: parseInt(
-          this.TeacherVerify.teachingPriceLow * e.target.value
-        ),
-        highPriceVerified: parseInt(
-          this.TeacherVerify.teachingPriceHigh * e.target.value
-        ),
-      })
+      } else {
+        this.form.setFieldsValue({
+          lowPriceVerified: parseInt(
+            this.TeacherVerify.teachingPriceLow * e.target.value
+          ),
+          highPriceVerified: parseInt(
+            this.TeacherVerify.teachingPriceHigh * e.target.value
+          ),
+        })
       }
     },
   },
@@ -595,17 +595,23 @@ export default {
   width: 160px;
   position: absolute;
 }
-.file {
+.file1 {
   position: absolute;
-  margin-top: 270px;
+  top: 300px;
+  left: 40px;
+  width: 100px;
+  height: 30px;
   opacity: 0;
-  z-index: 100;
+  z-index: 10;
 }
-.btn {
+.btn1 {
   position: absolute;
-  margin-top: 270px;
+  width: 100px;
+  height: 30px;
+  top: 300px;
+  left: 40px;
 }
-.download{
+.download {
   margin-left: 300px;
 }
 </style>

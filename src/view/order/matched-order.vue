@@ -17,7 +17,9 @@
           <span>{{ text == 1 ? '家长预约' : '教师投递' }}</span>
         </template>
         <template slot="processStatus" slot-scope="text">
-          <a>{{ text == 0 ? '待处理' : '已完成' }}</a>
+          <a>{{
+            text == 0 ? '待处理' : text == 1 ? '管理员删除' : '已完成'
+          }}</a>
         </template>
         <template slot="operate" slot-scope="scope">
           <a @click="reject(scope)">
@@ -108,9 +110,9 @@
           </a-form-item>
           <a-form-item v-bind="formItemLayout">
             <span slot="label"> 空闲时间 </span>
-            <span v-for="time in demandRegister.studyTimes" :key="time">{{
-              timeId[time]
-            }}；</span>
+            <span v-for="time in demandRegister.studyTimes" :key="time"
+              >{{ timeId[time] }}；</span
+            >
           </a-form-item>
         </a-form>
       </a-modal>
@@ -220,7 +222,7 @@ const columns = [
     width: 180,
   },
   {
-    title: '处理状态',
+    title: '订单状态',
     dataIndex: 'processStatus',
     key: 'processStatus',
     ellipsis: true,

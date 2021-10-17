@@ -9,19 +9,19 @@ module.exports = {
     proxy: {
       // 配置跨域-将所有/api的请求拦截，代理到target上
       '/Api': {
-        target: 'http://47.95.237.117:8090/',
+        target: 'https://wechatapp.cdjjwang.com/',
         ws: true,
         changOrigin: true,
         pathRewrite: { // ---->>>并将/api换成/
-          '^/Api': 'http://47.95.237.117:8090/Api'
+          '^/Api': 'https://wechatapp.cdjjwang.com/Api'
         }
       },
       '/captcha': {
-        target: 'http://47.95.237.117:8090/',
+        target: 'https://wechatapp.cdjjwang.com/',
         ws: true,
         changOrigin: true,
         pathRewrite: { // ---->>>并将/api换成/
-          '^/captcha': 'http://47.95.237.117:8090/captcha'
+          '^/captcha': 'https://wechatapp.cdjjwang.com/captcha'
         }
       }
     },

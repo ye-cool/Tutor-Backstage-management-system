@@ -7,7 +7,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    redirect: '/login'
+    redirect: '/login',
   },
   {
     path: '/login',
@@ -112,6 +112,7 @@ const router = new VueRouter({
 })
 // 路由权限守卫
 router.beforeEach((to, from, next) => {
+  window.document.title = '家教后台管理系统'
   if (to.path === '/login'||to.path === '/signup') {
     next();
   } else {

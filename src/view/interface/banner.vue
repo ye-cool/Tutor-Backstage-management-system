@@ -14,7 +14,7 @@
         :pagination="false"
       >
         <a slot="banner" slot-scope="text">
-          <img class="image" :src="'http://47.95.237.117:8090/' + text" />
+          <img class="image" :src="'https://wechatapp.cdjjwang.com/' + text" />
         </a>
         <a slot="url" slot-scope="text">{{ text }}</a>
         <span slot="customTitle">
@@ -42,7 +42,7 @@
         :pagination="false"
       >
         <a slot="banner" slot-scope="text">
-          <img class="image" :src="'http://47.95.237.117:8090/' + text" />
+          <img class="image" :src="'https://wechatapp.cdjjwang.com/' + text" />
         </a>
         <a slot="url" slot-scope="text">{{ text }}</a>
         <span slot="customTitle">
@@ -56,7 +56,7 @@
         </a>
       </a-table>
       <a-modal
-        width="600px"
+        width="800px"
         :visible="modalVisible"
         :closable="false"
         title="banner设置"
@@ -83,8 +83,8 @@
               accept="image/png,image/gif,image/jpeg"
               @change="update"
             />
+            <a-button class="btn">更换海报</a-button>
           </a-form-item>
-          <a-button class="btn">更换海报</a-button>
           <a-form-item v-bind="formItemLayout" label="跳转链接">
             <input
               type="text"
@@ -189,7 +189,7 @@ export default {
       if (userInfo.image == null) {
         this.valueUrl = ''
       } else {
-        this.valueUrl = 'http://47.95.237.117:8090/' + userInfo.image
+        this.valueUrl = 'https://wechatapp.cdjjwang.com/' + userInfo.image
       }
       this.Url = null
       this.Url = userInfo.url
@@ -201,7 +201,7 @@ export default {
       console.log(userInfo)
       this.image = userInfo.image
       this.valueUrl = null
-      this.valueUrl = 'http://47.95.237.117:8090/' + userInfo.image
+      this.valueUrl = 'https://wechatapp.cdjjwang.com/' + userInfo.image
       this.Url = null
       this.Url = userInfo.url
       this.ciid = null
@@ -252,7 +252,7 @@ export default {
         .then((res) => {
           console.log(res.data)
           this.image = res.data
-          this.valueUrl = 'http://47.95.237.117:8090/' + res.data
+          this.valueUrl = 'https://wechatapp.cdjjwang.com/' + res.data
         })
         .catch((error) => {
           console.log(error.response)
@@ -262,36 +262,26 @@ export default {
 }
 </script>
 <style>
-.comtemt {
-  padding: 24px;
-}
-.search {
-  display: flex;
-  flex-wrap: wrap;
-}
-.search-condition {
-  display: block;
-  text-align: center;
-  height: 35px;
-  line-height: 35px;
-}
-tr:last-child td {
-  padding-bottom: 0;
-}
 .previewImg {
   width: 120px;
 }
 .file {
   position: absolute;
-  margin-left: 360px;
-  margin-top: -56px;
+  width: 100px;
+  height: 30px;
+  margin-top: 0px;
+  left: 290px;
+  top: -30px;
   opacity: 0;
-  z-index: 100;
+  z-index: 10;
 }
 .btn {
+  width: 100px;
+  height: 30px;
+  margin-top: 0px;
   position: absolute;
-  margin-left: 360px;
-  margin-top: -68px;
+  left: 290px;
+  top: -30px;
 }
 .image {
   width: 100px;

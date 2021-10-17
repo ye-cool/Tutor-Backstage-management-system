@@ -103,6 +103,17 @@
               : '不通过'
           }}</a>
         </template>
+        <template slot="demandStatus" slot-scope="text">
+          <a>{{
+            text == 0
+              ? '匹配中'
+              : text == 1
+              ? '匹配成功'
+              : text == 2
+              ? '管理员结束订单'
+              : '家长结束订单'
+          }}</a>
+        </template>
         <template slot="deliveryStatus" slot-scope="text, scope">
           <a @click="showModal2(scope)">已有{{ text }}人投递</a>
         </template>
@@ -387,6 +398,13 @@ const columns = [
     key: 'verifyStatus',
     ellipsis: true,
     scopedSlots: { customRender: 'verifyStatus' },
+  },
+  {
+    title: '需求状态',
+    dataIndex: 'demandStatus',
+    key: 'demandStatus',
+    ellipsis: true,
+    scopedSlots: { customRender: 'demandStatus' },
   },
   {
     title: '投递状态',

@@ -18,6 +18,15 @@
         <span slot="verifyStatus" slot-scope="text">{{
           text == 0 ? '未审核' : '已通过'
         }}</span>
+        <span slot="processStatus" slot-scope="text">{{
+          text == 0
+            ? '匹配中'
+            : text == 1
+            ? '匹配成功'
+            : text == 2
+            ? '管理员结束订单'
+            : '家长结束订单'
+        }}</span>
         <a slot="applyTeachers" slot-scope="text, scope"
           ><a @click="showModal2(scope)">已有{{ text }}人投递</a></a
         >
@@ -341,6 +350,13 @@ const columns = [
     key: 'verifyStatus',
     ellipsis: true,
     scopedSlots: { customRender: 'verifyStatus' },
+  },
+  {
+    title: '订单状态',
+    dataIndex: 'processStatus',
+    key: 'processStatus',
+    ellipsis: true,
+    scopedSlots: { customRender: 'processStatus' },
   },
   {
     title: '投递状态',
